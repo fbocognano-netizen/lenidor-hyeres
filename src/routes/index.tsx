@@ -152,7 +152,7 @@ function Intro() {
           </div>
         </div>
         <div className="md:col-span-5 grid grid-cols-2 gap-4">
-          <Stat icon={<Users className="h-4 w-4" />} label="Voyageurs" value="2" />
+          <Stat icon={<Users className="h-4 w-4" />} label="Voyageurs" value="1" />
           <Stat icon={<Bed className="h-4 w-4" />} label="Lits" value="2" />
           <Stat icon={<Bath className="h-4 w-4" />} label="Salle de bain" value="1" />
           <Stat icon={<Star className="h-4 w-4 fill-current" />} label="Note Airbnb" value="5,0" />
@@ -200,9 +200,9 @@ function Gallery() {
 function Amenities() {
   const items = [
     { icon: <Waves className="h-5 w-5" />, label: "Piscine de 17 m" },
-    { icon: <Sun className="h-5 w-5" />, label: "Terrasse plein sud" },
-    { icon: <Wifi className="h-5 w-5" />, label: "Wi-Fi rapide" },
-    { icon: <Wind className="h-5 w-5" />, label: "Climatisation" },
+    { icon: <Sun className="h-5 w-5" />, label: "Terrasse plein sud & vue mer panoramique" },
+    { icon: <Wifi className="h-5 w-5" />, label: "TV Connectée" },
+    { icon: <Wind className="h-5 w-5" />, label: "Frais tout l'été" },
     { icon: <ChefHat className="h-5 w-5" />, label: "Cuisine équipée" },
     { icon: <Car className="h-5 w-5" />, label: "Parking privé" },
   ];
@@ -406,14 +406,16 @@ function Location() {
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Le lieu</p>
           <h2 className="mt-3 font-display text-4xl sm:text-5xl">Hyères, porte des Îles d'Or.</h2>
           <p className="mt-5 text-muted-foreground leading-relaxed">
-            À 10 minutes des plages de l'Almanarre, à 15 minutes du port pour Porquerolles, à 5 minutes du
-            centre historique. Tout est proche, rien n'est bruyant.
+            À 10 minutes des plages de l'Almanarre, à 15 minutes du port pour Porquerolles, à 15 minutes du
+            centre historique.
+            
+            Tout est proche si vous le désirez, mais vous êtes au calme et au paradis en même temps.
           </p>
           <ul className="mt-8 space-y-3 text-sm">
             <li className="flex justify-between border-b border-border/60 pb-3"><span>Plage de l'Almanarre</span><span className="text-muted-foreground">10 min</span></li>
             <li className="flex justify-between border-b border-border/60 pb-3"><span>Port de la Tour Fondue</span><span className="text-muted-foreground">15 min</span></li>
-            <li className="flex justify-between border-b border-border/60 pb-3"><span>Centre historique</span><span className="text-muted-foreground">5 min</span></li>
-            <li className="flex justify-between border-b border-border/60 pb-3"><span>Aéroport Toulon-Hyères</span><span className="text-muted-foreground">10 min</span></li>
+            <li className="flex justify-between border-b border-border/60 pb-3"><span>Centre historique</span><span className="text-muted-foreground">15 min</span></li>
+            <li className="flex justify-between border-b border-border/60 pb-3"><span>Aéroport Toulon-Hyères</span><span className="text-muted-foreground">11 min</span></li>
           </ul>
         </div>
         <div className="aspect-[4/5] overflow-hidden rounded-3xl">
@@ -434,8 +436,8 @@ function Footer() {
         </div>
         <div>
           <div className="text-xs uppercase tracking-wider text-muted-foreground">Contact</div>
-          <p className="mt-2">Joëlle, votre hôte</p>
-          <p className="text-muted-foreground">Réponse sous 24 h</p>
+          <p className="mt-2">Joëlle, votre hôte sur Hyères qui vous reçoit en personne.</p>
+          <p className="text-muted-foreground">Réponse sous 2 h</p>
         </div>
         <div>
           <div className="text-xs uppercase tracking-wider text-muted-foreground">Bon à savoir</div>
