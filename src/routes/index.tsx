@@ -152,8 +152,8 @@ function Intro() {
           </div>
         </div>
         <div className="md:col-span-5 grid grid-cols-2 gap-4">
-          <Stat icon={<Users className="h-4 w-4" />} label="Voyageurs" value="1" />
-          <Stat icon={<Bed className="h-4 w-4" />} label="Lits" value="2" />
+          <Stat icon={<Users className="h-4 w-4" />} label="Voyageurs" value="2" />
+          <Stat icon={<Bed className="h-4 w-4" />} label="Lits" value="1" />
           <Stat icon={<Bath className="h-4 w-4" />} label="Salle de bain" value="1" />
           <Stat icon={<Star className="h-4 w-4 fill-current" />} label="Note Airbnb" value="5,0" />
         </div>
