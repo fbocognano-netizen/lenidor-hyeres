@@ -421,6 +421,23 @@ function Location() {
           <img src={photo2} alt="Vue extérieure et piscine" className="h-full w-full object-cover" />
         </div>
       </div>
+      <div className="mt-16">
+        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Sur la carte</p>
+        <h3 className="mt-3 font-display text-3xl sm:text-4xl">L'emplacement du studio</h3>
+        <p className="mt-3 text-muted-foreground max-w-2xl">
+          Sur les hauteurs de Hyères, à quelques minutes des plages et du port pour Porquerolles.
+        </p>
+        <div className="mt-8 overflow-hidden rounded-3xl border border-border/60 shadow-sm">
+          <iframe
+            title="Emplacement du studio à Hyères sur Google Maps"
+            src="https://www.google.com/maps?q=Hy%C3%A8res%2C+France&output=embed"
+            className="w-full h-[420px] md:h-[480px] border-0"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            allowFullScreen
+          />
+        </div>
+      </div>
     </section>
   );
 }
