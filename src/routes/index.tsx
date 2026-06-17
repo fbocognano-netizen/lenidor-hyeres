@@ -188,9 +188,8 @@ function Gallery() {
           <img src={PHOTOS[2]} alt="Terrasse plein sud" className="col-span-1 row-span-1 h-full w-full object-cover rounded-2xl" />
           <img src={PHOTOS[3]} alt="Intérieur du studio" className="col-span-1 row-span-1 h-full w-full object-cover rounded-2xl" />
         </div>
-        <div className="mt-4 grid grid-cols-2 gap-3 md:gap-4">
+        <div className="mt-4">
           <img src={PHOTOS[4]} alt="Détail du studio" className="h-64 w-full object-cover rounded-2xl" />
-          <img src={PHOTOS[1]} alt="Vue piscine" className="h-64 w-full object-cover rounded-2xl" />
         </div>
       </div>
     </section>
