@@ -89,6 +89,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { name: "twitter:description", content: "Your Hyères Getaway is a modern website for booking a tranquil apartment rental in Hyères, France." },
       { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a6107858-f6ef-4afb-940a-b24813a15dc4/id-preview-db0726e6--ff9f603a-9389-4ad2-a6b4-ee7aa118af46.lovable.app-1781350078247.png" },
       { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a6107858-f6ef-4afb-940a-b24813a15dc4/id-preview-db0726e6--ff9f603a-9389-4ad2-a6b4-ee7aa118af46.lovable.app-1781350078247.png" },
+      { name: "google-site-verification", content: "B4L6zAp6HnvBopD0J7lOHzKKXQTLWk9moM-ifcl39_c" },
     ],
     links: [
       {
