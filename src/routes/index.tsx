@@ -97,8 +97,8 @@ function Hero() {
     <section id="top" className="relative">
       <div className="relative h-[78vh] min-h-[520px] w-full overflow-hidden">
         <img
-          src={photo1}
-          alt="Vue panoramique sur les Îles d'Or depuis le studio à Hyères"
+          src={photo2}
+          alt="Coucher de soleil sur les Îles d'Or depuis la terrasse du studio à Hyères, deux verres en premier plan"
           className="absolute inset-0 h-full w-full object-cover"
           fetchPriority="high"
         />
@@ -188,9 +188,8 @@ function Gallery() {
           <img src={PHOTOS[2]} alt="Terrasse plein sud" className="col-span-1 row-span-1 h-full w-full object-cover rounded-2xl" />
           <img src={PHOTOS[3]} alt="Intérieur du studio" className="col-span-1 row-span-1 h-full w-full object-cover rounded-2xl" />
         </div>
-        <div className="mt-4 grid grid-cols-2 gap-3 md:gap-4">
+        <div className="mt-4">
           <img src={PHOTOS[4]} alt="Détail du studio" className="h-64 w-full object-cover rounded-2xl" />
-          <img src={PHOTOS[1]} alt="Vue piscine" className="h-64 w-full object-cover rounded-2xl" />
         </div>
       </div>
     </section>
@@ -420,6 +419,23 @@ function Location() {
         </div>
         <div className="aspect-[4/5] overflow-hidden rounded-3xl">
           <img src={photo2} alt="Vue extérieure et piscine" className="h-full w-full object-cover" />
+        </div>
+      </div>
+      <div className="mt-16">
+        <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Sur la carte</p>
+        <h3 className="mt-3 font-display text-3xl sm:text-4xl">L'emplacement du studio</h3>
+        <p className="mt-3 text-muted-foreground max-w-2xl">
+          Sur les hauteurs de Hyères, à quelques minutes des plages et du port pour Porquerolles.
+        </p>
+        <div className="mt-8 overflow-hidden rounded-3xl border border-border/60 shadow-sm">
+          <iframe
+            title="Emplacement du studio à Hyères sur Google Maps"
+            src="https://www.google.com/maps?q=Hy%C3%A8res%2C+France&output=embed"
+            className="w-full h-[420px] md:h-[480px] border-0"
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            allowFullScreen
+          />
         </div>
       </div>
     </section>
