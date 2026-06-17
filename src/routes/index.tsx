@@ -97,8 +97,8 @@ function Hero() {
     <section id="top" className="relative">
       <div className="relative h-[78vh] min-h-[520px] w-full overflow-hidden">
         <img
-          src={photo1}
-          alt="Vue panoramique sur les Îles d'Or depuis le studio à Hyères"
+          src={photo2}
+          alt="Coucher de soleil sur les Îles d'Or depuis la terrasse du studio à Hyères, deux verres en premier plan"
           className="absolute inset-0 h-full w-full object-cover"
           fetchPriority="high"
         />
