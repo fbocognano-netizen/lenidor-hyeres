@@ -297,7 +297,8 @@ function BookingForm() {
 
   const nights = range?.from && range?.to ? differenceInCalendarDays(range.to, range.from) : 0;
   const { nightsTotal } = range?.from && range?.to ? computeStay(range.from, range.to) : { nightsTotal: 0 };
-  const total = nights > 0 ? nightsTotal + CLEANING_FEE : 0;
+  const touristTax = nights > 0 ? nights * guests * TOURIST_TAX_PER_PERSON_NIGHT : 0;
+  const total = nights > 0 ? nightsTotal + CLEANING_FEE + touristTax : 0;
   const avgRate = nights > 0 ? Math.round(nightsTotal / nights) : 0;
 
   async function handleSubmit(e: React.FormEvent) {
