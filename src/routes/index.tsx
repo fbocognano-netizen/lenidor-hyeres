@@ -252,6 +252,28 @@ function BookingSection() {
             <li className="flex gap-3"><span className="text-[var(--color-accent)]">—</span> Échange direct avec Joëlle, votre hôte</li>
             <li className="flex gap-3"><span className="text-[var(--color-accent)]">—</span> Minimum 2 nuits · 2 voyageurs</li>
           </ul>
+          <div className="mt-10 pt-8 border-t border-primary-foreground/15">
+            <p className="text-xs uppercase tracking-[0.2em] text-primary-foreground/60">Vous préférez une plateforme ?</p>
+            <p className="mt-3 text-sm text-primary-foreground/70">Réservez aussi via :</p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <a
+                href="https://www.airbnb.fr/rooms/1526120631746320177"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 transition px-5 py-2.5 text-sm font-medium"
+              >
+                Airbnb <span aria-hidden>↗</span>
+              </a>
+              <a
+                href="https://www.leboncoin.fr/ad/locations_saisonnieres/3216372939"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 transition px-5 py-2.5 text-sm font-medium"
+              >
+                Leboncoin <span aria-hidden>↗</span>
+              </a>
+            </div>
+          </div>
         </div>
         <div className="lg:col-span-7">
           <BookingForm />
