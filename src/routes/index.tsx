@@ -26,6 +26,7 @@ import photo5 from "@/assets/listing/photo-5.jpg";
 
 const CLEANING_FEE = 40;
 const DEPOSIT_CASH = 500;
+const TOURIST_TAX_PER_PERSON_NIGHT = 1; // approximatif, Hyères meublé non classé
 function nightlyRate(d: Date): number {
   const m = d.getMonth() + 1;
   if (m === 7 || m === 8) return 130;
@@ -251,6 +252,28 @@ function BookingSection() {
             <li className="flex gap-3"><span className="text-[var(--color-accent)]">—</span> Échange direct avec Joëlle, votre hôte</li>
             <li className="flex gap-3"><span className="text-[var(--color-accent)]">—</span> Minimum 2 nuits · 2 voyageurs</li>
           </ul>
+          <div className="mt-10 pt-8 border-t border-primary-foreground/15">
+            <p className="text-xs uppercase tracking-[0.2em] text-primary-foreground/60">Vous préférez une plateforme ?</p>
+            <p className="mt-3 text-sm text-primary-foreground/70">Réservez aussi via :</p>
+            <div className="mt-4 flex flex-wrap gap-3">
+              <a
+                href="https://www.airbnb.fr/rooms/1526120631746320177"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 transition px-5 py-2.5 text-sm font-medium"
+              >
+                Airbnb <span aria-hidden>↗</span>
+              </a>
+              <a
+                href="https://www.leboncoin.fr/ad/locations_saisonnieres/3216372939"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="inline-flex items-center gap-2 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 transition px-5 py-2.5 text-sm font-medium"
+              >
+                Leboncoin <span aria-hidden>↗</span>
+              </a>
+            </div>
+          </div>
         </div>
         <div className="lg:col-span-7">
           <BookingForm />
@@ -296,7 +319,8 @@ function BookingForm() {
 
   const nights = range?.from && range?.to ? differenceInCalendarDays(range.to, range.from) : 0;
   const { nightsTotal } = range?.from && range?.to ? computeStay(range.from, range.to) : { nightsTotal: 0 };
-  const total = nights > 0 ? nightsTotal + CLEANING_FEE : 0;
+  const touristTax = nights > 0 ? nights * guests * TOURIST_TAX_PER_PERSON_NIGHT : 0;
+  const total = nights > 0 ? nightsTotal + CLEANING_FEE + touristTax : 0;
   const avgRate = nights > 0 ? Math.round(nightsTotal / nights) : 0;
 
   async function handleSubmit(e: React.FormEvent) {
@@ -397,8 +421,9 @@ function BookingForm() {
         </div>
 
         <div className="rounded-xl bg-muted/40 p-3 text-xs text-muted-foreground space-y-1">
-          <div>Tarifs par nuit : <span className="text-foreground font-medium">75 €</span> basse saison · <span className="text-foreground font-medium">95 €</span> moyenne (avr-juin, sept) · <span className="text-foreground font-medium">130 €</span> haute (juil-août)</div>
+          <div>Tarifs par nuit : <span className="text-foreground font-medium">75 €</span> basse · <span className="text-foreground font-medium">95 €</span> moyenne (avr-juin, sept) · <span className="text-foreground font-medium">130 €</span> haute (juil-août)</div>
           <div>+ <span className="text-foreground font-medium">{CLEANING_FEE} €</span> de frais de ménage (une fois par séjour)</div>
+          <div>+ <span className="text-foreground font-medium">~{TOURIST_TAX_PER_PERSON_NIGHT} €</span> de taxe de séjour / personne / nuit (collectée à l'arrivée, reversée à la commune)</div>
           <div>Caution de <span className="text-foreground font-medium">{DEPOSIT_CASH} €</span> en espèces à régler à l'arrivée (restituée au départ)</div>
         </div>
 
@@ -410,7 +435,7 @@ function BookingForm() {
             </div>
             {nights > 0 && (
               <div className="text-xs text-muted-foreground mt-1">
-                {nights} nuit{nights > 1 ? "s" : ""} · {nightsTotal} € ({avgRate} €/nuit moy.) + {CLEANING_FEE} € ménage
+                {nights} nuit{nights > 1 ? "s" : ""} · {nightsTotal} € ({avgRate} €/nuit moy.) + {CLEANING_FEE} € ménage + {touristTax} € taxe séjour
               </div>
             )}
           </div>
