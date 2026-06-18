@@ -43,19 +43,61 @@ function rangesOverlap(aStart: Date, aEnd: Date, bStart: Date, bEnd: Date) {
   return aStart < bEnd && bStart < aEnd;
 }
 
-async function fetchBlockedRanges(): Promise<Array<{ start: Date; end: Date }>> {
-  const url = process.env.AIRBNB_ICAL_URL;
-  if (!url) return [];
-  try {
-    const res = await fetch(url, { headers: { "User-Agent": "BnB-Hyeres-Site/1.0" } });
-    if (!res.ok) return [];
-    const text = await res.text();
-    return parseICal(text);
-  } catch (e) {
-    console.error("iCal fetch failed", e);
-    return [];
-  }
+// Tarifs saisonniers + frais
+const CLEANING_FEE = 40;
+const DEPOSIT_CASH = 500; // caution espèces à l'arrivée (non incluse dans le total)
+function nightlyRateForDate(d: Date): number {
+  const m = d.getUTCMonth() + 1;
+  if (m === 7 || m === 8) return 130; // haute saison
+  if (m === 4 || m === 5 || m === 6 || m === 9) return 95; // moyenne
+  return 75; // basse
 }
+function computeNightsTotal(checkIn: Date, checkOut: Date): { nights: number; nightsTotal: number } {
+  let nights = 0;
+  let nightsTotal = 0;
+  for (let d = new Date(checkIn); d < checkOut; d = new Date(d.getTime() + 86400000)) {
+    nights++;
+    nightsTotal += nightlyRateForDate(d);
+  }
+  return { nights, nightsTotal };
+}
+
+async function fetchBlockedRanges(): Promise<Array<{ start: Date; end: Date }>> {
+  const urls = [
+    process.env.AIRBNB_ICAL_URL ?? "https://www.airbnb.fr/calendar/ical/1526120631746320177.ics?t=774616f2469d47389d29985aecbbead5",
+    process.env.ABRITEL_ICAL_URL ?? "https://www.abritel.fr/icalendar/cf2da2a6506e4b74b4663602f0dd9803.ics?nonTentative&includeTentative=false",
+  ].filter(Boolean) as string[];
+  const all: Array<{ start: Date; end: Date }> = [];
+  await Promise.all(urls.map(async (url) => {
+    try {
+      const res = await fetch(url, { headers: { "User-Agent": "BnB-Hyeres-Site/1.0" } });
+      if (!res.ok) return;
+      const text = await res.text();
+      all.push(...parseICal(text));
+    } catch (e) {
+      console.error("iCal fetch failed", url, e);
+    }
+  }));
+  return all;
+}
+
+export const quoteStay = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => z.object({
+    check_in: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+    check_out: z.string().regex(/^\d{4}-\d{2}-\d{2}$/),
+  }).parse(data))
+  .handler(async ({ data }) => {
+    const ci = new Date(data.check_in + "T00:00:00Z");
+    const co = new Date(data.check_out + "T00:00:00Z");
+    const { nights, nightsTotal } = computeNightsTotal(ci, co);
+    return {
+      nights,
+      nightsTotal,
+      cleaningFee: CLEANING_FEE,
+      total: nightsTotal + (nights > 0 ? CLEANING_FEE : 0),
+      depositCash: DEPOSIT_CASH,
+    };
+  });
 
 export const getBlockedDates = createServerFn({ method: "GET" }).handler(async () => {
   const ranges = await fetchBlockedRanges();
