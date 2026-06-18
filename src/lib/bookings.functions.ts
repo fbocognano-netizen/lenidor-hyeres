@@ -160,8 +160,9 @@ export const createBooking = createServerFn({ method: "POST" })
       }
     }
 
-    const PRICE_PER_NIGHT = 95; // EUR (modifiable)
-    const total = nights * PRICE_PER_NIGHT;
+    const { nightsTotal } = computeNightsTotal(checkIn, checkOut);
+    const total = nightsTotal + CLEANING_FEE;
+
 
     const { error } = await supabaseAdmin.from("bookings").insert({
       guest_name: data.guest_name,
