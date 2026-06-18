@@ -396,13 +396,23 @@ function BookingForm() {
           <Textarea id="msg" value={message} onChange={(e) => setMessage(e.target.value)} rows={3} className="mt-2 rounded-xl" placeholder="Heure d'arrivée, occasion spéciale…" />
         </div>
 
+        <div className="rounded-xl bg-muted/40 p-3 text-xs text-muted-foreground space-y-1">
+          <div>Tarifs par nuit : <span className="text-foreground font-medium">75 €</span> basse saison · <span className="text-foreground font-medium">95 €</span> moyenne (avr-juin, sept) · <span className="text-foreground font-medium">130 €</span> haute (juil-août)</div>
+          <div>+ <span className="text-foreground font-medium">{CLEANING_FEE} €</span> de frais de ménage (une fois par séjour)</div>
+          <div>Caution de <span className="text-foreground font-medium">{DEPOSIT_CASH} €</span> en espèces à régler à l'arrivée (restituée au départ)</div>
+        </div>
+
         <div className="flex items-end justify-between pt-2 border-t border-border">
           <div>
             <div className="text-xs uppercase tracking-wider text-muted-foreground">Total estimé</div>
             <div className="font-display text-3xl mt-1">
-              {nights > 0 ? `${total} €` : `${PRICE_PER_NIGHT} € / nuit`}
+              {nights > 0 ? `${total} €` : `à partir de 75 € / nuit`}
             </div>
-            {nights > 0 && <div className="text-xs text-muted-foreground mt-1">{nights} nuit{nights > 1 ? "s" : ""} · {PRICE_PER_NIGHT} €/nuit</div>}
+            {nights > 0 && (
+              <div className="text-xs text-muted-foreground mt-1">
+                {nights} nuit{nights > 1 ? "s" : ""} · {nightsTotal} € ({avgRate} €/nuit moy.) + {CLEANING_FEE} € ménage
+              </div>
+            )}
           </div>
           <Button type="submit" disabled={submitting} size="lg" className="rounded-full px-8">
             {submitting ? "Envoi…" : "Demander à réserver"}
