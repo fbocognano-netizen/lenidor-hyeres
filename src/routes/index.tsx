@@ -399,8 +399,9 @@ function BookingForm() {
         </div>
 
         <div className="rounded-xl bg-muted/40 p-3 text-xs text-muted-foreground space-y-1">
-          <div>Tarifs par nuit : <span className="text-foreground font-medium">75 €</span> basse saison · <span className="text-foreground font-medium">95 €</span> moyenne (avr-juin, sept) · <span className="text-foreground font-medium">130 €</span> haute (juil-août)</div>
+          <div>Tarifs par nuit : <span className="text-foreground font-medium">75 €</span> basse · <span className="text-foreground font-medium">95 €</span> moyenne (avr-juin, sept) · <span className="text-foreground font-medium">130 €</span> haute (juil-août)</div>
           <div>+ <span className="text-foreground font-medium">{CLEANING_FEE} €</span> de frais de ménage (une fois par séjour)</div>
+          <div>+ <span className="text-foreground font-medium">~{TOURIST_TAX_PER_PERSON_NIGHT} €</span> de taxe de séjour / personne / nuit (collectée à l'arrivée, reversée à la commune)</div>
           <div>Caution de <span className="text-foreground font-medium">{DEPOSIT_CASH} €</span> en espèces à régler à l'arrivée (restituée au départ)</div>
         </div>
 
@@ -412,7 +413,7 @@ function BookingForm() {
             </div>
             {nights > 0 && (
               <div className="text-xs text-muted-foreground mt-1">
-                {nights} nuit{nights > 1 ? "s" : ""} · {nightsTotal} € ({avgRate} €/nuit moy.) + {CLEANING_FEE} € ménage
+                {nights} nuit{nights > 1 ? "s" : ""} · {nightsTotal} € ({avgRate} €/nuit moy.) + {CLEANING_FEE} € ménage + {touristTax} € taxe séjour
               </div>
             )}
           </div>
