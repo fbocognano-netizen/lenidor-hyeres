@@ -26,6 +26,7 @@ import photo5 from "@/assets/listing/photo-5.jpg";
 
 const CLEANING_FEE = 40;
 const DEPOSIT_CASH = 500;
+const TOURIST_TAX_PER_PERSON_NIGHT = 1; // approximatif, Hyères meublé non classé
 function nightlyRate(d: Date): number {
   const m = d.getMonth() + 1;
   if (m === 7 || m === 8) return 130;
