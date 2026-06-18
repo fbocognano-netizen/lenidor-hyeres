@@ -24,7 +24,21 @@ import photo3 from "@/assets/listing/photo-3.jpg";
 import photo4 from "@/assets/listing/photo-4.jpg";
 import photo5 from "@/assets/listing/photo-5.jpg";
 
-const PRICE_PER_NIGHT = 95;
+const CLEANING_FEE = 40;
+const DEPOSIT_CASH = 500;
+function nightlyRate(d: Date): number {
+  const m = d.getMonth() + 1;
+  if (m === 7 || m === 8) return 130;
+  if (m === 4 || m === 5 || m === 6 || m === 9) return 95;
+  return 75;
+}
+function computeStay(from: Date, to: Date): { nights: number; nightsTotal: number } {
+  let nights = 0, nightsTotal = 0;
+  for (let d = new Date(from); d < to; d = new Date(d.getTime() + 86400000)) {
+    nights++; nightsTotal += nightlyRate(d);
+  }
+  return { nights, nightsTotal };
+}
 const PHOTOS = [photo1, photo2, photo3, photo4, photo5];
 
 export const Route = createFileRoute("/")({
