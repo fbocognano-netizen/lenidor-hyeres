@@ -295,7 +295,9 @@ function BookingForm() {
     blockedDates.some((b) => b.toDateString() === d.toDateString()) || d < new Date(new Date().toDateString());
 
   const nights = range?.from && range?.to ? differenceInCalendarDays(range.to, range.from) : 0;
-  const total = nights * PRICE_PER_NIGHT;
+  const { nightsTotal } = range?.from && range?.to ? computeStay(range.from, range.to) : { nightsTotal: 0 };
+  const total = nights > 0 ? nightsTotal + CLEANING_FEE : 0;
+  const avgRate = nights > 0 ? Math.round(nightsTotal / nights) : 0;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
