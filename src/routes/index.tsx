@@ -481,13 +481,18 @@ function Location() {
         <div className="mt-8 overflow-hidden rounded-3xl border border-border/60 shadow-sm">
           <iframe
             title="Emplacement du studio à Hyères sur Google Maps"
-            src="https://www.google.com/maps?q=43.1194,6.1556&output=embed"
+            src="https://www.google.com/maps?q=43.092840,6.113301&z=11&output=embed"
             className="w-full h-[420px] md:h-[480px] border-0"
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
             allowFullScreen
           />
         </div>
+        <p className="mt-4 text-sm text-muted-foreground">
+          <a href="https://maps.app.goo.gl/zZbtek49skWEsvuB7" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground transition">
+            Ouvrir dans Google Maps ↗
+          </a>
+        </p>
       </div>
     </section>
   );
