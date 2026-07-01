@@ -515,6 +515,7 @@ function Footer() {
           <div className="text-xs uppercase tracking-wider text-muted-foreground">Bon à savoir</div>
           <p className="mt-2 text-muted-foreground">Arrivée à partir de 16 h · Départ avant 11 h</p>
           <p className="text-muted-foreground">Non-fumeur · Animaux non admis</p>
+          <p className="mt-3"><a href="/admin" className="text-muted-foreground underline-offset-4 hover:text-foreground hover:underline">Espace hôte</a></p>
         </div>
       </div>
       <div className="border-t border-border/60 py-5 text-center text-xs text-muted-foreground">

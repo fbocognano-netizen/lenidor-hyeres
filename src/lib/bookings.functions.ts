@@ -46,6 +46,7 @@ function rangesOverlap(aStart: Date, aEnd: Date, bStart: Date, bEnd: Date) {
 // Tarifs saisonniers + frais
 const CLEANING_FEE = 40;
 const DEPOSIT_CASH = 500; // caution espèces à l'arrivée (non incluse dans le total)
+const TOURIST_TAX_PER_PERSON_NIGHT = 1; // estimation à percevoir et reverser en direct
 function nightlyRateForDate(d: Date): number {
   const m = d.getUTCMonth() + 1;
   if (m === 7 || m === 8) return 130; // haute saison
@@ -161,7 +162,8 @@ export const createBooking = createServerFn({ method: "POST" })
     }
 
     const { nightsTotal } = computeNightsTotal(checkIn, checkOut);
-    const total = nightsTotal + CLEANING_FEE;
+    const touristTax = nights * data.guests * TOURIST_TAX_PER_PERSON_NIGHT;
+    const total = nightsTotal + CLEANING_FEE + touristTax;
 
 
     const { error } = await supabaseAdmin.from("bookings").insert({
