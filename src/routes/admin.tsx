@@ -32,7 +32,19 @@ import {
 import { cn } from "@/lib/utils";
 
 type BookingStatus = "pending" | "confirmed" | "cancelled";
-type Booking = Awaited<ReturnType<typeof getAdminBookings>>["bookings"][number];
+type Booking = {
+  id: string;
+  guest_name: string;
+  email: string;
+  phone: string | null;
+  check_in: string;
+  check_out: string;
+  guests: number;
+  message: string | null;
+  total_price: number | null;
+  status: string;
+  created_at: string;
+};
 
 const statusLabels: Record<BookingStatus, string> = {
   pending: "À traiter",
