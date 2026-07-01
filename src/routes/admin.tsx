@@ -15,7 +15,7 @@ import {
   Users,
   XCircle,
 } from "lucide-react";
-import { useMemo, useState } from "react";
+import { useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { toast, Toaster } from "sonner";
 
 import { Badge } from "@/components/ui/badge";
@@ -92,7 +92,7 @@ function AdminPage() {
     onError: () => toast.error("Impossible de modifier le statut"),
   });
 
-  async function handleLogin(event: React.FormEvent<HTMLFormElement>) {
+  async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoginError(false);
 
@@ -119,6 +119,16 @@ function AdminPage() {
   }
 
   const data = bookingsQuery.data;
+
+  if (bookingsQuery.isLoading) {
+    return (
+      <main className="min-h-screen bg-background text-foreground">
+        <section className="mx-auto flex min-h-screen max-w-md items-center justify-center px-5 py-12">
+          <p className="text-sm text-muted-foreground">Chargement de l'espace hôte…</p>
+        </section>
+      </main>
+    );
+  }
 
   if (!data?.authenticated) {
     return (
@@ -338,7 +348,7 @@ function BookingCard({
   );
 }
 
-function Info({ icon, label, value }: { icon?: React.ReactNode; label: string; value: string }) {
+function Info({ icon, label, value }: { icon?: ReactNode; label: string; value: string }) {
   return (
     <div className="rounded-2xl bg-secondary/60 p-4">
       <div className="flex items-center gap-2 text-xs uppercase tracking-wider text-muted-foreground">
@@ -356,7 +366,7 @@ function StatusButton({
   disabled,
   onClick,
 }: {
-  icon: React.ReactNode;
+  icon: ReactNode;
   label: string;
   active: boolean;
   disabled: boolean;

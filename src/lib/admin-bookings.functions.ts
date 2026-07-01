@@ -1,4 +1,3 @@
-import { redirect } from "@tanstack/react-router";
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
@@ -55,7 +54,7 @@ export const signInAdmin = createServerFn({ method: "POST" })
 export const signOutAdmin = createServerFn({ method: "POST" }).handler(async () => {
   const session = await getAdminSession();
   await session.clear();
-  throw redirect({ to: "/admin" });
+  return { ok: true as const };
 });
 
 export const getAdminBookings = createServerFn({ method: "GET" }).handler(async () => {
