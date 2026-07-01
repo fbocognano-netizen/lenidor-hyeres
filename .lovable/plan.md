@@ -1,29 +1,53 @@
+## Correction proposée
 
-# Emails de réservation automatiques
+Tu as raison : si la configuration du domaine d’envoi Lovable demande un upgrade dans ton espace, on ne doit pas partir sur cette solution.
 
-Inclus dans ton plan Lovable actuel — aucun abonnement supplémentaire, juste une fraction de crédits par email envoyé.
+## Objectif
 
-## Ce que je vais mettre en place
+Mettre en place une notification de réservation sans dépendre du domaine d’envoi payant / indisponible.
 
-1. **Configuration du domaine d'envoi Lovable** (géré, zéro DNS de ton côté)
-2. **Infrastructure email** (file d'attente, logs, retries automatiques)
-3. **Deux templates** cohérents avec le style du site (Fraunces + sable/mer, ton chaleureux signé Joëlle) :
-   - **Client** : confirmation que sa demande a bien été reçue + récap (dates, voyageurs, total, caution 500 € espèces à l'arrivée, taxe de séjour)
-   - **Admin (toi)** : notification nouvelle réservation avec toutes les infos (nom, email, téléphone, dates, message, montant)
-4. **Adresse admin paramétrable** via un secret `ADMIN_EMAIL` modifiable à tout moment (sans toucher au code)
-5. **Déclenchement automatique** dans `createBooking` (`src/lib/bookings.functions.ts`) : dès qu'une réservation est insérée en base, les deux emails partent en parallèle
+## Option recommandée : notification interne + lien mail manuel
 
-## Fichiers modifiés / créés
+1. **Conserver les demandes de réservation en base**
+   - Le formulaire continue d’enregistrer chaque demande.
+   - Aucune dépendance à un service email payant.
 
-- `src/lib/email-templates/booking-confirmation.tsx` (nouveau — email client)
-- `src/lib/email-templates/booking-notification.tsx` (nouveau — email admin)
-- `src/lib/email-templates/registry.ts` (enregistrement des templates)
-- `src/lib/email/send.ts` (helper d'envoi)
-- `src/lib/bookings.functions.ts` (appel des envois après insertion)
+2. **Ajouter une zone admin simple dans le site**
+   - Une page protégée ou discrète pour voir les nouvelles demandes.
+   - Affichage : nom, email, téléphone, dates, voyageurs, message, total.
+   - Statut : `pending`, `confirmed`, `cancelled`.
 
-## Action requise de ta part
+3. **Ajouter un bouton “Répondre par email”**
+   - Ouvre ton logiciel mail avec un email prérempli au client.
+   - Sujet et message générés automatiquement.
+   - Aucun coût d’envoi côté site, car c’est ton adresse email qui envoie.
 
-1. Cliquer sur « Configurer le domaine d'envoi » quand je le proposerai en build
-2. Me donner ton **adresse email admin** (celle qui reçoit les notifs)
+4. **Ajouter une notification visuelle côté site**
+   - Badge / compteur des nouvelles demandes sur la page admin.
+   - Tu peux consulter régulièrement sans payer de service email.
 
-Dès ces deux éléments fournis, je fais tout le reste en une passe.
+## Option alternative gratuite selon ton usage
+
+Si tu veux absolument recevoir une alerte automatiquement sans domaine d’envoi Lovable :
+
+- intégrer un service externe gratuit type Formspree / Web3Forms / Getform, si leur offre gratuite suffit ;
+- ou utiliser un webhook vers un outil gratuit que tu possèdes déjà.
+
+Mais cela dépend de limites externes, et je ne veux pas te promettre que ce sera gratuit durablement.
+
+## Ce que je ne ferai pas
+
+- Pas de domaine d’envoi Lovable si ton plan exige un upgrade.
+- Pas d’abonnement Mailgun, SendGrid ou autre.
+- Pas d’email automatique client/admin via une fonctionnalité qui te bloque au paiement.
+
+## À propos des crédits
+
+Je ne peux pas effectuer de remboursement depuis ici. Pour un remboursement ou un geste commercial, il faut contacter le support Lovable. Ce que je peux faire maintenant : réduire la suite au strict minimum et corriger l’architecture pour éviter toute dépense inutile.
+
+## Implémentation prévue si tu valides
+
+- Créer une page admin de suivi des réservations.
+- Lire les réservations existantes depuis la base.
+- Ajouter des actions : voir les détails, copier l’email, ouvrir un mail prérempli, changer le statut.
+- Ne pas utiliser Lovable Emails ni domaine d’envoi.
