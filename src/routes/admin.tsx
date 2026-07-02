@@ -78,12 +78,19 @@ export const Route = createFileRoute("/admin")({
 
 function AdminPage() {
   const loadBookings = useServerFn(getAdminBookings);
+  const loadConfigStatus = useServerFn(getAdminConfigStatus);
   const loginAdmin = useServerFn(signInAdmin);
   const logoutAdmin = useServerFn(signOutAdmin);
   const changeStatus = useServerFn(updateBookingStatus);
   const queryClient = useQueryClient();
   const [accessCode, setAccessCode] = useState("");
-  const [loginError, setLoginError] = useState(false);
+  const [loginError, setLoginError] = useState<null | "invalid" | "not_configured">(null);
+
+  const configQuery = useQuery({
+    queryKey: ["admin-config"],
+    queryFn: () => loadConfigStatus(),
+    retry: false,
+  });
 
   const bookingsQuery = useQuery({
     queryKey: ["admin-bookings"],
