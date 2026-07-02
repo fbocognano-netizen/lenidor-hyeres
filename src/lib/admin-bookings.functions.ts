@@ -35,16 +35,22 @@ async function isAdminUnlocked() {
   return Boolean(session.data.unlocked);
 }
 
+export const getAdminConfigStatus = createServerFn({ method: "GET" }).handler(async () => {
+  return { configured: Boolean(process.env.ADMIN_ACCESS_CODE) };
+});
+
 export const signInAdmin = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) =>
     z.object({ code: z.string().min(1).max(200) }).parse(data),
   )
   .handler(async ({ data }) => {
     const expected = process.env.ADMIN_ACCESS_CODE;
-    if (!expected) throw new Error("Le code d'accès admin n'est pas configuré.");
+    if (!expected) {
+      return { ok: false as const, reason: "not_configured" as const };
+    }
 
     const ok = await passwordMatches(data.code, expected);
-    if (!ok) return { ok: false as const };
+    if (!ok) return { ok: false as const, reason: "invalid" as const };
 
     const session = await getAdminSession();
     await session.update({ unlocked: true });
