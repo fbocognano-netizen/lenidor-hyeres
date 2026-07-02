@@ -151,6 +151,7 @@ function AdminPage() {
   }
 
   if (!data?.authenticated) {
+    const notConfigured = configQuery.data?.configured === false;
     return (
       <main className="min-h-screen bg-background text-foreground">
         <Toaster position="top-center" richColors />
@@ -165,6 +166,12 @@ function AdminPage() {
               Entrez le code admin pour consulter les demandes reçues et répondre aux clients depuis votre messagerie.
             </p>
 
+            {notConfigured && (
+              <div className="mt-6 rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+                Aucun code admin défini. Ajoutez le secret <code className="font-mono">ADMIN_ACCESS_CODE</code> dans les paramètres du projet (Backend → Secrets) pour activer l'espace hôte.
+              </div>
+            )}
+
             <form onSubmit={handleLogin} className="mt-8 space-y-4">
               <div>
                 <Label htmlFor="admin-code" className="text-xs uppercase tracking-wider text-muted-foreground">
@@ -178,12 +185,27 @@ function AdminPage() {
                   autoComplete="current-password"
                   className="mt-2 h-11 rounded-xl"
                   required
+                  disabled={notConfigured}
                 />
-                {loginError && <p className="mt-2 text-sm text-destructive">Code incorrect.</p>}
+                {loginError === "invalid" && (
+                  <p className="mt-2 text-sm text-destructive">Code incorrect.</p>
+                )}
+                {loginError === "not_configured" && (
+                  <p className="mt-2 text-sm text-destructive">
+                    Code admin non configuré côté serveur.
+                  </p>
+                )}
               </div>
-              <Button type="submit" className="w-full rounded-full" disabled={!accessCode.trim()}>
+              <Button
+                type="submit"
+                className="w-full rounded-full"
+                disabled={!accessCode.trim() || notConfigured}
+              >
                 Ouvrir l'espace hôte
               </Button>
+              <p className="pt-2 text-xs leading-relaxed text-muted-foreground">
+                Pour changer le code d'accès : Paramètres du projet → Backend → Secrets → modifier <code className="font-mono">ADMIN_ACCESS_CODE</code>, puis rechargez cette page.
+              </p>
             </form>
           </Card>
         </section>
