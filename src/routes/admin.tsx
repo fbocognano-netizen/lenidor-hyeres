@@ -114,12 +114,12 @@ function AdminPage() {
 
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setLoginError(false);
+    setLoginError(null);
 
     try {
       const result = await loginAdmin({ data: { code: accessCode } });
       if (!result.ok) {
-        setLoginError(true);
+        setLoginError(result.reason ?? "invalid");
         return;
       }
       setAccessCode("");
