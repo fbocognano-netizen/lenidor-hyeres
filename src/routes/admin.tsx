@@ -25,6 +25,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import {
   getAdminBookings,
+  getAdminConfigStatus,
   signInAdmin,
   signOutAdmin,
   updateBookingStatus,
@@ -77,12 +78,19 @@ export const Route = createFileRoute("/admin")({
 
 function AdminPage() {
   const loadBookings = useServerFn(getAdminBookings);
+  const loadConfigStatus = useServerFn(getAdminConfigStatus);
   const loginAdmin = useServerFn(signInAdmin);
   const logoutAdmin = useServerFn(signOutAdmin);
   const changeStatus = useServerFn(updateBookingStatus);
   const queryClient = useQueryClient();
   const [accessCode, setAccessCode] = useState("");
-  const [loginError, setLoginError] = useState(false);
+  const [loginError, setLoginError] = useState<null | "invalid" | "not_configured">(null);
+
+  const configQuery = useQuery({
+    queryKey: ["admin-config"],
+    queryFn: () => loadConfigStatus(),
+    retry: false,
+  });
 
   const bookingsQuery = useQuery({
     queryKey: ["admin-bookings"],
@@ -106,12 +114,12 @@ function AdminPage() {
 
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    setLoginError(false);
+    setLoginError(null);
 
     try {
       const result = await loginAdmin({ data: { code: accessCode } });
       if (!result.ok) {
-        setLoginError(true);
+        setLoginError(result.reason ?? "invalid");
         return;
       }
       setAccessCode("");
@@ -143,6 +151,7 @@ function AdminPage() {
   }
 
   if (!data?.authenticated) {
+    const notConfigured = configQuery.data?.configured === false;
     return (
       <main className="min-h-screen bg-background text-foreground">
         <Toaster position="top-center" richColors />
@@ -157,6 +166,12 @@ function AdminPage() {
               Entrez le code admin pour consulter les demandes reçues et répondre aux clients depuis votre messagerie.
             </p>
 
+            {notConfigured && (
+              <div className="mt-6 rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+                Aucun code admin défini. Ajoutez le secret <code className="font-mono">ADMIN_ACCESS_CODE</code> dans les paramètres du projet (Backend → Secrets) pour activer l'espace hôte.
+              </div>
+            )}
+
             <form onSubmit={handleLogin} className="mt-8 space-y-4">
               <div>
                 <Label htmlFor="admin-code" className="text-xs uppercase tracking-wider text-muted-foreground">
@@ -170,12 +185,27 @@ function AdminPage() {
                   autoComplete="current-password"
                   className="mt-2 h-11 rounded-xl"
                   required
+                  disabled={notConfigured}
                 />
-                {loginError && <p className="mt-2 text-sm text-destructive">Code incorrect.</p>}
+                {loginError === "invalid" && (
+                  <p className="mt-2 text-sm text-destructive">Code incorrect.</p>
+                )}
+                {loginError === "not_configured" && (
+                  <p className="mt-2 text-sm text-destructive">
+                    Code admin non configuré côté serveur.
+                  </p>
+                )}
               </div>
-              <Button type="submit" className="w-full rounded-full" disabled={!accessCode.trim()}>
+              <Button
+                type="submit"
+                className="w-full rounded-full"
+                disabled={!accessCode.trim() || notConfigured}
+              >
                 Ouvrir l'espace hôte
               </Button>
+              <p className="pt-2 text-xs leading-relaxed text-muted-foreground">
+                Pour changer le code d'accès : Paramètres du projet → Backend → Secrets → modifier <code className="font-mono">ADMIN_ACCESS_CODE</code>, puis rechargez cette page.
+              </p>
             </form>
           </Card>
         </section>
