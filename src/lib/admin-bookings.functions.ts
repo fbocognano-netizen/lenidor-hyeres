@@ -71,8 +71,10 @@ async function passwordMatches(input: string, expected: string): Promise<boolean
   const { createHash, timingSafeEqual } = await import("node:crypto");
   const normalizeSecret = (value: string) =>
     value
+      .normalize("NFKC")
       .trim()
       .replace(/[\u200B-\u200D\uFEFF]/g, "")
+      .replace(/\u00A0/g, " ")
       .replace(/^["']|["']$/g, "");
   const normalizedInput = normalizeSecret(input);
   const normalizedExpected = normalizeSecret(expected);

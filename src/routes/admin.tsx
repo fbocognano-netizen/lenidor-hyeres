@@ -245,9 +245,9 @@ function AdminPage() {
                 />
                 {loginError === "invalid" && (
                   <div className="mt-2 space-y-1 text-sm text-destructive">
-                    <p>Code incorrect.</p>
+                    <p>Le code ne correspond pas au secret ADMIN_ACCESS_CODE actuellement enregistré.</p>
                     <p className="text-xs text-muted-foreground">
-                      Astuce : le code se (re)configure dans Paramètres du projet → Backend → Secrets → <span className="font-mono">ADMIN_ACCESS_CODE</span>. Évite les espaces au début ou à la fin.
+                      Remplacez le secret <span className="font-mono">ADMIN_ACCESS_CODE</span> par un nouveau code simple, rechargez la page, puis retapez exactement ce nouveau code.
                     </p>
                   </div>
                 )}
@@ -280,7 +280,7 @@ function AdminPage() {
                 {isLoggingIn ? "Connexion en cours…" : "Ouvrir l'espace hôte"}
               </Button>
               <p className="pt-2 text-xs leading-relaxed text-muted-foreground">
-                Pour changer le code d'accès : Paramètres du projet → Backend → Secrets → modifier <code className="font-mono">ADMIN_ACCESS_CODE</code>, puis rechargez cette page.
+                Si l'accès bloque encore, remplacez <code className="font-mono">ADMIN_ACCESS_CODE</code> par un code neuf dans les secrets, puis rechargez cette page.
               </p>
             </form>
           </Card>
