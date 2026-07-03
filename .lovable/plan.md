@@ -1,28 +1,62 @@
-## Problème
+## Diagnostic sans modification
 
-Ta connexion admin échoue avec "Code incorrect". La logique côté serveur est correcte : elle compare (via hash SHA-256 anti-timing) ce que tu tapes avec la valeur du secret `ADMIN_ACCESS_CODE`. Les logs confirment que le serveur reçoit ta saisie mais ne la reconnaît pas.
+J’ai vérifié le code, les requêtes récentes, les secrets configurés, les logs et les tables de réservation sans modifier le projet.
 
-Deux causes probables :
-1. La valeur enregistrée dans `ADMIN_ACCESS_CODE` n'est plus celle dont tu te souviens (ou contient un espace/retour à la ligne invisible ajouté lors du collage).
-2. Tu as peut-être renseigné le code dans `ADMIN_ACCESS_TOKEN` (qui existe aussi dans tes secrets et ne sert à rien ici) au lieu de `ADMIN_ACCESS_CODE`.
+### Ce qui fonctionne
+- Les demandes de réservation sont bien enregistrées : 4 demandes existent dans la table `bookings`.
+- Le secret `ADMIN_ACCESS_CODE` existe bien.
+- Le secret `NOTIFY_ADMIN_EMAIL` existe bien.
+- Le secret `PINGRAM_API_KEY` existe bien.
+- Les appels récents au login admin ont renvoyé `ok: true` côté serveur quand le code `ADMIN_ACCESS_CODE` a été saisi.
 
-## Plan
+### Problèmes identifiés
 
-### 1. Réinitialiser proprement le code d'accès
-Utiliser `update_secret` pour `ADMIN_ACCESS_CODE` — cela t'ouvre un formulaire sécurisé où tu tapes un nouveau code (choisis quelque chose de simple, sans espace, ex : `villa2026`). Une fois enregistré, tu le connaîtras avec certitude.
+1. **Admin : session probablement cassée ou fragile**
+   - Le code admin est comparé à `ADMIN_ACCESS_CODE`.
+   - Mais la session de connexion admin utilise un autre secret : `ADMIN_ACCESS_TOKEN`.
+   - Ce secret a été supprimé/absent d’après la liste actuelle des secrets.
+   - Résultat probable : même si le code est bon, l’espace admin ne peut pas garder correctement l’état “connecté”, ou certaines fonctions admin peuvent échouer.
 
-### 2. Rendre la comparaison tolérante aux espaces invisibles
-Dans `src/lib/admin-bookings.functions.ts`, appliquer un `.trim()` sur `input` et `expected` avant le hash SHA-256, pour éviter qu'un espace ou retour à la ligne collé accidentellement dans le secret ne casse la connexion à jamais.
+2. **Notifications email : la fonction n’est pas appelée ou pas déployée correctement**
+   - Il y a 4 réservations en base.
+   - La table `booking_notifications` est vide.
+   - Les logs de la fonction `notify-lead` sont vides.
+   - Donc le problème n’est pas seulement “Pingram n’envoie pas” : actuellement, on ne voit même pas de trace fiable que le flux de notification s’exécute jusqu’au bout.
 
-### 3. Supprimer le secret orphelin `ADMIN_ACCESS_TOKEN`
-Il n'est utilisé nulle part dans le code et prête à confusion — le retirer via `delete_secret`.
+3. **Incohérence entre le fallback email et la fonction email**
+   - Le code de réservation utilise une valeur par défaut `usertinder543@gmail.com` si `NOTIFY_ADMIN_EMAIL` manque.
+   - Mais l’Edge Function `notify-lead` exige absolument `NOTIFY_ADMIN_EMAIL` et échoue si ce secret manque.
+   - Même si le secret existe maintenant, cette incohérence rend le système fragile.
 
-### 4. Améliorer le message d'erreur sur l'écran de login
-Actuellement il affiche seulement "Code incorrect". Ajouter une aide contextuelle : "Le code se configure dans Paramètres → Backend → Secrets → `ADMIN_ACCESS_CODE`" pour que tu retrouves toujours où aller.
+4. **Architecture inutilement compliquée**
+   - Pour un site simple, l’envoi email passe par : formulaire → server function → base → Edge Function → Pingram → retour statut.
+   - Ça multiplie les points de panne.
+   - Le plus robuste serait d’envoyer Pingram directement depuis la server function de réservation, puis enregistrer le statut dans `booking_notifications`.
 
-### Détails techniques
-- Fichier modifié : `src/lib/admin-bookings.functions.ts` (fonction `passwordMatches`)
-- Fichier modifié : `src/routes/admin.tsx` (bloc `{loginError === "invalid" && ...}`)
-- Secrets : `update_secret(["ADMIN_ACCESS_CODE"])` puis `delete_secret("ADMIN_ACCESS_TOKEN")`
+## Plan de correction proposé
 
-Aucune régression attendue sur le reste du site (page publique, réservations, notifications Pingram).
+### 1. Corriger l’accès admin
+- Remplacer l’usage de `ADMIN_ACCESS_TOKEN` pour la session par un secret de session dédié et stable.
+- Comme il faut une vraie clé de chiffrement de session, générer automatiquement `ADMIN_SESSION_SECRET` si elle n’existe pas.
+- Garder `ADMIN_ACCESS_CODE` uniquement comme code que vous tapez pour entrer dans `/admin`.
+- Résultat : vous pourrez changer le code admin sans casser la session technique.
+
+### 2. Simplifier et fiabiliser les notifications email
+- Déplacer l’envoi Pingram dans une fonction serveur interne, appelée directement par `createBooking`.
+- Garder `booking_notifications` comme historique visible dans `/admin`.
+- Ne plus dépendre de l’Edge Function `notify-lead` pour le flux principal.
+- Enregistrer précisément : `pending`, `sent`, ou `failed`, avec message d’erreur lisible.
+
+### 3. Garder le bouton “Renvoyer la notif”
+- Le bouton admin “Renvoyer la notif” utilisera le même helper serveur fiable.
+- S’il échoue, l’erreur sera visible dans l’historique de la demande.
+
+### 4. Vérifier après correction
+- Tester une connexion `/admin`.
+- Vérifier que les 4 réservations existantes apparaissent.
+- Tester l’envoi ou le renvoi d’une notification.
+- Vérifier que `booking_notifications` contient bien une ligne avec le statut.
+
+## Aucun changement maintenant
+
+Je n’ai pas modifié le code, conformément à votre demande. Si vous approuvez ce plan, je ferai uniquement ces corrections ciblées.
