@@ -274,3 +274,30 @@ export const resendBookingNotification = createServerFn({ method: "POST" })
 
     return { authenticated: true as const, ok: true as const };
   });
+
+export const getAdminOtaRanges = createServerFn({ method: "GET" }).handler(async () => {
+  if (!(await isAdminUnlocked())) {
+    return { authenticated: false as const, ranges: [] as Array<{ source: string; start: string; end: string }> };
+  }
+  const sources: Array<{ source: "airbnb" | "abritel"; url: string }> = [
+    {
+      source: "airbnb",
+      url:
+        process.env.AIRBNB_ICAL_URL ??
+        "https://www.airbnb.fr/calendar/ical/1526120631746320177.ics?t=774616f2469d47389d29985aecbbead5",
+    },
+    {
+      source: "abritel",
+      url:
+        process.env.ABRITEL_ICAL_URL ??
+        "https://www.abritel.fr/icalendar/cf2da2a6506e4b74b4663602f0dd9803.ics?nonTentative&includeTentative=false",
+    },
+  ];
+  const results = await Promise.all(
+    sources.map(async ({ source, url }) => {
+      const ranges = await fetchICalRanges(url);
+      return ranges.map((r) => ({ source, start: r.start.toISOString(), end: r.end.toISOString() }));
+    }),
+  );
+  return { authenticated: true as const, ranges: results.flat() };
+});
