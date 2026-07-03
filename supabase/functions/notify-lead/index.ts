@@ -9,6 +9,8 @@ const corsHeaders = {
 };
 
 interface LeadPayload {
+  booking_id?: string;
+  notification_id?: string;
   guest_name?: string;
   email?: string;
   phone?: string | null;
@@ -17,6 +19,49 @@ interface LeadPayload {
   check_out?: string;
   guests?: number;
   total_price?: number | null;
+}
+
+async function updateNotification(
+  notificationId: string | undefined,
+  patch: {
+    status: "sent" | "failed";
+    provider_status?: number;
+    provider_response?: string;
+    error_message?: string;
+    sent_at?: string;
+  },
+) {
+  if (!notificationId) return;
+
+  const supabaseUrl = Deno.env.get("SUPABASE_URL");
+  const serviceRoleKey = Deno.env.get("SUPABASE_SERVICE_ROLE_KEY");
+  if (!supabaseUrl || !serviceRoleKey) {
+    console.error("notification tracking skipped: backend env missing", { notificationId });
+    return;
+  }
+
+  try {
+    const res = await fetch(`${supabaseUrl}/rest/v1/booking_notifications?id=eq.${encodeURIComponent(notificationId)}`, {
+      method: "PATCH",
+      headers: {
+        "Authorization": `Bearer ${serviceRoleKey}`,
+        "apikey": serviceRoleKey,
+        "Content-Type": "application/json",
+        "Prefer": "return=minimal",
+      },
+      body: JSON.stringify(patch),
+    });
+
+    if (!res.ok) {
+      console.error("notification tracking update failed", {
+        notificationId,
+        status: res.status,
+        body: await res.text(),
+      });
+    }
+  } catch (error) {
+    console.error("notification tracking update threw", { notificationId, error: String(error) });
+  }
 }
 
 function esc(v: unknown): string {
@@ -53,6 +98,7 @@ function buildHtml(lead: LeadPayload): string {
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  let lead: LeadPayload | undefined;
   try {
     const apiKey = Deno.env.get("PINGRAM_API_KEY");
     const toEmail = Deno.env.get("NOTIFY_ADMIN_EMAIL");
@@ -66,7 +112,12 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: "NOTIFY_ADMIN_EMAIL not configured" }), { status: 500, headers: { ...corsHeaders, "content-type": "application/json" } });
     }
 
-    const lead = (await req.json()) as LeadPayload;
+    lead = (await req.json()) as LeadPayload;
+    console.log("notify-lead received", {
+      bookingId: lead.booking_id ?? null,
+      notificationId: lead.notification_id ?? null,
+      to: toEmail,
+    });
 
     const payload = {
       type: "new_lead",
@@ -86,13 +137,38 @@ Deno.serve(async (req) => {
 
     const responseText = await res.text();
     if (!res.ok) {
-      console.error("Pingram send failed", { status: res.status, body: responseText });
+      console.error("Pingram send failed", {
+        bookingId: lead.booking_id ?? null,
+        notificationId: lead.notification_id ?? null,
+        status: res.status,
+        body: responseText,
+      });
+      await updateNotification(lead.notification_id, {
+        status: "failed",
+        provider_status: res.status,
+        provider_response: responseText.slice(0, 2000),
+        error_message: "Pingram send failed",
+      });
       return new Response(JSON.stringify({ error: "Pingram send failed", status: res.status, body: responseText }), { status: 502, headers: { ...corsHeaders, "content-type": "application/json" } });
     }
 
-    console.log("Pingram send ok", { status: res.status });
+    await updateNotification(lead.notification_id, {
+      status: "sent",
+      provider_status: res.status,
+      provider_response: responseText.slice(0, 2000),
+      sent_at: new Date().toISOString(),
+    });
+    console.log("Pingram send ok", {
+      bookingId: lead.booking_id ?? null,
+      notificationId: lead.notification_id ?? null,
+      status: res.status,
+    });
     return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "content-type": "application/json" } });
   } catch (e) {
+    await updateNotification(lead?.notification_id, {
+      status: "failed",
+      error_message: String(e),
+    });
     console.error("notify-lead error", e);
     return new Response(JSON.stringify({ error: String(e) }), { status: 500, headers: { ...corsHeaders, "content-type": "application/json" } });
   }

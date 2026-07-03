@@ -1,40 +1,32 @@
-## Pourquoi tu ne reçois rien aujourd'hui
+## Constat
 
-En vérifiant le code : **aucune intégration Pingram n'existe dans le projet**. Il n'y a pas de dossier `supabase/functions/`, ni d'appel à Pingram dans `createBooking`. Le secret `PINGRAM_API_KEY` n'est pas non plus enregistré. Le message précédent a annoncé la mise en place mais rien n'a été réellement écrit.
+- Les réservations sont bien enregistrées dans la base : plusieurs demandes récentes existent.
+- La fonction `notify-lead` répond bien `200 OK` quand elle est appelée directement.
+- Pingram répond aussi `200 OK` côté backend, donc l'appel technique à Pingram part bien.
+- Le problème restant est très probablement l'un de ces points : email accepté par Pingram mais non délivré, mauvais expéditeur/domaine côté Pingram, ou absence de traçabilité entre une réservation précise et la notification envoyée.
 
-Résultat : quand tu valides le formulaire, la réservation est bien enregistrée en base, mais aucun email n'est envoyé nulle part.
+## Plan de correction
 
-## Ce que je vais faire
+1. **Ajouter une vraie traçabilité des notifications**
+   - Créer une table de suivi des notifications liées aux réservations.
+   - Enregistrer pour chaque demande : réservation concernée, destinataire, statut, réponse Pingram, erreur éventuelle, date d'envoi.
 
-1. **Secrets**
-   - Demander la saisie de `PINGRAM_API_KEY` (ta clé secrète Pingram).
-   - Créer `NOTIFY_ADMIN_EMAIL` = `usertinder543@gmail.com` (modifiable ensuite dans Cloud → Secrets sans toucher au code).
+2. **Relier chaque réservation à son envoi Pingram**
+   - Après création d'une réservation, appeler `notify-lead` avec l'identifiant de la réservation.
+   - Si l'email échoue, ne pas bloquer la réservation, mais enregistrer l'erreur clairement.
 
-2. **Edge Function Supabase `notify-lead`** (`supabase/functions/notify-lead/index.ts`)
-   - Reçoit `{ guest_name, email, phone, message, check_in, check_out, guests, total_price }`.
-   - Appelle l'API Pingram (`pingram.send`) en mode contenu direct :
-     - `type: "new_lead"`
-     - `to.email`: valeur de `NOTIFY_ADMIN_EMAIL`
-     - `email.subject`: `"Nouveau lead depuis le site"`
-     - `email.html`: nom, email, téléphone, dates, voyageurs, message, total, date de création
-   - Pas de `templateId`.
-   - Logs explicites en cas d'erreur (statut HTTP + corps de réponse Pingram), sans jamais logger la clé.
-   - Config par défaut Lovable (`verify_jwt = false` déjà appliqué), pas de bloc à ajouter.
+3. **Rendre les logs exploitables**
+   - Ajouter des logs avec : id réservation, destinataire, statut Pingram, extrait de réponse Pingram.
+   - Éviter les logs vagues du type “send ok” sans preuve liée à une réservation.
 
-3. **Déclenchement depuis `createBooking`** (`src/lib/bookings.functions.ts`)
-   - Après un `insert` réussi dans `bookings`, appeler l'edge function via `supabaseAdmin.functions.invoke("notify-lead", { body: {...} })`.
-   - Enveloppé dans un `try/catch` : si Pingram échoue, la réservation reste enregistrée (on ne casse pas l'UX client), l'erreur est juste loguée.
+4. **Ajouter un contrôle visible dans `/admin`**
+   - Afficher sur chaque demande si la notification email admin a été envoyée, échouée, ou non tentée.
+   - Ajouter éventuellement un bouton “Renvoyer la notification” pour tester sans refaire une fausse réservation.
 
-4. **Vérification**
-   - Après implémentation : tester avec une fausse réservation, consulter les logs de l'edge function pour confirmer l'envoi (status 200 Pingram).
-   - Si erreur d'auth Pingram → vérifier la clé ; si adresse expéditeur refusée → il faudra vérifier le domaine d'envoi côté Pingram.
+5. **Vérifier l'adresse admin configurée**
+   - Utiliser le secret `NOTIFY_ADMIN_EMAIL` comme destinataire.
+   - Confirmer dans l'interface admin quelle adresse est utilisée, sans afficher de secret sensible.
 
-## Ce qui ne change pas
+## Résultat attendu
 
-- Aucune modification du frontend, du formulaire, ni du calcul de prix.
-- L'espace `/admin` reste fonctionnel comme aujourd'hui.
-- Clé Pingram jamais exposée côté navigateur : uniquement lue dans l'edge function via `Deno.env.get("PINGRAM_API_KEY")`.
-
-## Point à confirmer
-
-Le prérequis Pingram : ton compte Pingram doit autoriser l'envoi vers `usertinder543@gmail.com` depuis une adresse expéditeur valide (généralement configurée dans le dashboard Pingram). Si Pingram exige un `from` vérifié, dis-moi quelle adresse utiliser ; sinon j'utilise le défaut du compte.
+Tu ne seras plus dans le flou : pour chaque demande, tu verras si l'email a été demandé à Pingram, si Pingram l'a accepté, et si une erreur existe. Si Pingram accepte mais que Gmail ne reçoit rien, on saura que le blocage est côté délivrabilité Pingram/Gmail et non côté formulaire ou site.

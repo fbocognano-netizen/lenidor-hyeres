@@ -5,6 +5,8 @@ type AdminSession = { unlocked?: boolean };
 
 const statusSchema = z.enum(["pending", "confirmed", "cancelled"]);
 
+const fallbackAdminEmail = "usertinder543@gmail.com";
+
 async function getAdminSession() {
   const secret = process.env.ADMIN_ACCESS_TOKEN;
   if (!secret) throw new Error("La protection admin n'est pas configurée.");
@@ -36,7 +38,11 @@ async function isAdminUnlocked() {
 }
 
 export const getAdminConfigStatus = createServerFn({ method: "GET" }).handler(async () => {
-  return { configured: Boolean(process.env.ADMIN_ACCESS_CODE) };
+  return {
+    configured: Boolean(process.env.ADMIN_ACCESS_CODE),
+    notifyAdminEmail: process.env.NOTIFY_ADMIN_EMAIL ?? fallbackAdminEmail,
+    notifyAdminEmailConfigured: Boolean(process.env.NOTIFY_ADMIN_EMAIL),
+  };
 });
 
 export const signInAdmin = createServerFn({ method: "POST" })
@@ -95,7 +101,46 @@ export const getAdminBookings = createServerFn({ method: "GET" }).handler(async 
     total_price: booking.total_price === null ? null : Number(booking.total_price),
     status: booking.status,
     created_at: booking.created_at,
+    notification: null as null | {
+      status: string;
+      recipient_email: string;
+      provider_status: number | null;
+      error_message: string | null;
+      sent_at: string | null;
+      created_at: string;
+    },
   }));
+
+  if (bookings.length > 0) {
+    const bookingIds = bookings.map((booking) => booking.id);
+    const { data: notifications, error: notificationsError } = await supabaseAdmin
+      .from("booking_notifications")
+      .select("booking_id, status, recipient_email, provider_status, error_message, sent_at, created_at")
+      .in("booking_id", bookingIds)
+      .order("created_at", { ascending: false });
+
+    if (notificationsError) {
+      console.error("admin booking notifications fetch failed", notificationsError);
+    } else {
+      const latestByBooking = new Map<string, NonNullable<(typeof bookings)[number]["notification"]>>();
+      for (const notification of notifications ?? []) {
+        if (notification.booking_id && !latestByBooking.has(notification.booking_id)) {
+          latestByBooking.set(notification.booking_id, {
+            status: notification.status,
+            recipient_email: notification.recipient_email,
+            provider_status: notification.provider_status,
+            error_message: notification.error_message,
+            sent_at: notification.sent_at,
+            created_at: notification.created_at,
+          });
+        }
+      }
+
+      for (const booking of bookings) {
+        booking.notification = latestByBooking.get(booking.id) ?? null;
+      }
+    }
+  }
 
   return {
     authenticated: true as const,
@@ -125,6 +170,67 @@ export const updateBookingStatus = createServerFn({ method: "POST" })
     if (error) {
       console.error("admin booking status update failed", error);
       throw new Error("Impossible de modifier le statut de la réservation.");
+    }
+
+    return { authenticated: true as const, ok: true as const };
+  });
+
+export const resendBookingNotification = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
+  .handler(async ({ data }) => {
+    if (!(await isAdminUnlocked())) return { authenticated: false as const, ok: false as const };
+
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { data: booking, error: bookingError } = await supabaseAdmin
+      .from("bookings")
+      .select("id, guest_name, email, phone, check_in, check_out, guests, message, total_price")
+      .eq("id", data.id)
+      .single();
+
+    if (bookingError || !booking) {
+      console.error("admin booking notification resend fetch failed", { bookingId: data.id, error: bookingError });
+      throw new Error("Impossible de retrouver cette demande.");
+    }
+
+    const recipientEmail = process.env.NOTIFY_ADMIN_EMAIL ?? fallbackAdminEmail;
+    const { data: notification, error: notificationError } = await supabaseAdmin
+      .from("booking_notifications")
+      .insert({
+        booking_id: booking.id,
+        provider: "pingram",
+        recipient_email: recipientEmail,
+        status: "pending",
+      })
+      .select("id")
+      .single();
+
+    if (notificationError || !notification) {
+      console.error("admin booking notification resend tracking insert failed", { bookingId: booking.id, error: notificationError });
+      throw new Error("Impossible de préparer le renvoi de notification.");
+    }
+
+    const { error: invokeErr } = await supabaseAdmin.functions.invoke("notify-lead", {
+      body: {
+        booking_id: booking.id,
+        notification_id: notification.id,
+        guest_name: booking.guest_name,
+        email: booking.email,
+        phone: booking.phone,
+        message: booking.message,
+        check_in: booking.check_in,
+        check_out: booking.check_out,
+        guests: booking.guests,
+        total_price: booking.total_price === null ? null : Number(booking.total_price),
+      },
+    });
+
+    if (invokeErr) {
+      console.error("admin booking notification resend failed", { bookingId: booking.id, notificationId: notification.id, error: invokeErr });
+      await supabaseAdmin
+        .from("booking_notifications")
+        .update({ status: "failed", error_message: String(invokeErr.message ?? invokeErr) })
+        .eq("id", notification.id);
+      throw new Error("La notification n'a pas pu être renvoyée.");
     }
 
     return { authenticated: true as const, ok: true as const };
