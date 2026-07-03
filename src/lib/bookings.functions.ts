@@ -182,5 +182,24 @@ export const createBooking = createServerFn({ method: "POST" })
       throw new Error("Impossible d'enregistrer votre demande. Réessayez.");
     }
 
+    // Fire-and-forget admin notification (Pingram). Never break the booking flow.
+    try {
+      const { error: invokeErr } = await supabaseAdmin.functions.invoke("notify-lead", {
+        body: {
+          guest_name: data.guest_name,
+          email: data.email,
+          phone: data.phone ?? null,
+          message: data.message ?? null,
+          check_in: data.check_in,
+          check_out: data.check_out,
+          guests: data.guests,
+          total_price: total,
+        },
+      });
+      if (invokeErr) console.error("notify-lead invoke failed", invokeErr);
+    } catch (e) {
+      console.error("notify-lead invoke threw", e);
+    }
+
     return { ok: true, nights, total };
   });
