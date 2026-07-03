@@ -1,38 +1,28 @@
-## Contexte / réponses aux questions
+## Problème
 
-- **Envoi vers Airbnb/Abritel/Leboncoin** : impossible techniquement (pas d'API publique, réservé aux Channel Managers payants). Tu confirmes que tu bloqueras manuellement les dates sur chaque OTA après une résa directe.
-- **Accès /admin** : reste par bookmark uniquement (`/villador-hyeres.lovable.app/admin`), aucun lien public ajouté. Je retire même le lien "Espace hôte" du footer pour plus de discrétion.
-- **Où sont les résas** : dans la table `bookings` de Lovable Cloud, consultables dans `/admin`.
+Ta connexion admin échoue avec "Code incorrect". La logique côté serveur est correcte : elle compare (via hash SHA-256 anti-timing) ce que tu tapes avec la valeur du secret `ADMIN_ACCESS_CODE`. Les logs confirment que le serveur reçoit ta saisie mais ne la reconnaît pas.
 
-## Ce que je vais construire
+Deux causes probables :
+1. La valeur enregistrée dans `ADMIN_ACCESS_CODE` n'est plus celle dont tu te souviens (ou contient un espace/retour à la ligne invisible ajouté lors du collage).
+2. Tu as peut-être renseigné le code dans `ADMIN_ACCESS_TOKEN` (qui existe aussi dans tes secrets et ne sert à rien ici) au lieu de `ADMIN_ACCESS_CODE`.
 
-### 1. Onglets dans `/admin` (deux vues)
-- **Onglet "Calendrier"** (par défaut) : vue mensuelle avec navigation mois précédent/suivant.
-  - Code couleur : 🟢 réservation directe, 🔴 Airbnb, 🟠 Abritel (récupéré via iCal).
-  - Clic sur un jour occupé → panneau latéral avec détails de la résa.
-- **Onglet "Liste"** : liste chronologique actuelle améliorée (à venir, en cours, passées), triée par date d'arrivée.
+## Plan
 
-### 2. Actions sur les réservations directes
-Sur chaque résa directe (dans les 2 vues) :
-- **Confirmer** : passe le statut de `pending` → `confirmed`.
-- **Annuler / Libérer** : passe le statut en `cancelled`. Les dates redeviennent immédiatement disponibles dans le calendrier public (la logique de blocage filtre déjà par statut).
-- **Répondre par email** : bouton `mailto:` déjà existant, conservé.
-- **Renvoyer la notif** : conservé.
+### 1. Réinitialiser proprement le code d'accès
+Utiliser `update_secret` pour `ADMIN_ACCESS_CODE` — cela t'ouvre un formulaire sécurisé où tu tapes un nouveau code (choisis quelque chose de simple, sans espace, ex : `villa2026`). Une fois enregistré, tu le connaîtras avec certitude.
 
-Les résas Airbnb/Abritel restent en lecture seule (elles se gèrent sur l'OTA).
+### 2. Rendre la comparaison tolérante aux espaces invisibles
+Dans `src/lib/admin-bookings.functions.ts`, appliquer un `.trim()` sur `input` et `expected` avant le hash SHA-256, pour éviter qu'un espace ou retour à la ligne collé accidentellement dans le secret ne casse la connexion à jamais.
 
-### 3. Rappel visuel OTA
-Bandeau d'info dans `/admin` :
-> "⚠️ Après confirmation d'une résa directe, pense à bloquer les dates sur Airbnb, Abritel et Leboncoin — la synchronisation automatique vers les OTA n'est pas possible."
+### 3. Supprimer le secret orphelin `ADMIN_ACCESS_TOKEN`
+Il n'est utilisé nulle part dans le code et prête à confusion — le retirer via `delete_secret`.
 
-Avec liens directs vers les calendriers OTA (Airbnb / Abritel / Leboncoin).
+### 4. Améliorer le message d'erreur sur l'écran de login
+Actuellement il affiche seulement "Code incorrect". Ajouter une aide contextuelle : "Le code se configure dans Paramètres → Backend → Secrets → `ADMIN_ACCESS_CODE`" pour que tu retrouves toujours où aller.
 
-## Détails techniques
+### Détails techniques
+- Fichier modifié : `src/lib/admin-bookings.functions.ts` (fonction `passwordMatches`)
+- Fichier modifié : `src/routes/admin.tsx` (bloc `{loginError === "invalid" && ...}`)
+- Secrets : `update_secret(["ADMIN_ACCESS_CODE"])` puis `delete_secret("ADMIN_ACCESS_TOKEN")`
 
-- **Fichiers modifiés** :
-  - `src/lib/admin-bookings.functions.ts` : ajouter `updateBookingStatus(id, status)` et `getBlockedDatesWithSources()` (qui renvoie aussi la source Airbnb/Abritel pour la vue calendrier).
-  - `src/routes/admin.tsx` : ajouter les onglets, le composant calendrier (grille mensuelle custom légère, pas de dépendance lourde), le panneau détails, les boutons d'action.
-  - `src/lib/bookings.functions.ts` : s'assurer que le filtre de disponibilité exclut bien les résas `cancelled`.
-  - `src/routes/index.tsx` : retirer le lien "Espace hôte" du footer.
-- **Pas de nouvelle table** ni de migration : on utilise le champ `status` existant (`pending`, `confirmed`, `cancelled`).
-- **Pas de flux .ics sortant** (tu as choisi le blocage manuel).
+Aucune régression attendue sur le reste du site (page publique, réservations, notifications Pingram).

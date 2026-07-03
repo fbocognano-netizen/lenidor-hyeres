@@ -229,7 +229,12 @@ function AdminPage() {
                   disabled={notConfigured}
                 />
                 {loginError === "invalid" && (
-                  <p className="mt-2 text-sm text-destructive">Code incorrect.</p>
+                  <div className="mt-2 space-y-1 text-sm text-destructive">
+                    <p>Code incorrect.</p>
+                    <p className="text-xs text-muted-foreground">
+                      Astuce : le code se (re)configure dans Paramètres du projet → Backend → Secrets → <span className="font-mono">ADMIN_ACCESS_CODE</span>. Évite les espaces au début ou à la fin.
+                    </p>
+                  </div>
                 )}
                 {loginError === "not_configured" && (
                   <p className="mt-2 text-sm text-destructive">
