@@ -100,6 +100,7 @@ function AdminPage() {
   const logoutAdmin = useServerFn(signOutAdmin);
   const changeStatus = useServerFn(updateBookingStatus);
   const resendNotification = useServerFn(resendBookingNotification);
+  const loadOtaRanges = useServerFn(getAdminOtaRanges);
   const queryClient = useQueryClient();
   const [accessCode, setAccessCode] = useState("");
   const [loginError, setLoginError] = useState<null | "invalid" | "not_configured">(null);
