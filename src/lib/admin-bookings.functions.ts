@@ -69,8 +69,13 @@ async function getAdminSession() {
 
 async function passwordMatches(input: string, expected: string): Promise<boolean> {
   const { createHash, timingSafeEqual } = await import("node:crypto");
-  const normalizedInput = input.trim();
-  const normalizedExpected = expected.trim();
+  const normalizeSecret = (value: string) =>
+    value
+      .trim()
+      .replace(/[\u200B-\u200D\uFEFF]/g, "")
+      .replace(/^["']|["']$/g, "");
+  const normalizedInput = normalizeSecret(input);
+  const normalizedExpected = normalizeSecret(expected);
   const inputHash = createHash("sha256").update(normalizedInput, "utf8").digest();
   const expectedHash = createHash("sha256").update(normalizedExpected, "utf8").digest();
   return timingSafeEqual(inputHash, expectedHash);
