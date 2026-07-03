@@ -117,6 +117,14 @@ function AdminPage() {
     retry: false,
   });
 
+  const otaQuery = useQuery({
+    queryKey: ["admin-ota-ranges"],
+    queryFn: () => loadOtaRanges(),
+    retry: false,
+    enabled: bookingsQuery.data?.authenticated === true,
+  });
+
+
   const statusMutation = useMutation({
     mutationFn: (input: { id: string; status: BookingStatus }) => changeStatus({ data: input }),
     onSuccess: (result) => {
