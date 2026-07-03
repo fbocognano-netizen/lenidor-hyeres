@@ -70,14 +70,12 @@ Deno.serve(async (req) => {
 
     const payload = {
       type: "new_lead",
-      to: { email: toEmail },
-      email: {
-        subject: "Nouveau lead depuis le site",
-        html: buildHtml(lead),
-      },
+      to: toEmail,
+      subject: "Nouveau lead depuis le site",
+      html: buildHtml(lead),
     };
 
-    const res = await fetch("https://api.pingram.email/v1/send", {
+    const res = await fetch("https://api.pingram.io/email", {
       method: "POST",
       headers: {
         "Authorization": `Bearer ${apiKey}`,
