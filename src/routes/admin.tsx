@@ -291,30 +291,68 @@ function AdminPage() {
           <Counter label="Total" value={data.counts.total} tone="default" />
         </div>
 
-        <Card className="mt-5 rounded-2xl border-border/60 p-4 text-sm text-muted-foreground shadow-none">
+        <Card className="mt-5 rounded-2xl border border-accent/60 bg-accent/20 p-4 text-sm">
+          <p className="font-medium text-foreground">⚠️ Sync OTA manuelle</p>
+          <p className="mt-1 text-muted-foreground">
+            Après avoir confirmé une réservation directe, pense à bloquer les dates sur chaque plateforme (les OTA ne permettent pas de sync automatique sortante) :
+          </p>
+          <div className="mt-3 flex flex-wrap gap-2">
+            <a href="https://www.airbnb.fr/multicalendar" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-background px-3 py-1 text-xs font-medium hover:bg-secondary">
+              Airbnb <ExternalLink className="h-3 w-3" />
+            </a>
+            <a href="https://www.abritel.fr/hote/calendar" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-background px-3 py-1 text-xs font-medium hover:bg-secondary">
+              Abritel <ExternalLink className="h-3 w-3" />
+            </a>
+            <a href="https://www.leboncoin.fr/account/my_bookings" target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 rounded-full border border-border/60 bg-background px-3 py-1 text-xs font-medium hover:bg-secondary">
+              Leboncoin <ExternalLink className="h-3 w-3" />
+            </a>
+          </div>
+        </Card>
+
+        <Card className="mt-4 rounded-2xl border-border/60 p-4 text-sm text-muted-foreground shadow-none">
           Notifications admin envoyées à <span className="font-medium text-foreground">{configQuery.data?.notifyAdminEmail ?? "usertinder543@gmail.com"}</span>
           {!configQuery.data?.notifyAdminEmailConfigured && " (valeur par défaut, modifiable via NOTIFY_ADMIN_EMAIL)"}.
         </Card>
 
-        <div className="mt-8 space-y-4">
-          {data.bookings.length === 0 ? (
-            <Card className="rounded-3xl border-border/60 p-8 text-center shadow-none">
-              <p className="font-display text-2xl">Aucune demande pour le moment.</p>
-              <p className="mt-2 text-sm text-muted-foreground">Les futures demandes apparaîtront ici.</p>
-            </Card>
-          ) : (
-            data.bookings.map((booking) => (
-              <BookingCard
-                key={booking.id}
-                booking={booking}
-                onStatusChange={(status) => statusMutation.mutate({ id: booking.id, status })}
-                onResendNotification={() => resendMutation.mutate({ id: booking.id })}
-                statusPending={statusMutation.isPending}
-                resendPending={resendMutation.isPending}
-              />
-            ))
-          )}
-        </div>
+        <Tabs defaultValue="calendar" className="mt-8">
+          <TabsList className="rounded-full">
+            <TabsTrigger value="calendar" className="rounded-full">Calendrier</TabsTrigger>
+            <TabsTrigger value="list" className="rounded-full">Liste ({data.counts.total})</TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="calendar" className="mt-6">
+            <CalendarView
+              bookings={data.bookings}
+              otaRanges={otaQuery.data?.ranges ?? []}
+              otaLoading={otaQuery.isLoading}
+              onStatusChange={(id, status) => statusMutation.mutate({ id, status })}
+              statusPending={statusMutation.isPending}
+            />
+          </TabsContent>
+
+          <TabsContent value="list" className="mt-6">
+            <div className="space-y-4">
+              {data.bookings.length === 0 ? (
+                <Card className="rounded-3xl border-border/60 p-8 text-center shadow-none">
+                  <p className="font-display text-2xl">Aucune demande pour le moment.</p>
+                  <p className="mt-2 text-sm text-muted-foreground">Les futures demandes apparaîtront ici.</p>
+                </Card>
+              ) : (
+                data.bookings.map((booking) => (
+                  <BookingCard
+                    key={booking.id}
+                    booking={booking}
+                    onStatusChange={(status) => statusMutation.mutate({ id: booking.id, status })}
+                    onResendNotification={() => resendMutation.mutate({ id: booking.id })}
+                    statusPending={statusMutation.isPending}
+                    resendPending={resendMutation.isPending}
+                  />
+                ))
+              )}
+            </div>
+          </TabsContent>
+        </Tabs>
+
       </section>
     </main>
   );
