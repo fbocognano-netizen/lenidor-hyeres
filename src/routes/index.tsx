@@ -42,6 +42,13 @@ function computeStay(from: Date, to: Date): { nights: number; nightsTotal: numbe
 }
 const PHOTOS = [photo1, photo2, photo3, photo4, photo5];
 
+function dateKey(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
@@ -303,32 +310,33 @@ function BookingForm() {
 
   const ranges = useMemo(() => {
     const rs = blockedData?.ranges ?? [];
-    return rs.map((r) => ({ start: new Date(r.start), end: new Date(r.end) }));
+    return rs.map((r) => ({ start: r.start.slice(0, 10), end: r.end.slice(0, 10) }));
   }, [blockedData]);
 
-  const todayStart = useMemo(() => new Date(new Date().toDateString()), []);
+  const todayKey = useMemo(() => dateKey(new Date()), []);
 
   const isBlocked = (d: Date) => {
-    const day = d.getTime();
-    if (day < todayStart.getTime()) return true;
+    const day = dateKey(d);
+    if (day < todayKey) return true;
 
     // A day is "occupied" if it's a booked night: start <= d < end.
     // The end date itself is a turnover (checkout) day and stays free.
     const occupied = ranges.some(
-      (r) => day >= r.start.getTime() && day < r.end.getTime(),
+      (r) => day >= r.start && day < r.end,
     );
 
     // When selecting the checkout date, allow the next booking's check-in
     // day as a valid checkout (same-day turnover, hotel-style).
-    if (range?.from && !range?.to && day > range.from.getTime()) {
-      let earliestBlock = Infinity;
+    const fromDay = range?.from ? dateKey(range.from) : null;
+    const toDay = range?.to ? dateKey(range.to) : null;
+    if (fromDay && (!toDay || toDay === fromDay) && day > fromDay) {
+      let earliestBlock: string | null = null;
       for (const r of ranges) {
-        const s = r.start.getTime();
-        if (s > range.from.getTime() && s < earliestBlock) earliestBlock = s;
+        if (r.start > fromDay && (!earliestBlock || r.start < earliestBlock)) earliestBlock = r.start;
       }
       // Days strictly after the next booking's start are disabled;
       // days from (from, earliestBlock] remain selectable as checkout.
-      return day > earliestBlock;
+      return earliestBlock ? day > earliestBlock : false;
     }
 
     return occupied;
@@ -397,6 +405,7 @@ function BookingForm() {
                   mode="range"
                   selected={range}
                   onSelect={setRange}
+                  min={2}
                   numberOfMonths={2}
                   disabled={isBlocked}
                   locale={fr}
