@@ -327,8 +327,9 @@ function BookingForm() {
 
     // When selecting the checkout date, allow the next booking's check-in
     // day as a valid checkout (same-day turnover, hotel-style).
-    if (range?.from && !range?.to && day > dateKey(range.from)) {
-      const fromDay = dateKey(range.from);
+    const fromDay = range?.from ? dateKey(range.from) : null;
+    const toDay = range?.to ? dateKey(range.to) : null;
+    if (fromDay && (!toDay || toDay === fromDay) && day > fromDay) {
       let earliestBlock: string | null = null;
       for (const r of ranges) {
         if (r.start > fromDay && (!earliestBlock || r.start < earliestBlock)) earliestBlock = r.start;
