@@ -1,32 +1,38 @@
-## Constat
+## Contexte / réponses aux questions
 
-- Les réservations sont bien enregistrées dans la base : plusieurs demandes récentes existent.
-- La fonction `notify-lead` répond bien `200 OK` quand elle est appelée directement.
-- Pingram répond aussi `200 OK` côté backend, donc l'appel technique à Pingram part bien.
-- Le problème restant est très probablement l'un de ces points : email accepté par Pingram mais non délivré, mauvais expéditeur/domaine côté Pingram, ou absence de traçabilité entre une réservation précise et la notification envoyée.
+- **Envoi vers Airbnb/Abritel/Leboncoin** : impossible techniquement (pas d'API publique, réservé aux Channel Managers payants). Tu confirmes que tu bloqueras manuellement les dates sur chaque OTA après une résa directe.
+- **Accès /admin** : reste par bookmark uniquement (`/villador-hyeres.lovable.app/admin`), aucun lien public ajouté. Je retire même le lien "Espace hôte" du footer pour plus de discrétion.
+- **Où sont les résas** : dans la table `bookings` de Lovable Cloud, consultables dans `/admin`.
 
-## Plan de correction
+## Ce que je vais construire
 
-1. **Ajouter une vraie traçabilité des notifications**
-   - Créer une table de suivi des notifications liées aux réservations.
-   - Enregistrer pour chaque demande : réservation concernée, destinataire, statut, réponse Pingram, erreur éventuelle, date d'envoi.
+### 1. Onglets dans `/admin` (deux vues)
+- **Onglet "Calendrier"** (par défaut) : vue mensuelle avec navigation mois précédent/suivant.
+  - Code couleur : 🟢 réservation directe, 🔴 Airbnb, 🟠 Abritel (récupéré via iCal).
+  - Clic sur un jour occupé → panneau latéral avec détails de la résa.
+- **Onglet "Liste"** : liste chronologique actuelle améliorée (à venir, en cours, passées), triée par date d'arrivée.
 
-2. **Relier chaque réservation à son envoi Pingram**
-   - Après création d'une réservation, appeler `notify-lead` avec l'identifiant de la réservation.
-   - Si l'email échoue, ne pas bloquer la réservation, mais enregistrer l'erreur clairement.
+### 2. Actions sur les réservations directes
+Sur chaque résa directe (dans les 2 vues) :
+- **Confirmer** : passe le statut de `pending` → `confirmed`.
+- **Annuler / Libérer** : passe le statut en `cancelled`. Les dates redeviennent immédiatement disponibles dans le calendrier public (la logique de blocage filtre déjà par statut).
+- **Répondre par email** : bouton `mailto:` déjà existant, conservé.
+- **Renvoyer la notif** : conservé.
 
-3. **Rendre les logs exploitables**
-   - Ajouter des logs avec : id réservation, destinataire, statut Pingram, extrait de réponse Pingram.
-   - Éviter les logs vagues du type “send ok” sans preuve liée à une réservation.
+Les résas Airbnb/Abritel restent en lecture seule (elles se gèrent sur l'OTA).
 
-4. **Ajouter un contrôle visible dans `/admin`**
-   - Afficher sur chaque demande si la notification email admin a été envoyée, échouée, ou non tentée.
-   - Ajouter éventuellement un bouton “Renvoyer la notification” pour tester sans refaire une fausse réservation.
+### 3. Rappel visuel OTA
+Bandeau d'info dans `/admin` :
+> "⚠️ Après confirmation d'une résa directe, pense à bloquer les dates sur Airbnb, Abritel et Leboncoin — la synchronisation automatique vers les OTA n'est pas possible."
 
-5. **Vérifier l'adresse admin configurée**
-   - Utiliser le secret `NOTIFY_ADMIN_EMAIL` comme destinataire.
-   - Confirmer dans l'interface admin quelle adresse est utilisée, sans afficher de secret sensible.
+Avec liens directs vers les calendriers OTA (Airbnb / Abritel / Leboncoin).
 
-## Résultat attendu
+## Détails techniques
 
-Tu ne seras plus dans le flou : pour chaque demande, tu verras si l'email a été demandé à Pingram, si Pingram l'a accepté, et si une erreur existe. Si Pingram accepte mais que Gmail ne reçoit rien, on saura que le blocage est côté délivrabilité Pingram/Gmail et non côté formulaire ou site.
+- **Fichiers modifiés** :
+  - `src/lib/admin-bookings.functions.ts` : ajouter `updateBookingStatus(id, status)` et `getBlockedDatesWithSources()` (qui renvoie aussi la source Airbnb/Abritel pour la vue calendrier).
+  - `src/routes/admin.tsx` : ajouter les onglets, le composant calendrier (grille mensuelle custom légère, pas de dépendance lourde), le panneau détails, les boutons d'action.
+  - `src/lib/bookings.functions.ts` : s'assurer que le filtre de disponibilité exclut bien les résas `cancelled`.
+  - `src/routes/index.tsx` : retirer le lien "Espace hôte" du footer.
+- **Pas de nouvelle table** ni de migration : on utilise le champ `status` existant (`pending`, `confirmed`, `cancelled`).
+- **Pas de flux .ics sortant** (tu as choisi le blocage manuel).
