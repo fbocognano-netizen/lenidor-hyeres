@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { format, differenceInCalendarDays, addDays } from "date-fns";
+import { format, differenceInCalendarDays } from "date-fns";
 import { fr } from "date-fns/locale";
 import type { DateRange } from "react-day-picker";
 import { CalendarIcon, Waves, Sun, Bed, Bath, Users, MapPin, Wifi, Wind, ChefHat, Car, Star } from "lucide-react";
@@ -301,21 +301,38 @@ function BookingForm() {
     staleTime: 5 * 60 * 1000,
   });
 
-  const blockedDates = useMemo(() => {
-    const out: Date[] = [];
-    const ranges = blockedData?.ranges ?? [];
-    for (const r of ranges) {
-      const s = new Date(r.start);
-      const e = new Date(r.end);
-      for (let d = new Date(s); d < e; d = addDays(d, 1)) {
-        out.push(new Date(d));
-      }
-    }
-    return out;
+  const ranges = useMemo(() => {
+    const rs = blockedData?.ranges ?? [];
+    return rs.map((r) => ({ start: new Date(r.start), end: new Date(r.end) }));
   }, [blockedData]);
 
-  const isBlocked = (d: Date) =>
-    blockedDates.some((b) => b.toDateString() === d.toDateString()) || d < new Date(new Date().toDateString());
+  const todayStart = useMemo(() => new Date(new Date().toDateString()), []);
+
+  const isBlocked = (d: Date) => {
+    const day = d.getTime();
+    if (day < todayStart.getTime()) return true;
+
+    // A day is "occupied" if it's a booked night: start <= d < end.
+    // The end date itself is a turnover (checkout) day and stays free.
+    const occupied = ranges.some(
+      (r) => day >= r.start.getTime() && day < r.end.getTime(),
+    );
+
+    // When selecting the checkout date, allow the next booking's check-in
+    // day as a valid checkout (same-day turnover, hotel-style).
+    if (range?.from && !range?.to && day > range.from.getTime()) {
+      let earliestBlock = Infinity;
+      for (const r of ranges) {
+        const s = r.start.getTime();
+        if (s > range.from.getTime() && s < earliestBlock) earliestBlock = s;
+      }
+      // Days strictly after the next booking's start are disabled;
+      // days from (from, earliestBlock] remain selectable as checkout.
+      return day > earliestBlock;
+    }
+
+    return occupied;
+  };
 
   const nights = range?.from && range?.to ? differenceInCalendarDays(range.to, range.from) : 0;
   const { nightsTotal } = range?.from && range?.to ? computeStay(range.from, range.to) : { nightsTotal: 0 };
