@@ -8,6 +8,7 @@ type AdminSession = { unlocked?: boolean };
 const statusSchema = z.enum(["pending", "confirmed", "cancelled"]);
 
 const fallbackAdminEmail = "usertinder543@gmail.com";
+const adminLogPrefix = "[admin-auth]";
 
 // --- Minimal iCal parser (duplicated from bookings.functions to keep admin self-contained) ---
 function parseICal(ics: string): Array<{ start: Date; end: Date }> {
@@ -49,8 +50,8 @@ async function fetchICalRanges(url: string): Promise<Array<{ start: Date; end: D
 }
 
 async function getAdminSession() {
-  const secret = process.env.ADMIN_SESSION_SECRET ?? process.env.ADMIN_ACCESS_CODE;
-  if (!secret) throw new Error("La protection admin n'est pas configurée.");
+  const secret = process.env.ADMIN_SESSION_SECRET;
+  if (!secret) throw new Error("La session admin n'est pas configurée.");
 
   const { useSession } = await import("@tanstack/react-start/server");
   return useSession<AdminSession>({
@@ -76,13 +77,26 @@ async function passwordMatches(input: string, expected: string): Promise<boolean
 }
 
 async function isAdminUnlocked() {
-  const session = await getAdminSession();
-  return Boolean(session.data.unlocked);
+  try {
+    const session = await getAdminSession();
+    const authenticated = Boolean(session.data.unlocked);
+    console.info(adminLogPrefix, "authenticated", { authenticated });
+    return authenticated;
+  } catch (error) {
+    console.error(adminLogPrefix, "session_read_failed", { error: String(error) });
+    return false;
+  }
 }
 
 export const getAdminConfigStatus = createServerFn({ method: "GET" }).handler(async () => {
+  console.info(adminLogPrefix, "config_status", {
+    accessCodeConfigured: Boolean(process.env.ADMIN_ACCESS_CODE),
+    sessionSecretConfigured: Boolean(process.env.ADMIN_SESSION_SECRET),
+  });
+
   return {
     configured: Boolean(process.env.ADMIN_ACCESS_CODE),
+    sessionConfigured: Boolean(process.env.ADMIN_SESSION_SECRET),
     notifyAdminEmail: process.env.NOTIFY_ADMIN_EMAIL ?? fallbackAdminEmail,
     notifyAdminEmailConfigured: Boolean(process.env.NOTIFY_ADMIN_EMAIL),
   };
@@ -95,15 +109,30 @@ export const signInAdmin = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     const expected = process.env.ADMIN_ACCESS_CODE;
     if (!expected) {
+      console.info(adminLogPrefix, "login_missing_access_code");
       return { ok: false as const, reason: "not_configured" as const };
     }
 
-    const ok = await passwordMatches(data.code, expected);
-    if (!ok) return { ok: false as const, reason: "invalid" as const };
+    if (!process.env.ADMIN_SESSION_SECRET) {
+      console.error(adminLogPrefix, "login_missing_session_secret");
+      return { ok: false as const, reason: "session_not_configured" as const };
+    }
 
-    const session = await getAdminSession();
-    await session.update({ unlocked: true });
-    return { ok: true as const };
+    const ok = await passwordMatches(data.code, expected);
+    if (!ok) {
+      console.info(adminLogPrefix, "login_invalid_code");
+      return { ok: false as const, reason: "invalid" as const };
+    }
+
+    try {
+      const session = await getAdminSession();
+      await session.update({ unlocked: true });
+      console.info(adminLogPrefix, "login_ok_session_updated");
+      return { ok: true as const };
+    } catch (error) {
+      console.error(adminLogPrefix, "login_session_update_failed", { error: String(error) });
+      return { ok: false as const, reason: "session_error" as const };
+    }
   });
 
 export const signOutAdmin = createServerFn({ method: "POST" }).handler(async () => {
