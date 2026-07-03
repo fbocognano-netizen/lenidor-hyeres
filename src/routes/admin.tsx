@@ -1,13 +1,16 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { differenceInCalendarDays, format } from "date-fns";
+import { addMonths, differenceInCalendarDays, format, isSameDay, startOfMonth } from "date-fns";
 import { fr } from "date-fns/locale";
 import {
   CalendarDays,
+  ChevronLeft,
+  ChevronRight,
   CheckCircle2,
   Clock,
   Copy,
+  ExternalLink,
   LogOut,
   Mail,
   Phone,
@@ -23,15 +26,18 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
   getAdminBookings,
   getAdminConfigStatus,
+  getAdminOtaRanges,
   resendBookingNotification,
   signInAdmin,
   signOutAdmin,
   updateBookingStatus,
 } from "@/lib/admin-bookings.functions";
 import { cn } from "@/lib/utils";
+
 
 type BookingStatus = "pending" | "confirmed" | "cancelled";
 type Booking = {
