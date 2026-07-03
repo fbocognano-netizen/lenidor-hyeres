@@ -26,6 +26,7 @@ import { Label } from "@/components/ui/label";
 import {
   getAdminBookings,
   getAdminConfigStatus,
+  resendBookingNotification,
   signInAdmin,
   signOutAdmin,
   updateBookingStatus,
@@ -45,7 +46,17 @@ type Booking = {
   total_price: number | null;
   status: string;
   created_at: string;
+  notification: null | {
+    status: string;
+    recipient_email: string;
+    provider_status: number | null;
+    error_message: string | null;
+    sent_at: string | null;
+    created_at: string;
+  };
 };
+
+type NotificationStatus = "pending" | "sent" | "failed";
 
 const statusLabels: Record<BookingStatus, string> = {
   pending: "À traiter",
@@ -82,6 +93,7 @@ function AdminPage() {
   const loginAdmin = useServerFn(signInAdmin);
   const logoutAdmin = useServerFn(signOutAdmin);
   const changeStatus = useServerFn(updateBookingStatus);
+  const resendNotification = useServerFn(resendBookingNotification);
   const queryClient = useQueryClient();
   const [accessCode, setAccessCode] = useState("");
   const [loginError, setLoginError] = useState<null | "invalid" | "not_configured">(null);
@@ -110,6 +122,20 @@ function AdminPage() {
       queryClient.invalidateQueries({ queryKey: ["admin-bookings"] });
     },
     onError: () => toast.error("Impossible de modifier le statut"),
+  });
+
+  const resendMutation = useMutation({
+    mutationFn: (input: { id: string }) => resendNotification({ data: input }),
+    onSuccess: (result) => {
+      if (!result.authenticated) {
+        toast.error("Session expirée. Entrez à nouveau le code admin.");
+        queryClient.invalidateQueries({ queryKey: ["admin-bookings"] });
+        return;
+      }
+      toast.success("Notification renvoyée");
+      queryClient.invalidateQueries({ queryKey: ["admin-bookings"] });
+    },
+    onError: () => toast.error("Impossible de renvoyer la notification"),
   });
 
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
@@ -250,6 +276,11 @@ function AdminPage() {
           <Counter label="Total" value={data.counts.total} tone="default" />
         </div>
 
+        <Card className="mt-5 rounded-2xl border-border/60 p-4 text-sm text-muted-foreground shadow-none">
+          Notifications admin envoyées à <span className="font-medium text-foreground">{configQuery.data?.notifyAdminEmail ?? "usertinder543@gmail.com"}</span>
+          {!configQuery.data?.notifyAdminEmailConfigured && " (valeur par défaut, modifiable via NOTIFY_ADMIN_EMAIL)"}.
+        </Card>
+
         <div className="mt-8 space-y-4">
           {data.bookings.length === 0 ? (
             <Card className="rounded-3xl border-border/60 p-8 text-center shadow-none">
@@ -262,7 +293,9 @@ function AdminPage() {
                 key={booking.id}
                 booking={booking}
                 onStatusChange={(status) => statusMutation.mutate({ id: booking.id, status })}
+                onResendNotification={() => resendMutation.mutate({ id: booking.id })}
                 statusPending={statusMutation.isPending}
+                resendPending={resendMutation.isPending}
               />
             ))
           )}
@@ -293,11 +326,15 @@ function Counter({ label, value, tone }: { label: string; value: number; tone: "
 function BookingCard({
   booking,
   onStatusChange,
+  onResendNotification,
   statusPending,
+  resendPending,
 }: {
   booking: Booking;
   onStatusChange: (status: BookingStatus) => void;
+  onResendNotification: () => void;
   statusPending: boolean;
+  resendPending: boolean;
 }) {
   const nights = useMemo(
     () => differenceInCalendarDays(new Date(`${booking.check_out}T00:00:00`), new Date(`${booking.check_in}T00:00:00`)),
@@ -349,6 +386,8 @@ function BookingCard({
         </div>
       )}
 
+      <NotificationPanel booking={booking} onResend={onResendNotification} pending={resendPending} />
+
       <div className="mt-6 flex flex-col gap-3 border-t border-border/60 pt-5 lg:flex-row lg:items-center lg:justify-between">
         <div className="flex flex-wrap gap-2">
           <Button asChild className="rounded-full">
@@ -387,6 +426,49 @@ function BookingCard({
         </div>
       </div>
     </Card>
+  );
+}
+
+function NotificationPanel({ booking, onResend, pending }: { booking: Booking; onResend: () => void; pending: boolean }) {
+  const notification = booking.notification;
+  const status = (notification?.status ?? "missing") as NotificationStatus | "missing";
+  const label =
+    status === "sent" ? "Email admin accepté par Pingram" :
+    status === "failed" ? "Email admin en erreur" :
+    status === "pending" ? "Email admin en attente" :
+    "Aucun suivi email";
+  const details = notification
+    ? [
+        `Destinataire : ${notification.recipient_email}`,
+        notification.provider_status ? `Réponse Pingram : ${notification.provider_status}` : null,
+        notification.sent_at ? `Envoyé le ${format(new Date(notification.sent_at), "d MMM yyyy à HH:mm", { locale: fr })}` : null,
+        notification.error_message ? `Erreur : ${notification.error_message}` : null,
+      ].filter(Boolean).join(" · ")
+    : "Cette demande date peut-être d'avant le suivi automatique.";
+
+  return (
+    <div className="mt-5 rounded-2xl border border-border/60 bg-secondary/30 p-4">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <Badge
+            variant="outline"
+            className={cn(
+              "rounded-full",
+              status === "sent" && "border-primary/20 bg-primary/10 text-primary",
+              status === "failed" && "border-destructive/20 bg-destructive/10 text-destructive",
+              (status === "pending" || status === "missing") && "border-accent bg-accent/40 text-accent-foreground",
+            )}
+          >
+            {label}
+          </Badge>
+          <p className="mt-2 text-xs leading-relaxed text-muted-foreground">{details}</p>
+        </div>
+        <Button type="button" variant="outline" size="sm" className="rounded-full" onClick={onResend} disabled={pending}>
+          <RefreshCw className={cn("mr-2 h-4 w-4", pending && "animate-spin")} />
+          Renvoyer la notif
+        </Button>
+      </div>
+    </div>
   );
 }
 
