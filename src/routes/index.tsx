@@ -2,7 +2,7 @@ import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
-import { format, differenceInCalendarDays, addDays } from "date-fns";
+import { format, differenceInCalendarDays } from "date-fns";
 import { fr } from "date-fns/locale";
 import type { DateRange } from "react-day-picker";
 import { CalendarIcon, Waves, Sun, Bed, Bath, Users, MapPin, Wifi, Wind, ChefHat, Car, Star } from "lucide-react";
