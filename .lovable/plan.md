@@ -1,27 +1,40 @@
-## Objectif
+## Pourquoi tu ne reçois rien aujourd'hui
 
-Rendre le code d'accès à `/admin` modifiable facilement, sans toucher au code, via le secret `ADMIN_ACCESS_CODE` déjà configuré côté serveur.
+En vérifiant le code : **aucune intégration Pingram n'existe dans le projet**. Il n'y a pas de dossier `supabase/functions/`, ni d'appel à Pingram dans `createBooking`. Le secret `PINGRAM_API_KEY` n'est pas non plus enregistré. Le message précédent a annoncé la mise en place mais rien n'a été réellement écrit.
 
-## État actuel
+Résultat : quand tu valides le formulaire, la réservation est bien enregistrée en base, mais aucun email n'est envoyé nulle part.
 
-- `src/lib/admin-bookings.functions.ts` lit déjà `process.env.ADMIN_ACCESS_CODE` pour valider la connexion admin.
-- Le secret existe (`ADMIN_ACCESS_CODE`) mais il n'y a aucun message clair quand il n'est pas défini, et aucune indication dans l'UI sur comment le changer.
+## Ce que je vais faire
 
-## Changements
+1. **Secrets**
+   - Demander la saisie de `PINGRAM_API_KEY` (ta clé secrète Pingram).
+   - Créer `NOTIFY_ADMIN_EMAIL` = `usertinder543@gmail.com` (modifiable ensuite dans Cloud → Secrets sans toucher au code).
 
-1. **`src/lib/admin-bookings.functions.ts`**
-   - Si `ADMIN_ACCESS_CODE` est vide/absent : renvoyer un message d'erreur explicite ("Code admin non configuré. Définissez le secret ADMIN_ACCESS_CODE dans les paramètres du projet.") au lieu d'un simple throw générique.
-   - Ajouter une petite fonction `getAdminConfigStatus` (server fn) qui retourne `{ configured: boolean }` sans exposer la valeur, pour que l'UI puisse afficher un état.
+2. **Edge Function Supabase `notify-lead`** (`supabase/functions/notify-lead/index.ts`)
+   - Reçoit `{ guest_name, email, phone, message, check_in, check_out, guests, total_price }`.
+   - Appelle l'API Pingram (`pingram.send`) en mode contenu direct :
+     - `type: "new_lead"`
+     - `to.email`: valeur de `NOTIFY_ADMIN_EMAIL`
+     - `email.subject`: `"Nouveau lead depuis le site"`
+     - `email.html`: nom, email, téléphone, dates, voyageurs, message, total, date de création
+   - Pas de `templateId`.
+   - Logs explicites en cas d'erreur (statut HTTP + corps de réponse Pingram), sans jamais logger la clé.
+   - Config par défaut Lovable (`verify_jwt = false` déjà appliqué), pas de bloc à ajouter.
 
-2. **`src/routes/admin.tsx`**
-   - Sur l'écran de connexion, afficher une note discrète : *« Le code d'accès se modifie dans les paramètres du projet (secret `ADMIN_ACCESS_CODE`). »*
-   - Si `getAdminConfigStatus` renvoie `configured: false`, afficher un encart d'alerte : *« Aucun code admin défini. Ajoutez le secret `ADMIN_ACCESS_CODE` pour activer l'espace hôte. »* + bouton désactivé.
-   - Messages d'erreur plus clairs (secret manquant vs code incorrect).
+3. **Déclenchement depuis `createBooking`** (`src/lib/bookings.functions.ts`)
+   - Après un `insert` réussi dans `bookings`, appeler l'edge function via `supabaseAdmin.functions.invoke("notify-lead", { body: {...} })`.
+   - Enveloppé dans un `try/catch` : si Pingram échoue, la réservation reste enregistrée (on ne casse pas l'UX client), l'erreur est juste loguée.
 
-3. **Message chat post-implémentation**
-   - Rappeler comment changer le code : Paramètres projet → Backend/Secrets → modifier `ADMIN_ACCESS_CODE` → recharger `/admin`.
+4. **Vérification**
+   - Après implémentation : tester avec une fausse réservation, consulter les logs de l'edge function pour confirmer l'envoi (status 200 Pingram).
+   - Si erreur d'auth Pingram → vérifier la clé ; si adresse expéditeur refusée → il faudra vérifier le domaine d'envoi côté Pingram.
 
 ## Ce qui ne change pas
 
-- La logique de session, la comparaison timing-safe et le stockage restent identiques.
-- Aucune modification de base de données, ni de la page publique.
+- Aucune modification du frontend, du formulaire, ni du calcul de prix.
+- L'espace `/admin` reste fonctionnel comme aujourd'hui.
+- Clé Pingram jamais exposée côté navigateur : uniquement lue dans l'edge function via `Deno.env.get("PINGRAM_API_KEY")`.
+
+## Point à confirmer
+
+Le prérequis Pingram : ton compte Pingram doit autoriser l'envoi vers `usertinder543@gmail.com` depuis une adresse expéditeur valide (généralement configurée dans le dashboard Pingram). Si Pingram exige un `from` vérifié, dis-moi quelle adresse utiliser ; sinon j'utilise le défaut du compte.
