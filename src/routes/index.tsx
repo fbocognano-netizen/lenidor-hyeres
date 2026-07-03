@@ -405,6 +405,7 @@ function BookingForm() {
                   mode="range"
                   selected={range}
                   onSelect={setRange}
+                  min={2}
                   numberOfMonths={2}
                   disabled={isBlocked}
                   locale={fr}
