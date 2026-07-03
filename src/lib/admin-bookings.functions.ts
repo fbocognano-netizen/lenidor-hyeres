@@ -1,6 +1,8 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
+import { createAndSendBookingNotification } from "./pingram-notifications.server";
+
 type AdminSession = { unlocked?: boolean };
 
 const statusSchema = z.enum(["pending", "confirmed", "cancelled"]);
@@ -47,7 +49,7 @@ async function fetchICalRanges(url: string): Promise<Array<{ start: Date; end: D
 }
 
 async function getAdminSession() {
-  const secret = process.env.ADMIN_ACCESS_TOKEN;
+  const secret = process.env.ADMIN_SESSION_SECRET ?? process.env.ADMIN_ACCESS_CODE;
   if (!secret) throw new Error("La protection admin n'est pas configurée.");
 
   const { useSession } = await import("@tanstack/react-start/server");
@@ -233,44 +235,20 @@ export const resendBookingNotification = createServerFn({ method: "POST" })
       throw new Error("Impossible de retrouver cette demande.");
     }
 
-    const recipientEmail = process.env.NOTIFY_ADMIN_EMAIL ?? fallbackAdminEmail;
-    const { data: notification, error: notificationError } = await supabaseAdmin
-      .from("booking_notifications")
-      .insert({
-        booking_id: booking.id,
-        provider: "pingram",
-        recipient_email: recipientEmail,
-        status: "pending",
-      })
-      .select("id")
-      .single();
-
-    if (notificationError || !notification) {
-      console.error("admin booking notification resend tracking insert failed", { bookingId: booking.id, error: notificationError });
-      throw new Error("Impossible de préparer le renvoi de notification.");
-    }
-
-    const { error: invokeErr } = await supabaseAdmin.functions.invoke("notify-lead", {
-      body: {
-        booking_id: booking.id,
-        notification_id: notification.id,
-        guest_name: booking.guest_name,
-        email: booking.email,
-        phone: booking.phone,
-        message: booking.message,
-        check_in: booking.check_in,
-        check_out: booking.check_out,
-        guests: booking.guests,
-        total_price: booking.total_price === null ? null : Number(booking.total_price),
-      },
+    const result = await createAndSendBookingNotification({
+      booking_id: booking.id,
+      guest_name: booking.guest_name,
+      email: booking.email,
+      phone: booking.phone,
+      message: booking.message,
+      check_in: booking.check_in,
+      check_out: booking.check_out,
+      guests: booking.guests,
+      total_price: booking.total_price === null ? null : Number(booking.total_price),
     });
 
-    if (invokeErr) {
-      console.error("admin booking notification resend failed", { bookingId: booking.id, notificationId: notification.id, error: invokeErr });
-      await supabaseAdmin
-        .from("booking_notifications")
-        .update({ status: "failed", error_message: String(invokeErr.message ?? invokeErr) })
-        .eq("id", notification.id);
+    if (!result.ok) {
+      console.error("admin booking notification resend failed", { bookingId: booking.id, result });
       throw new Error("La notification n'a pas pu être renvoyée.");
     }
 
