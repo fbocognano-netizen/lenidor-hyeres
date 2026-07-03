@@ -63,6 +63,7 @@ type Booking = {
 };
 
 type NotificationStatus = "pending" | "sent" | "failed";
+type LoginError = "invalid" | "not_configured" | "session_not_configured" | "session_error" | "server_error";
 
 const statusLabels: Record<BookingStatus, string> = {
   pending: "À traiter",
@@ -103,7 +104,8 @@ function AdminPage() {
   const loadOtaRanges = useServerFn(getAdminOtaRanges);
   const queryClient = useQueryClient();
   const [accessCode, setAccessCode] = useState("");
-  const [loginError, setLoginError] = useState<null | "invalid" | "not_configured">(null);
+  const [loginError, setLoginError] = useState<null | LoginError>(null);
+  const [isLoggingIn, setIsLoggingIn] = useState(false);
 
   const configQuery = useQuery({
     queryKey: ["admin-config"],
@@ -156,17 +158,22 @@ function AdminPage() {
   async function handleLogin(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setLoginError(null);
+    setIsLoggingIn(true);
 
     try {
       const result = await loginAdmin({ data: { code: accessCode } });
       if (!result.ok) {
-        setLoginError(result.reason ?? "invalid");
+        setLoginError(result.reason ?? "server_error");
         return;
       }
       setAccessCode("");
       await queryClient.invalidateQueries({ queryKey: ["admin-bookings"] });
+      await bookingsQuery.refetch();
     } catch {
+      setLoginError("server_error");
       toast.error("Connexion impossible pour le moment");
+    } finally {
+      setIsLoggingIn(false);
     }
   }
 
@@ -193,6 +200,8 @@ function AdminPage() {
 
   if (!data?.authenticated) {
     const notConfigured = configQuery.data?.configured === false;
+    const sessionNotConfigured = configQuery.data?.sessionConfigured === false;
+    const adminUnavailable = notConfigured || sessionNotConfigured;
     return (
       <main className="min-h-screen bg-background text-foreground">
         <Toaster position="top-center" richColors />
@@ -213,6 +222,12 @@ function AdminPage() {
               </div>
             )}
 
+            {sessionNotConfigured && (
+              <div className="mt-6 rounded-2xl border border-destructive/30 bg-destructive/10 p-4 text-sm text-destructive">
+                Session admin non configurée. Le secret <code className="font-mono">ADMIN_SESSION_SECRET</code> doit exister pour ouvrir l'espace hôte.
+              </div>
+            )}
+
             <form onSubmit={handleLogin} className="mt-8 space-y-4">
               <div>
                 <Label htmlFor="admin-code" className="text-xs uppercase tracking-wider text-muted-foreground">
@@ -226,7 +241,7 @@ function AdminPage() {
                   autoComplete="current-password"
                   className="mt-2 h-11 rounded-xl"
                   required
-                  disabled={notConfigured}
+                  disabled={adminUnavailable || isLoggingIn}
                 />
                 {loginError === "invalid" && (
                   <div className="mt-2 space-y-1 text-sm text-destructive">
@@ -241,13 +256,28 @@ function AdminPage() {
                     Code admin non configuré côté serveur.
                   </p>
                 )}
+                {loginError === "session_not_configured" && (
+                  <p className="mt-2 text-sm text-destructive">
+                    Session admin non configurée côté serveur.
+                  </p>
+                )}
+                {loginError === "session_error" && (
+                  <p className="mt-2 text-sm text-destructive">
+                    Le code est bon, mais la session admin n'a pas pu être ouverte.
+                  </p>
+                )}
+                {loginError === "server_error" && (
+                  <p className="mt-2 text-sm text-destructive">
+                    Erreur serveur pendant la connexion admin.
+                  </p>
+                )}
               </div>
               <Button
                 type="submit"
                 className="w-full rounded-full"
-                disabled={!accessCode.trim() || notConfigured}
+                disabled={!accessCode.trim() || adminUnavailable || isLoggingIn}
               >
-                Ouvrir l'espace hôte
+                {isLoggingIn ? "Connexion en cours…" : "Ouvrir l'espace hôte"}
               </Button>
               <p className="pt-2 text-xs leading-relaxed text-muted-foreground">
                 Pour changer le code d'accès : Paramètres du projet → Backend → Secrets → modifier <code className="font-mono">ADMIN_ACCESS_CODE</code>, puis rechargez cette page.
