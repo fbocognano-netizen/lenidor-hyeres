@@ -7,6 +7,45 @@ const statusSchema = z.enum(["pending", "confirmed", "cancelled"]);
 
 const fallbackAdminEmail = "usertinder543@gmail.com";
 
+// --- Minimal iCal parser (duplicated from bookings.functions to keep admin self-contained) ---
+function parseICal(ics: string): Array<{ start: Date; end: Date }> {
+  const events: Array<{ start: Date; end: Date }> = [];
+  const unfolded = ics.replace(/\r?\n[ \t]/g, "");
+  const lines = unfolded.split(/\r?\n/);
+  let inEvent = false;
+  let dtStart: Date | null = null;
+  let dtEnd: Date | null = null;
+  const parseDate = (val: string): Date | null => {
+    const m = val.match(/^(\d{4})(\d{2})(\d{2})(?:T(\d{2})(\d{2})(\d{2})Z?)?$/);
+    if (!m) return null;
+    const [, y, mo, d, h = "0", mi = "0", s = "0"] = m;
+    return new Date(Date.UTC(+y, +mo - 1, +d, +h, +mi, +s));
+  };
+  for (const raw of lines) {
+    const line = raw.trim();
+    if (line === "BEGIN:VEVENT") { inEvent = true; dtStart = null; dtEnd = null; continue; }
+    if (line === "END:VEVENT") {
+      if (inEvent && dtStart && dtEnd) events.push({ start: dtStart, end: dtEnd });
+      inEvent = false; continue;
+    }
+    if (!inEvent) continue;
+    if (line.startsWith("DTSTART")) dtStart = parseDate(line.split(":")[1] ?? "");
+    else if (line.startsWith("DTEND")) dtEnd = parseDate(line.split(":")[1] ?? "");
+  }
+  return events;
+}
+
+async function fetchICalRanges(url: string): Promise<Array<{ start: Date; end: Date }>> {
+  try {
+    const res = await fetch(url, { headers: { "User-Agent": "BnB-Hyeres-Site/1.0" } });
+    if (!res.ok) return [];
+    return parseICal(await res.text());
+  } catch (e) {
+    console.error("iCal fetch failed", url, e);
+    return [];
+  }
+}
+
 async function getAdminSession() {
   const secret = process.env.ADMIN_ACCESS_TOKEN;
   if (!secret) throw new Error("La protection admin n'est pas configurée.");
@@ -235,3 +274,30 @@ export const resendBookingNotification = createServerFn({ method: "POST" })
 
     return { authenticated: true as const, ok: true as const };
   });
+
+export const getAdminOtaRanges = createServerFn({ method: "GET" }).handler(async () => {
+  if (!(await isAdminUnlocked())) {
+    return { authenticated: false as const, ranges: [] as Array<{ source: string; start: string; end: string }> };
+  }
+  const sources: Array<{ source: "airbnb" | "abritel"; url: string }> = [
+    {
+      source: "airbnb",
+      url:
+        process.env.AIRBNB_ICAL_URL ??
+        "https://www.airbnb.fr/calendar/ical/1526120631746320177.ics?t=774616f2469d47389d29985aecbbead5",
+    },
+    {
+      source: "abritel",
+      url:
+        process.env.ABRITEL_ICAL_URL ??
+        "https://www.abritel.fr/icalendar/cf2da2a6506e4b74b4663602f0dd9803.ics?nonTentative&includeTentative=false",
+    },
+  ];
+  const results = await Promise.all(
+    sources.map(async ({ source, url }) => {
+      const ranges = await fetchICalRanges(url);
+      return ranges.map((r) => ({ source, start: r.start.toISOString(), end: r.end.toISOString() }));
+    }),
+  );
+  return { authenticated: true as const, ranges: results.flat() };
+});
