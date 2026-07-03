@@ -14,6 +14,53 @@ export type Database = {
   }
   public: {
     Tables: {
+      booking_notifications: {
+        Row: {
+          booking_id: string | null
+          created_at: string
+          error_message: string | null
+          id: string
+          provider: string
+          provider_response: string | null
+          provider_status: number | null
+          recipient_email: string
+          sent_at: string | null
+          status: string
+        }
+        Insert: {
+          booking_id?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          provider?: string
+          provider_response?: string | null
+          provider_status?: number | null
+          recipient_email: string
+          sent_at?: string | null
+          status?: string
+        }
+        Update: {
+          booking_id?: string | null
+          created_at?: string
+          error_message?: string | null
+          id?: string
+          provider?: string
+          provider_response?: string | null
+          provider_status?: number | null
+          recipient_email?: string
+          sent_at?: string | null
+          status?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "booking_notifications_booking_id_fkey"
+            columns: ["booking_id"]
+            isOneToOne: false
+            referencedRelation: "bookings"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       bookings: {
         Row: {
           check_in: string
