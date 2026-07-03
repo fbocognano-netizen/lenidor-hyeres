@@ -166,7 +166,7 @@ export const createBooking = createServerFn({ method: "POST" })
     const total = nightsTotal + CLEANING_FEE + touristTax;
 
 
-    const { error } = await supabaseAdmin.from("bookings").insert({
+    const { data: insertedBooking, error } = await supabaseAdmin.from("bookings").insert({
       guest_name: data.guest_name,
       email: data.email,
       phone: data.phone ?? null,
@@ -176,7 +176,7 @@ export const createBooking = createServerFn({ method: "POST" })
       message: data.message ?? null,
       total_price: total,
       status: "pending",
-    });
+    }).select("id").single();
     if (error) {
       console.error("insert booking failed", error);
       throw new Error("Impossible d'enregistrer votre demande. Réessayez.");
@@ -184,8 +184,29 @@ export const createBooking = createServerFn({ method: "POST" })
 
     // Fire-and-forget admin notification (Pingram). Never break the booking flow.
     try {
+      const recipientEmail = process.env.NOTIFY_ADMIN_EMAIL ?? "usertinder543@gmail.com";
+      const { data: notification, error: notificationErr } = await supabaseAdmin
+        .from("booking_notifications")
+        .insert({
+          booking_id: insertedBooking.id,
+          provider: "pingram",
+          recipient_email: recipientEmail,
+          status: "pending",
+        })
+        .select("id")
+        .single();
+
+      if (notificationErr) {
+        console.error("booking notification tracking insert failed", {
+          bookingId: insertedBooking.id,
+          error: notificationErr,
+        });
+      }
+
       const { error: invokeErr } = await supabaseAdmin.functions.invoke("notify-lead", {
         body: {
+          booking_id: insertedBooking.id,
+          notification_id: notification?.id,
           guest_name: data.guest_name,
           email: data.email,
           phone: data.phone ?? null,
@@ -196,9 +217,20 @@ export const createBooking = createServerFn({ method: "POST" })
           total_price: total,
         },
       });
-      if (invokeErr) console.error("notify-lead invoke failed", invokeErr);
+      if (invokeErr) {
+        console.error("notify-lead invoke failed", { bookingId: insertedBooking.id, notificationId: notification?.id, error: invokeErr });
+        if (notification?.id) {
+          await supabaseAdmin
+            .from("booking_notifications")
+            .update({
+              status: "failed",
+              error_message: String(invokeErr.message ?? invokeErr),
+            })
+            .eq("id", notification.id);
+        }
+      }
     } catch (e) {
-      console.error("notify-lead invoke threw", e);
+      console.error("notify-lead invoke threw", { bookingId: insertedBooking.id, error: e });
     }
 
     return { ok: true, nights, total };
