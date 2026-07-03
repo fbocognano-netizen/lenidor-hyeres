@@ -376,6 +376,204 @@ function Counter({ label, value, tone }: { label: string; value: number; tone: "
   );
 }
 
+type OtaRange = { source: string; start: string; end: string };
+
+function CalendarView({
+  bookings,
+  otaRanges,
+  otaLoading,
+  onStatusChange,
+  statusPending,
+}: {
+  bookings: Booking[];
+  otaRanges: OtaRange[];
+  otaLoading: boolean;
+  onStatusChange: (id: string, status: BookingStatus) => void;
+  statusPending: boolean;
+}) {
+  const [monthCursor, setMonthCursor] = useState(() => startOfMonth(new Date()));
+  const [selectedDay, setSelectedDay] = useState<Date | null>(null);
+
+  const monthStart = startOfMonth(monthCursor);
+  const monthEnd = addMonths(monthStart, 1);
+  // Build 6-week grid starting Monday
+  const gridStart = new Date(monthStart);
+  const dow = (gridStart.getDay() + 6) % 7; // 0 = Monday
+  gridStart.setDate(gridStart.getDate() - dow);
+  const days: Date[] = [];
+  for (let i = 0; i < 42; i++) {
+    const d = new Date(gridStart);
+    d.setDate(gridStart.getDate() + i);
+    days.push(d);
+  }
+
+  type Entry = { kind: "direct"; booking: Booking } | { kind: "ota"; source: string; range: OtaRange };
+  const entriesForDay = (day: Date): Entry[] => {
+    const out: Entry[] = [];
+    for (const b of bookings) {
+      if (b.status === "cancelled") continue;
+      const ci = new Date(`${b.check_in}T00:00:00`);
+      const co = new Date(`${b.check_out}T00:00:00`);
+      if (day >= ci && day < co) out.push({ kind: "direct", booking: b });
+    }
+    for (const r of otaRanges) {
+      const s = new Date(r.start);
+      const e = new Date(r.end);
+      if (day >= new Date(s.getFullYear(), s.getMonth(), s.getDate()) && day < new Date(e.getFullYear(), e.getMonth(), e.getDate())) {
+        out.push({ kind: "ota", source: r.source, range: r });
+      }
+    }
+    return out;
+  };
+
+  const sourceColor = (src: string) => {
+    if (src === "airbnb") return "bg-rose-400/80 text-white";
+    if (src === "abritel") return "bg-blue-400/80 text-white";
+    return "bg-muted text-foreground";
+  };
+
+  const selectedEntries = selectedDay ? entriesForDay(selectedDay) : [];
+
+  return (
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <div className="flex items-center gap-2">
+          <Button variant="outline" size="icon" className="rounded-full" onClick={() => setMonthCursor(addMonths(monthCursor, -1))}>
+            <ChevronLeft className="h-4 w-4" />
+          </Button>
+          <h3 className="font-display text-2xl capitalize min-w-[180px] text-center">
+            {format(monthStart, "MMMM yyyy", { locale: fr })}
+          </h3>
+          <Button variant="outline" size="icon" className="rounded-full" onClick={() => setMonthCursor(addMonths(monthCursor, 1))}>
+            <ChevronRight className="h-4 w-4" />
+          </Button>
+          <Button variant="ghost" size="sm" className="rounded-full ml-2" onClick={() => setMonthCursor(startOfMonth(new Date()))}>
+            Aujourd'hui
+          </Button>
+        </div>
+        <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
+          <LegendDot className="bg-primary" label="Direct" />
+          <LegendDot className="bg-rose-400" label="Airbnb" />
+          <LegendDot className="bg-blue-400" label="Abritel" />
+          {otaLoading && <span className="italic">Chargement OTA…</span>}
+        </div>
+      </div>
+
+      <Card className="overflow-hidden rounded-3xl border-border/60 p-0 shadow-none">
+        <div className="grid grid-cols-7 border-b border-border/60 bg-muted/30 text-xs font-medium uppercase tracking-wide text-muted-foreground">
+          {["Lun", "Mar", "Mer", "Jeu", "Ven", "Sam", "Dim"].map((d) => (
+            <div key={d} className="px-2 py-2 text-center">{d}</div>
+          ))}
+        </div>
+        <div className="grid grid-cols-7">
+          {days.map((day, idx) => {
+            const inMonth = day >= monthStart && day < monthEnd;
+            const entries = entriesForDay(day);
+            const isToday = isSameDay(day, new Date());
+            const isSelected = selectedDay && isSameDay(day, selectedDay);
+            return (
+              <button
+                key={idx}
+                type="button"
+                onClick={() => setSelectedDay(day)}
+                className={cn(
+                  "min-h-[86px] border-b border-r border-border/40 p-1.5 text-left transition hover:bg-secondary/40",
+                  !inMonth && "bg-muted/20 text-muted-foreground/60",
+                  isSelected && "ring-2 ring-primary ring-inset",
+                )}
+              >
+                <div className={cn("mb-1 flex items-center justify-between text-xs", isToday && "font-bold text-primary")}>
+                  <span>{day.getDate()}</span>
+                </div>
+                <div className="space-y-0.5">
+                  {entries.slice(0, 3).map((e, i) => (
+                    <div
+                      key={i}
+                      className={cn(
+                        "truncate rounded px-1 py-0.5 text-[10px] leading-tight",
+                        e.kind === "direct"
+                          ? e.booking.status === "confirmed"
+                            ? "bg-primary/80 text-primary-foreground"
+                            : "bg-accent/70 text-foreground"
+                          : sourceColor(e.source),
+                      )}
+                    >
+                      {e.kind === "direct" ? e.booking.guest_name : e.source}
+                    </div>
+                  ))}
+                  {entries.length > 3 && (
+                    <div className="text-[10px] text-muted-foreground">+{entries.length - 3}</div>
+                  )}
+                </div>
+              </button>
+            );
+          })}
+        </div>
+      </Card>
+
+      {selectedDay && (
+        <Card className="rounded-3xl border-border/60 p-5 shadow-none">
+          <div className="flex items-center justify-between">
+            <h4 className="font-display text-xl">
+              {format(selectedDay, "EEEE d MMMM yyyy", { locale: fr })}
+            </h4>
+            <Button variant="ghost" size="sm" onClick={() => setSelectedDay(null)}>Fermer</Button>
+          </div>
+          {selectedEntries.length === 0 ? (
+            <p className="mt-3 text-sm text-muted-foreground">Aucune réservation ce jour — dates disponibles.</p>
+          ) : (
+            <ul className="mt-4 space-y-3">
+              {selectedEntries.map((e, i) => (
+                <li key={i} className="flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-border/50 p-3">
+                  {e.kind === "direct" ? (
+                    <>
+                      <div>
+                        <div className="font-medium">{e.booking.guest_name} <Badge variant="outline" className="ml-2 rounded-full">{statusLabels[e.booking.status as BookingStatus] ?? e.booking.status}</Badge></div>
+                        <div className="text-xs text-muted-foreground">
+                          {formatDate(e.booking.check_in)} → {formatDate(e.booking.check_out)} · {e.booking.guests} voy. · {e.booking.email}
+                        </div>
+                      </div>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="rounded-full"
+                        disabled={statusPending || e.booking.status === "cancelled"}
+                        onClick={() => onStatusChange(e.booking.id, "cancelled")}
+                      >
+                        <XCircle className="mr-1 h-4 w-4" /> Libérer / Annuler
+                      </Button>
+                    </>
+                  ) : (
+                    <>
+                      <div>
+                        <div className="font-medium capitalize">Réservation {e.source}</div>
+                        <div className="text-xs text-muted-foreground">
+                          {format(new Date(e.range.start), "d MMM", { locale: fr })} → {format(new Date(e.range.end), "d MMM yyyy", { locale: fr })}
+                        </div>
+                      </div>
+                      <span className="text-xs text-muted-foreground italic">À gérer sur la plateforme OTA</span>
+                    </>
+                  )}
+                </li>
+              ))}
+            </ul>
+          )}
+        </Card>
+      )}
+    </div>
+  );
+}
+
+function LegendDot({ className, label }: { className: string; label: string }) {
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      <span className={cn("h-2.5 w-2.5 rounded-full", className)} />
+      {label}
+    </span>
+  );
+}
+
+
 function BookingCard({
   booking,
   onStatusChange,
