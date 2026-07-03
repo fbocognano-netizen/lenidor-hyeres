@@ -98,6 +98,7 @@ function buildHtml(lead: LeadPayload): string {
 Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
+  let lead: LeadPayload | undefined;
   try {
     const apiKey = Deno.env.get("PINGRAM_API_KEY");
     const toEmail = Deno.env.get("NOTIFY_ADMIN_EMAIL");
@@ -111,7 +112,7 @@ Deno.serve(async (req) => {
       return new Response(JSON.stringify({ error: "NOTIFY_ADMIN_EMAIL not configured" }), { status: 500, headers: { ...corsHeaders, "content-type": "application/json" } });
     }
 
-    const lead = (await req.json()) as LeadPayload;
+    lead = (await req.json()) as LeadPayload;
     console.log("notify-lead received", {
       bookingId: lead.booking_id ?? null,
       notificationId: lead.notification_id ?? null,
@@ -164,15 +165,7 @@ Deno.serve(async (req) => {
     });
     return new Response(JSON.stringify({ ok: true }), { status: 200, headers: { ...corsHeaders, "content-type": "application/json" } });
   } catch (e) {
-    let notificationId: string | undefined;
-    try {
-      const cloned = req.clone();
-      const body = await cloned.json() as LeadPayload;
-      notificationId = body.notification_id;
-    } catch {
-      // The body may already be consumed; logging below is enough.
-    }
-    await updateNotification(notificationId, {
+    await updateNotification(lead?.notification_id, {
       status: "failed",
       error_message: String(e),
     });
