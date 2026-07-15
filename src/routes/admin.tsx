@@ -80,12 +80,12 @@ const statusClasses: Record<BookingStatus, string> = {
 export const Route = createFileRoute("/admin")({
   head: () => ({
     meta: [
-      { title: "Espace hôte — Réservations Villa d'Or" },
+      { title: "Espace hôte — Réservations Le Nid d'Or" },
       {
         name: "description",
         content: "Espace hôte privé pour suivre les demandes de réservation du studio à Hyères.",
       },
-      { property: "og:title", content: "Espace hôte — Villa d'Or" },
+      { property: "og:title", content: "Espace hôte — Le Nid d'Or" },
       { property: "og:description", content: "Suivi privé des demandes de réservation." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },

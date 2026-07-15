@@ -52,14 +52,14 @@ function dateKey(date: Date): string {
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Studio vue mer — Hyères, Îles d'Or | Réservation directe" },
+      { title: "Le Nid d'Or à Hyères • Studio vue mer & piscine • Site officiel" },
       {
         name: "description",
         content:
-          "Studio calme avec vue panoramique sur les Îles d'Or, piscine, terrasse plein sud. Réservation en direct sans commission, à Hyères.",
+          "Réservez en direct au Nid d'Or à Hyères : studio vue mer & piscine, terrasse plein sud, calme assuré. Site officiel, sans intermédiaire.",
       },
-      { property: "og:title", content: "Studio vue mer — Hyères, Îles d'Or" },
-      { property: "og:description", content: "Vue panoramique, piscine, terrasse plein sud. Réservez en direct." },
+      { property: "og:title", content: "Le Nid d'Or à Hyères • Studio vue mer & piscine" },
+      { property: "og:description", content: "Studio vue mer, piscine et terrasse plein sud à Hyères. Réservez en direct sur le site officiel." },
       { property: "og:type", content: "website" },
       { property: "og:image", content: photo1 },
       { name: "twitter:card", content: "summary_large_image" },
@@ -131,7 +131,7 @@ function Hero() {
               <MapPin className="h-3 w-3" /> Hyères · Côte d'Azur
             </div>
             <h1 className="mt-5 font-display text-5xl sm:text-6xl md:text-7xl leading-[1.05] max-w-3xl">
-              Le silence du sud,<br />face aux Îles d'Or.
+              Le silence du sud, face aux Îles d'Or
             </h1>
             <p className="mt-5 max-w-xl text-base sm:text-lg text-primary-foreground/85">
               Un studio lumineux, une piscine de 18 m, une terrasse plein sud.
