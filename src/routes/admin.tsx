@@ -102,8 +102,6 @@ export const Route = createFileRoute("/admin")({
 function AdminPage() {
   const loadBookings = useServerFn(getAdminBookings);
   const loadConfigStatus = useServerFn(getAdminConfigStatus);
-  const loginAdmin = useServerFn(signInAdmin);
-  const logoutAdmin = useServerFn(signOutAdmin);
   const changeStatus = useServerFn(updateBookingStatus);
   const resendNotification = useServerFn(resendBookingNotification);
   const loadOtaRanges = useServerFn(getAdminOtaRanges);
