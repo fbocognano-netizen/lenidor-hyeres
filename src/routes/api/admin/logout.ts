@@ -19,7 +19,7 @@ export const Route = createFileRoute("/api/admin/logout")({
         await clearSession(event, {
           password: secret,
           name: COOKIE_NAME,
-          cookie: { path: "/", httpOnly: true, sameSite: "lax", secure: true },
+          cookie: { path: "/", httpOnly: true, sameSite: "none", secure: true, partitioned: true },
         });
         const cookies = extractSetCookie(event);
         const headers = new Headers({ "content-type": "application/json" });
