@@ -296,7 +296,7 @@ function AdminPage() {
         <header className="flex flex-col gap-6 border-b border-border/60 pb-8 md:flex-row md:items-end md:justify-between">
           <div>
             <a href="/" className="font-display text-2xl">
-              Villa <span className="italic text-[var(--color-sea)]">d'Or</span>
+              Le Nid&nbsp;d'Or
             </a>
             <p className="mt-8 text-xs uppercase tracking-[0.2em] text-muted-foreground">Espace hôte</p>
             <h1 className="mt-3 font-display text-4xl leading-tight sm:text-5xl">Demandes de réservation</h1>
