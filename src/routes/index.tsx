@@ -134,7 +134,7 @@ function Hero() {
               Le silence du sud,<br />face aux Îles d'Or.
             </h1>
             <p className="mt-5 max-w-xl text-base sm:text-lg text-primary-foreground/85">
-              Un studio lumineux, une piscine de 17 m, une terrasse plein sud.
+              Un studio lumineux, une piscine de 18 m, une terrasse plein sud.
               Pour deux, le temps d'une parenthèse au bord de la Méditerranée.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
