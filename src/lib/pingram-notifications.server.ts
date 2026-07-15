@@ -107,12 +107,10 @@ export async function createAndSendBookingNotification(lead: BookingNotification
       body: JSON.stringify({
         type: "new_lead",
         to: recipientEmail,
-        email: {
-          subject: "Nouvelle demande de réservation — Le Nid d'Or",
-          html: buildHtml(lead),
-          previewText: `Nouvelle demande de ${lead.guest_name} du ${lead.check_in} au ${lead.check_out}`,
-        },
+        subject: "Nouvelle demande de réservation — Le Nid d'Or",
+        html: buildHtml(lead),
       }),
+
     });
 
     const responseText = await res.text();
@@ -146,6 +144,106 @@ export async function createAndSendBookingNotification(lead: BookingNotification
       error_message: message,
     });
     console.error("Pingram send threw", { bookingId: lead.booking_id, notificationId: notification?.id, error: message });
+    return { ok: false as const, notificationId: notification?.id, error: message };
+  }
+}
+
+function buildGuestHtml(lead: BookingNotificationLead): string {
+  return `
+    <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:16px;color:#222">
+      <h2 style="margin:0 0 12px">Merci pour votre demande de réservation ✨</h2>
+      <p style="margin:0 0 16px;color:#555">Bonjour ${esc(lead.guest_name)}, nous avons bien reçu votre demande pour <strong>Le Nid d'Or</strong> à Hyères. Joëlle, votre hôte, vous répondra en personne sous 2 heures pour confirmer les disponibilités.</p>
+      <table style="width:100%;border-collapse:collapse;font-size:14px;background:#faf7f2;border-radius:8px;padding:8px">
+        <tbody>
+          <tr><td style="padding:6px 12px;color:#666">Arrivée</td><td style="padding:6px 12px"><strong>${esc(lead.check_in)}</strong></td></tr>
+          <tr><td style="padding:6px 12px;color:#666">Départ</td><td style="padding:6px 12px"><strong>${esc(lead.check_out)}</strong></td></tr>
+          <tr><td style="padding:6px 12px;color:#666">Voyageurs</td><td style="padding:6px 12px">${esc(lead.guests)}</td></tr>
+          <tr><td style="padding:6px 12px;color:#666">Total estimé</td><td style="padding:6px 12px">${lead.total_price != null ? esc(lead.total_price) + " €" : "—"}</td></tr>
+        </tbody>
+      </table>
+      <p style="margin:20px 0 8px;color:#555">Cette demande n'est pas encore confirmée : les dates seront validées manuellement par votre hôte. Vous recevrez un email de confirmation dès que ce sera fait, avec les instructions d'arrivée.</p>
+      <p style="margin:16px 0 0;color:#555">À très bientôt sur les hauteurs d'Hyères,<br/>Joëlle — Le Nid d'Or</p>
+      <p style="margin-top:24px;font-size:12px;color:#888">Si vous avez une question, répondez directement à cet email.</p>
+    </div>`;
+}
+
+export async function sendGuestConfirmationEmail(lead: BookingNotificationLead) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const recipientEmail = lead.email.trim();
+
+  const { data: notification, error: notificationError } = await supabaseAdmin
+    .from("booking_notifications")
+    .insert({
+      booking_id: lead.booking_id,
+      provider: "pingram",
+      recipient_email: recipientEmail,
+      status: "pending",
+    })
+    .select("id")
+    .single();
+
+  if (notificationError) {
+    console.error("guest notification tracking insert failed", {
+      bookingId: lead.booking_id,
+      error: notificationError,
+    });
+  }
+
+  const apiKey = process.env.PINGRAM_API_KEY;
+  if (!apiKey) {
+    await updateNotification(notification?.id, {
+      status: "failed",
+      error_message: "PINGRAM_API_KEY not configured",
+    });
+    return { ok: false as const, notificationId: notification?.id, error: "PINGRAM_API_KEY not configured" };
+  }
+
+  try {
+    const res = await fetch("https://api.pingram.io/email", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        type: "booking_confirmation",
+        to: recipientEmail,
+        subject: "Votre demande de réservation — Le Nid d'Or à Hyères",
+        html: buildGuestHtml(lead),
+      }),
+    });
+
+    const responseText = await res.text();
+    if (!res.ok) {
+      await updateNotification(notification?.id, {
+        status: "failed",
+        provider_status: res.status,
+        provider_response: responseText.slice(0, 2000),
+        error_message: "Pingram guest send failed",
+      });
+      console.error("Pingram guest send failed", {
+        bookingId: lead.booking_id,
+        notificationId: notification?.id,
+        status: res.status,
+        body: responseText,
+      });
+      return { ok: false as const, notificationId: notification?.id, status: res.status, error: responseText };
+    }
+
+    await updateNotification(notification?.id, {
+      status: "sent",
+      provider_status: res.status,
+      provider_response: responseText.slice(0, 2000),
+      sent_at: new Date().toISOString(),
+    });
+    return { ok: true as const, notificationId: notification?.id, status: res.status };
+  } catch (error) {
+    const message = String(error);
+    await updateNotification(notification?.id, {
+      status: "failed",
+      error_message: message,
+    });
+    console.error("Pingram guest send threw", { bookingId: lead.booking_id, notificationId: notification?.id, error: message });
     return { ok: false as const, notificationId: notification?.id, error: message };
   }
 }

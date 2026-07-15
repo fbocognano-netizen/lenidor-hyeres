@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-import { createAndSendBookingNotification } from "./pingram-notifications.server";
+import { createAndSendBookingNotification, sendGuestConfirmationEmail } from "./pingram-notifications.server";
 
 // --- iCal parser (minimal, handles VEVENT DTSTART/DTEND) ---
 function parseICal(ics: string): Array<{ start: Date; end: Date }> {
@@ -199,6 +199,23 @@ export const createBooking = createServerFn({ method: "POST" })
       });
     } catch (e) {
       console.error("booking notification send threw", { bookingId: insertedBooking.id, error: e });
+    }
+
+    // Fire-and-forget guest confirmation.
+    try {
+      await sendGuestConfirmationEmail({
+        booking_id: insertedBooking.id,
+        guest_name: data.guest_name,
+        email: data.email,
+        phone: data.phone ?? null,
+        message: data.message ?? null,
+        check_in: data.check_in,
+        check_out: data.check_out,
+        guests: data.guests,
+        total_price: total,
+      });
+    } catch (e) {
+      console.error("guest confirmation send threw", { bookingId: insertedBooking.id, error: e });
     }
 
     return { ok: true, nights, total };

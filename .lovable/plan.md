@@ -1,33 +1,50 @@
-Vous avez raison : le 25 ne devrait pas être grisé. Les calendriers externes indiquent bien :
+# Audit notifications de réservation
 
-```text
-Réservé : 22 → 25 juillet  = nuits du 22, 23, 24
-Libre   : 25 → 27 juillet  = nuits du 25 et 26
-Réservé : 27 juillet → 3 août
+## Diagnostic
+
+Les logs `booking_notifications` montrent que **toutes les tentatives d'envoi depuis le 3 juillet échouent** avec la même erreur Pingram :
+
+```
+HTTP 400 — missing_subject
+"The email subject is required. Include a non-empty \"subject\" string in the request body."
 ```
 
-Le problème vient du mélange entre dates UTC côté synchronisation calendrier et dates locales côté affichage. En France, ça décale les comparaisons d’environ 2 heures, donc le 25 peut être traité comme encore bloqué alors qu’il est libre.
+### Cause racine
+Dans `src/lib/pingram-notifications.server.ts`, la payload envoyée à Pingram place `subject` dans un objet imbriqué `email` :
+```ts
+body: JSON.stringify({
+  type: "new_lead",
+  to: recipientEmail,
+  email: { subject: "...", html, previewText },  // ❌ Pingram ne le lit pas ici
+})
+```
+Or Pingram attend `subject` au **niveau racine** (comme le faisait l'ancienne edge function `supabase/functions/notify-lead/index.ts`, qui elle fonctionnait). C'est bien une régression introduite en migrant l'envoi vers `.server.ts`.
 
-Plan de correction :
+### Point secondaire
+Tu mentionnes "pour moi admin, **et pour mes clients**" — actuellement aucun email de confirmation n'est envoyé au client qui fait la demande. Seul l'admin est notifié (et cassé).
 
-1. **Comparer uniquement des dates “jour” (`YYYY-MM-DD`)**
-   - Ne plus comparer les timestamps `Date.getTime()` pour l’affichage du calendrier.
-   - Convertir chaque jour affiché en clé stable `YYYY-MM-DD`.
+## Corrections
 
-2. **Appliquer la vraie règle de nuitée**
-   - Une réservation `[check_in, check_out)` bloque uniquement les nuits de `check_in` inclus à `check_out` exclu.
-   - Donc une réservation `22 → 25` bloque 22, 23, 24, mais pas le 25.
+### 1. Fix payload Pingram (`src/lib/pingram-notifications.server.ts`)
+Remettre le format plat qui fonctionnait :
+```ts
+body: JSON.stringify({
+  type: "new_lead",
+  to: recipientEmail,
+  subject: "Nouvelle demande de réservation — Le Nid d'Or",
+  html: buildHtml(lead),
+})
+```
 
-3. **Autoriser les jours de rotation**
-   - Le jour de départ d’une réservation doit rester cliquable comme arrivée.
-   - Le jour d’arrivée de la réservation suivante doit rester cliquable comme départ.
-   - Exemple attendu : `25 → 27 juillet` doit être sélectionnable.
+### 2. Ajouter email de confirmation client
+- Nouvelle fonction `sendGuestConfirmationEmail(lead)` dans `pingram-notifications.server.ts` avec un template HTML dédié (récap dates, voyageurs, total estimé, rappel que la demande sera confirmée manuellement sous 2h).
+- Tracker aussi dans `booking_notifications` avec `recipient_email = lead.email` (le champ existe déjà).
+- Appel après `createAndSendBookingNotification` dans `src/lib/bookings.functions.ts` (fire-and-forget, ne bloque jamais la réservation).
 
-4. **Garder la sécurité serveur actuelle**
-   - Le serveur continue de refuser les vrais chevauchements de nuits.
-   - On corrige seulement la logique d’affichage/sélection du calendrier.
+### 3. Nettoyage
+Supprimer l'edge function obsolète `supabase/functions/notify-lead/` (plus appelée nulle part) pour éviter la confusion.
 
-5. **Vérifier visuellement après correction**
-   - 22, 23, 24 juillet grisés.
-   - 25 et 26 juillet sélectionnables.
-   - 27 juillet sélectionnable uniquement comme date de départ si l’arrivée est le 25, mais pas comme nuit libre.
+## Vérification
+- Créer une réservation de test depuis le site.
+- Vérifier dans `booking_notifications` : deux lignes `status='sent'` (admin + client).
+- Confirmer réception dans la boîte `usertinder543@gmail.com` et sur l'email du test.
