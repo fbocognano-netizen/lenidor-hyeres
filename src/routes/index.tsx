@@ -56,10 +56,10 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Réservez en direct au Nid d'Or à Hyères : studio vue mer & piscine, terrasse plein sud, calme assuré. Site officiel, sans intermédiaire.",
+          "Réservez en direct au Nid d'Or à Hyères : studio vue mer & piscine, terrasse plein sud, calme assuré. Site officiel, sans intermédiaire. Meilleur Prix assuré",
       },
-      { property: "og:title", content: "Le Nid d'Or à Hyères • Studio vue mer & piscine" },
-      { property: "og:description", content: "Studio vue mer, piscine et terrasse plein sud à Hyères. Réservez en direct sur le site officiel." },
+      { property: "og:title", content: "Le Nid d'Or à Hyères • Studio vue mer & piscine • Site officiel" },
+      { property: "og:description", content: "Réservez en direct au Nid d'Or à Hyères : studio vue mer & piscine, terrasse plein sud, calme assuré. Site officiel, sans intermédiaire. Meilleur Prix assuré" },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://lenidor-hyeres.lovable.app/" },
       { property: "og:image", content: photo1 },

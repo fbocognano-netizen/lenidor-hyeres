@@ -77,13 +77,19 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Le Nid d'Or — Location studio vue mer à Hyères" },
-      { name: "description", content: "Le Nid d'Or : location en direct d'un studio vue mer avec piscine et terrasse plein sud à Hyères, face aux Îles d'Or." },
+      { title: "Le Nid d'Or à Hyères • Studio vue mer & piscine • Site officiel" },
+      { name: "description", content: "Réservez en direct au Nid d'Or à Hyères : studio vue mer & piscine, terrasse plein sud, calme assuré. Site officiel, sans intermédiaire. Meilleur Prix assuré" },
       { property: "og:site_name", content: "Le Nid d'Or" },
       { property: "og:type", content: "website" },
       { property: "og:locale", content: "fr_FR" },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "google-site-verification", content: "B4L6zAp6HnvBopD0J7lOHzKKXQTLWk9moM-ifcl39_c" },
+      { property: "og:title", content: "Le Nid d'Or à Hyères • Studio vue mer & piscine • Site officiel" },
+      { name: "twitter:title", content: "Le Nid d'Or à Hyères • Studio vue mer & piscine • Site officiel" },
+      { property: "og:description", content: "Réservez en direct au Nid d'Or à Hyères : studio vue mer & piscine, terrasse plein sud, calme assuré. Site officiel, sans intermédiaire. Meilleur Prix assuré" },
+      { name: "twitter:description", content: "Réservez en direct au Nid d'Or à Hyères : studio vue mer & piscine, terrasse plein sud, calme assuré. Site officiel, sans intermédiaire. Meilleur Prix assuré" },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4cfebf76-be57-402d-8084-0261b0223748/id-preview-cc6d774e--ff9f603a-9389-4ad2-a6b4-ee7aa118af46.lovable.app-1784115931645.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4cfebf76-be57-402d-8084-0261b0223748/id-preview-cc6d774e--ff9f603a-9389-4ad2-a6b4-ee7aa118af46.lovable.app-1784115931645.png" },
     ],
 
     links: [
