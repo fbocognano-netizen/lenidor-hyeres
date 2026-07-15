@@ -529,8 +529,8 @@ function Footer() {
     <footer className="bg-secondary/50 border-t border-border/60">
       <div className="mx-auto max-w-6xl px-5 py-12 grid md:grid-cols-3 gap-8 text-sm">
         <div>
-          <div className="font-display text-xl">Villa <span className="italic text-[var(--color-sea)]">d'Or</span></div>
-          <p className="mt-3 text-muted-foreground">Studio vue mer · Hyères, France</p>
+          <div className="font-display text-xl">Le Nid d'Or</div>
+          <p className="mt-3 text-muted-foreground">Studio vue mer panoramique à Hyères, France</p>
         </div>
         <div>
           <div className="text-xs uppercase tracking-wider text-muted-foreground">Contact</div>
