@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as ApiAdminLoginRouteImport } from './routes/api/admin/login'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -28,35 +29,44 @@ const IndexRoute = IndexRouteImport.update({
   path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminLoginRoute = ApiAdminLoginRouteImport.update({
+  id: '/api/admin/login',
+  path: '/api/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/api/admin/login': typeof ApiAdminLoginRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/api/admin/login': typeof ApiAdminLoginRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/api/admin/login': typeof ApiAdminLoginRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/admin' | '/sitemap.xml'
+  fullPaths: '/' | '/admin' | '/sitemap.xml' | '/api/admin/login'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/admin' | '/sitemap.xml'
-  id: '__root__' | '/' | '/admin' | '/sitemap.xml'
+  to: '/' | '/admin' | '/sitemap.xml' | '/api/admin/login'
+  id: '__root__' | '/' | '/admin' | '/sitemap.xml' | '/api/admin/login'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
+  ApiAdminLoginRoute: typeof ApiAdminLoginRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +92,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/login': {
+      id: '/api/admin/login'
+      path: '/api/admin/login'
+      fullPath: '/api/admin/login'
+      preLoaderRoute: typeof ApiAdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
+  ApiAdminLoginRoute: ApiAdminLoginRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
