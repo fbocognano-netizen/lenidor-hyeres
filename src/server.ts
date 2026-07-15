@@ -30,7 +30,16 @@ async function normalizeCatastrophicSsrResponse(response: Response): Promise<Res
     return response;
   }
 
-  console.error(consumeLastCapturedError() ?? new Error(`h3 swallowed SSR error: ${body}`));
+  const captured = consumeLastCapturedError() ?? new Error(`h3 swallowed SSR error: ${body}`);
+  console.error(captured);
+  const { errorDetails, logAppEvent } = await import("./lib/logging.server");
+  await logAppEvent({
+    level: "error",
+    event: "catastrophic_ssr_response",
+    area: "server",
+    message: "Erreur SSR transformée en page d'erreur.",
+    details: errorDetails(captured, { body }),
+  });
   return new Response(renderErrorPage(), {
     status: 500,
     headers: { "content-type": "text/html; charset=utf-8" },
@@ -45,6 +54,19 @@ export default {
       return await normalizeCatastrophicSsrResponse(response);
     } catch (error) {
       console.error(error);
+      try {
+        const { errorDetails, logAppEvent } = await import("./lib/logging.server");
+        await logAppEvent({
+          level: "error",
+          event: "server_fetch_uncaught_error",
+          area: "server",
+          message: "Exception serveur non interceptée.",
+          request,
+          details: errorDetails(error),
+        });
+      } catch (logError) {
+        console.error(logError);
+      }
       return new Response(renderErrorPage(), {
         status: 500,
         headers: { "content-type": "text/html; charset=utf-8" },

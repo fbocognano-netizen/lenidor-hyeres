@@ -11,6 +11,14 @@ const errorMiddleware = createMiddleware().server(async ({ next }) => {
       throw error;
     }
     console.error(error);
+    const { errorDetails, logAppEvent } = await import("./lib/logging.server");
+    await logAppEvent({
+      level: "error",
+      event: "request_middleware_error",
+      area: "server",
+      message: "Exception serveur interceptée par le middleware.",
+      details: errorDetails(error),
+    });
     return new Response(renderErrorPage(), {
       status: 500,
       headers: { "content-type": "text/html; charset=utf-8" },

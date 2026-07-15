@@ -1,39 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
-import { createHash, timingSafeEqual } from "node:crypto";
-import { H3Event, updateSession, clearSession } from "h3-v2";
+import { H3Event, updateSession } from "h3-v2";
 
-const COOKIE_NAME = "villa-admin-session";
-const MAX_AGE = 60 * 60 * 24 * 14;
-
-function normalize(v: string) {
-  return v
-    .normalize("NFKC")
-    .trim()
-    .replace(/[\u200B-\u200D\uFEFF]/g, "")
-    .replace(/\u00A0/g, " ")
-    .replace(/^["']|["']$/g, "");
-}
-
-function matches(input: string, expected: string) {
-  const a = createHash("sha256").update(normalize(input), "utf8").digest();
-  const b = createHash("sha256").update(normalize(expected), "utf8").digest();
-  return timingSafeEqual(a, b);
-}
-
-function sessionConfig(secret: string) {
-  return {
-    password: secret,
-    name: COOKIE_NAME,
-    maxAge: MAX_AGE,
-    cookie: {
-      httpOnly: true,
-      sameSite: "none" as const,
-      path: "/",
-      secure: true,
-      partitioned: true,
-    },
-  };
-}
+import { adminCodeMatches, adminSessionConfig } from "@/lib/admin-session.server";
+import { errorDetails, logAppEvent } from "@/lib/logging.server";
 
 function json(body: unknown, extraHeaders: Record<string, string> = {}, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -55,24 +24,97 @@ export const Route = createFileRoute("/api/admin/login")({
       POST: async ({ request }) => {
         const expected = process.env.ADMIN_ACCESS_CODE;
         const secret = process.env.ADMIN_SESSION_SECRET;
-        if (!expected) return json({ ok: false, reason: "not_configured" });
-        if (!secret) return json({ ok: false, reason: "session_not_configured" });
+        await logAppEvent({
+          level: "info",
+          event: "admin_login_started",
+          area: "admin",
+          message: "Tentative de connexion admin reçue.",
+          request,
+          details: {
+            accessCodeConfigured: Boolean(expected),
+            sessionSecretConfigured: Boolean(secret),
+          },
+        });
+        if (!expected) {
+          await logAppEvent({
+            level: "error",
+            event: "admin_login_missing_access_code",
+            area: "admin",
+            message: "ADMIN_ACCESS_CODE n'est pas configuré.",
+            request,
+          });
+          return json({ ok: false, reason: "not_configured" });
+        }
+        if (!secret) {
+          await logAppEvent({
+            level: "error",
+            event: "admin_login_missing_session_secret",
+            area: "admin",
+            message: "ADMIN_SESSION_SECRET n'est pas configuré.",
+            request,
+          });
+          return json({ ok: false, reason: "session_not_configured" });
+        }
 
         let payload: { code?: string } = {};
         try {
           payload = (await request.json()) as { code?: string };
-        } catch {
+        } catch (error) {
+          await logAppEvent({
+            level: "warning",
+            event: "admin_login_invalid_payload",
+            area: "admin",
+            message: "Payload de connexion admin invalide.",
+            request,
+            details: errorDetails(error),
+          });
           return json({ ok: false, reason: "invalid" }, {}, 400);
         }
         const code = typeof payload.code === "string" ? payload.code : "";
-        if (!code || !matches(code, expected)) return json({ ok: false, reason: "invalid" });
+        if (!code || !adminCodeMatches(code, expected)) {
+          await logAppEvent({
+            level: "warning",
+            event: "admin_login_invalid_code",
+            area: "admin",
+            message: "Code admin incorrect.",
+            request,
+            details: { codeLength: code.length },
+          });
+          return json({ ok: false, reason: "invalid" });
+        }
 
-        const event = new H3Event(request);
-        await updateSession(event, sessionConfig(secret), { unlocked: true });
-        const cookies = extractSetCookie(event);
-        const headers = new Headers({ "content-type": "application/json" });
-        for (const c of cookies) headers.append("set-cookie", c);
-        return new Response(JSON.stringify({ ok: true }), { status: 200, headers });
+        try {
+          const event = new H3Event(request);
+          await updateSession(event, adminSessionConfig(secret), { unlocked: true });
+          const cookies = extractSetCookie(event);
+
+          await logAppEvent({
+            level: cookies.length > 0 ? "info" : "error",
+            event: cookies.length > 0 ? "admin_login_cookie_created" : "admin_login_cookie_missing",
+            area: "admin",
+            message: cookies.length > 0
+              ? "Code admin valide et cookie de session généré."
+              : "Code admin valide mais aucun cookie de session n'a été généré.",
+            request,
+            details: { setCookieCount: cookies.length },
+          });
+
+          if (cookies.length === 0) return json({ ok: false, reason: "session_error" });
+
+          const headers = new Headers({ "content-type": "application/json" });
+          for (const c of cookies) headers.append("set-cookie", c);
+          return new Response(JSON.stringify({ ok: true }), { status: 200, headers });
+        } catch (error) {
+          await logAppEvent({
+            level: "error",
+            event: "admin_login_session_update_failed",
+            area: "admin",
+            message: "Création de session admin impossible.",
+            request,
+            details: errorDetails(error),
+          });
+          return json({ ok: false, reason: "session_error" }, {}, 500);
+        }
       },
     },
   },
