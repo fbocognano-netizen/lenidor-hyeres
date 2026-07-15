@@ -1,5 +1,6 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { createHash, timingSafeEqual } from "node:crypto";
+import { H3Event, updateSession, clearSession } from "h3-v2";
 
 const COOKIE_NAME = "villa-admin-session";
 const MAX_AGE = 60 * 60 * 24 * 14;
@@ -19,26 +20,32 @@ function matches(input: string, expected: string) {
   return timingSafeEqual(a, b);
 }
 
-function buildCookie(value: string, secure: boolean) {
-  const parts = [
-    `${COOKIE_NAME}=${value}`,
-    "Path=/",
-    "HttpOnly",
-    "SameSite=Lax",
-    `Max-Age=${MAX_AGE}`,
-  ];
-  if (secure) parts.push("Secure");
-  return parts.join("; ");
+function sessionConfig(secret: string) {
+  return {
+    password: secret,
+    name: COOKIE_NAME,
+    maxAge: MAX_AGE,
+    cookie: {
+      httpOnly: true,
+      sameSite: "lax" as const,
+      path: "/",
+      secure: true,
+    },
+  };
 }
 
-function json(body: unknown, init?: ResponseInit) {
+function json(body: unknown, extraHeaders: Record<string, string> = {}, status = 200) {
   return new Response(JSON.stringify(body), {
-    ...init,
-    headers: {
-      "content-type": "application/json",
-      ...(init?.headers ?? {}),
-    },
+    status,
+    headers: { "content-type": "application/json", ...extraHeaders },
   });
+}
+
+function extractSetCookie(event: H3Event): string[] {
+  const h = event.res.headers as Headers & { getSetCookie?: () => string[] };
+  if (typeof h.getSetCookie === "function") return h.getSetCookie();
+  const v = h.get("set-cookie");
+  return v ? [v] : [];
 }
 
 export const Route = createFileRoute("/api/admin/login")({
@@ -54,37 +61,17 @@ export const Route = createFileRoute("/api/admin/login")({
         try {
           payload = (await request.json()) as { code?: string };
         } catch {
-          return json({ ok: false, reason: "invalid" }, { status: 400 });
+          return json({ ok: false, reason: "invalid" }, {}, 400);
         }
         const code = typeof payload.code === "string" ? payload.code : "";
-        if (!code || !matches(code, expected)) {
-          return json({ ok: false, reason: "invalid" });
-        }
+        if (!code || !matches(code, expected)) return json({ ok: false, reason: "invalid" });
 
-        const { sealSession } = await import("h3-v2");
-        const sessionData = {
-          id: crypto.randomUUID(),
-          createdAt: Date.now(),
-          data: { unlocked: true },
-        };
-        const sealed = await sealSession(
-          // h3 sealSession signature: (event, config, sessionData)
-          // We fake a minimal event since we only need the sealed string
-          { req: request, res: new Response() } as unknown as never,
-          {
-            password: secret,
-            name: COOKIE_NAME,
-            maxAge: MAX_AGE,
-            cookie: { httpOnly: true, sameSite: "lax", path: "/" },
-          } as never,
-          sessionData as never,
-        );
-
-        const secure = new URL(request.url).protocol === "https:";
-        return json(
-          { ok: true },
-          { headers: { "set-cookie": buildCookie(sealed, secure) } },
-        );
+        const event = new H3Event(request);
+        await updateSession(event, sessionConfig(secret), { unlocked: true });
+        const cookies = extractSetCookie(event);
+        const headers = new Headers({ "content-type": "application/json" });
+        for (const c of cookies) headers.append("set-cookie", c);
+        return new Response(JSON.stringify({ ok: true }), { status: 200, headers });
       },
     },
   },
