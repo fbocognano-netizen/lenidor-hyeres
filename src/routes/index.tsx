@@ -220,7 +220,7 @@ function Gallery() {
 
 function Amenities() {
   const items = [
-    { icon: <Waves className="h-5 w-5" />, label: "Piscine de 17 m" },
+    { icon: <Waves className="h-5 w-5" />, label: "Piscine de 18 m, vue mer & îles d'Or" },
     { icon: <Sun className="h-5 w-5" />, label: "Terrasse plein sud & vue mer panoramique" },
     { icon: <Wifi className="h-5 w-5" />, label: "TV Connectée" },
     { icon: <Wind className="h-5 w-5" />, label: "Frais tout l'été" },
