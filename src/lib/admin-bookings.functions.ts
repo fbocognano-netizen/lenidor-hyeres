@@ -4,6 +4,7 @@ import { z } from "zod";
 import { adminCodeMatches, getAdminSessionState } from "./admin-session.server";
 import { errorDetails, logAppEvent } from "./logging.server";
 import { createAndSendBookingNotification } from "./pingram-notifications.server";
+import type { Json } from "@/integrations/supabase/types";
 
 const statusSchema = z.enum(["pending", "confirmed", "cancelled"]);
 
@@ -475,7 +476,7 @@ export const listAppLogs = createServerFn({ method: "GET" }).handler(async () =>
         event: string;
         area: string | null;
         message: string | null;
-        details: unknown;
+        details: Json;
         url: string | null;
         user_agent: string | null;
         created_at: string;
