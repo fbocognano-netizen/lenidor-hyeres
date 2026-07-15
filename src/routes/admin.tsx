@@ -358,6 +358,7 @@ function AdminPage() {
           <TabsList className="rounded-full">
             <TabsTrigger value="calendar" className="rounded-full">Calendrier</TabsTrigger>
             <TabsTrigger value="list" className="rounded-full">Liste ({data.counts.total})</TabsTrigger>
+            <TabsTrigger value="ical" className="rounded-full">Calendriers iCal</TabsTrigger>
           </TabsList>
 
           <TabsContent value="calendar" className="mt-6">
@@ -391,7 +392,12 @@ function AdminPage() {
               )}
             </div>
           </TabsContent>
+
+          <TabsContent value="ical" className="mt-6">
+            <IcalSourcesPanel />
+          </TabsContent>
         </Tabs>
+
 
       </section>
     </main>
