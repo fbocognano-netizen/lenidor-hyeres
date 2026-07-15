@@ -208,7 +208,7 @@ function Gallery() {
         </div>
         <div className="grid grid-cols-4 grid-rows-2 gap-3 md:gap-4 h-[420px] md:h-[560px]">
           <img src={PHOTOS[0]} alt="Vue mer depuis le studio" className="col-span-2 row-span-2 h-full w-full object-cover rounded-2xl" />
-          <img src={PHOTOS[1]} alt="Piscine de 17 mètres" className="col-span-2 row-span-1 h-full w-full object-cover rounded-2xl" />
+          <img src={PHOTOS[1]} alt="Piscine de 18 mètres" className="col-span-2 row-span-1 h-full w-full object-cover rounded-2xl" />
           <img src={PHOTOS[2]} alt="Terrasse plein sud" className="col-span-1 row-span-1 h-full w-full object-cover rounded-2xl" />
           <img src={PHOTOS[3]} alt="Intérieur du studio" className="col-span-1 row-span-1 h-full w-full object-cover rounded-2xl" />
         </div>
