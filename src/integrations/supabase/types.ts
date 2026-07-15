@@ -103,6 +103,33 @@ export type Database = {
         }
         Relationships: []
       }
+      ical_sources: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          id: string
+          label: string
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          label: string
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          label?: string
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
