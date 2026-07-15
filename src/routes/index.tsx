@@ -98,7 +98,7 @@ function Nav() {
     <header className="sticky top-0 z-40 backdrop-blur-md bg-background/75 border-b border-border/60">
       <div className="mx-auto max-w-6xl px-5 h-16 flex items-center justify-between">
         <a href="#top" className="font-display text-xl tracking-tight">
-          Villa <span className="italic text-[var(--color-sea)]">d'Or</span>
+          Le Nid d'Or à Hyères
         </a>
         <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
           <a href="#sejour" className="hover:text-foreground transition">Le studio</a>
@@ -134,7 +134,7 @@ function Hero() {
               Le silence du sud,<br />face aux Îles d'Or.
             </h1>
             <p className="mt-5 max-w-xl text-base sm:text-lg text-primary-foreground/85">
-              Un studio lumineux, une piscine de 17 m, une terrasse plein sud.
+              Un studio lumineux, une piscine de 18 m, une terrasse plein sud.
               Pour deux, le temps d'une parenthèse au bord de la Méditerranée.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
@@ -163,13 +163,15 @@ function Intro() {
           </h2>
           <div className="mt-6 space-y-4 text-muted-foreground text-[15px] leading-relaxed">
             <p>
-              Niché sur les hauteurs de Hyères, ce studio a été pensé comme une retraite à deux :
+              Niché sur les hauteurs de Hyères dans une résidence privée & sécurisée, ce studio a été pensé comme une retraite à deux :
               un coin nuit confortable, une cuisine équipée, et surtout cette terrasse plein sud d'où l'on
-              suit le ballet des voiliers entre Port-Cros et Porquerolles.
+              suit le ballet des voiliers entre Port-Cros et Porquerolles (les îles d'Or).
             </p>
             <p>
-              Le matin, le soleil entre doucement. L'après-midi se passe au bord de la piscine de 17 mètres,
-              à l'ombre des pins. Le soir, la lumière dorée du sud descend sur la mer — et c'est tout.
+              Le matin, le soleil entre doucement. L'après-midi se passe au bord de la piscine de 18 mètres,
+              à l'ombre des pins avec une vue panoramique sur la baie de Hyères.
+
+              Le soir, la lumière dorée du sud descend sur la mer — et c'est tout. Vous pouvez vous relaxer sur les transats de la piscine ou tout simplement autour d'un verre sur notre terrasse.
             </p>
           </div>
         </div>
@@ -206,7 +208,7 @@ function Gallery() {
         </div>
         <div className="grid grid-cols-4 grid-rows-2 gap-3 md:gap-4 h-[420px] md:h-[560px]">
           <img src={PHOTOS[0]} alt="Vue mer depuis le studio" className="col-span-2 row-span-2 h-full w-full object-cover rounded-2xl" />
-          <img src={PHOTOS[1]} alt="Piscine de 17 mètres" className="col-span-2 row-span-1 h-full w-full object-cover rounded-2xl" />
+          <img src={PHOTOS[1]} alt="Piscine de 18 mètres" className="col-span-2 row-span-1 h-full w-full object-cover rounded-2xl" />
           <img src={PHOTOS[2]} alt="Terrasse plein sud" className="col-span-1 row-span-1 h-full w-full object-cover rounded-2xl" />
           <img src={PHOTOS[3]} alt="Intérieur du studio" className="col-span-1 row-span-1 h-full w-full object-cover rounded-2xl" />
         </div>
@@ -220,7 +222,7 @@ function Gallery() {
 
 function Amenities() {
   const items = [
-    { icon: <Waves className="h-5 w-5" />, label: "Piscine de 17 m" },
+    { icon: <Waves className="h-5 w-5" />, label: "Piscine de 18 m, vue mer & îles d'Or" },
     { icon: <Sun className="h-5 w-5" />, label: "Terrasse plein sud & vue mer panoramique" },
     { icon: <Wifi className="h-5 w-5" />, label: "TV Connectée" },
     { icon: <Wind className="h-5 w-5" />, label: "Frais tout l'été" },
@@ -482,7 +484,7 @@ function Location() {
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Le lieu</p>
           <h2 className="mt-3 font-display text-4xl sm:text-5xl">Hyères, porte des Îles d'Or.</h2>
           <p className="mt-5 text-muted-foreground leading-relaxed">
-            À 10 minutes des plages de l'Almanarre, à 15 minutes du port pour Porquerolles, à 15 minutes du
+            À 10 minutes en voiture des plages de l'Almanarre, à 15 minutes du port pour Porquerolles, à 15 minutes du
             centre historique.
             
             Tout est proche si vous le désirez, mais vous êtes au calme et au paradis en même temps.
@@ -529,8 +531,8 @@ function Footer() {
     <footer className="bg-secondary/50 border-t border-border/60">
       <div className="mx-auto max-w-6xl px-5 py-12 grid md:grid-cols-3 gap-8 text-sm">
         <div>
-          <div className="font-display text-xl">Villa <span className="italic text-[var(--color-sea)]">d'Or</span></div>
-          <p className="mt-3 text-muted-foreground">Studio vue mer · Hyères, France</p>
+          <div className="font-display text-xl">Le Nid d'Or</div>
+          <p className="mt-3 text-muted-foreground">Studio vue mer panoramique à Hyères, France</p>
         </div>
         <div>
           <div className="text-xs uppercase tracking-wider text-muted-foreground">Contact</div>
@@ -545,7 +547,7 @@ function Footer() {
         </div>
       </div>
       <div className="border-t border-border/60 py-5 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Villa d'Or — Tous droits réservés
+        © {new Date().getFullYear()} Le Nid d'Or — Tous droits réservés
       </div>
     </footer>
   );
