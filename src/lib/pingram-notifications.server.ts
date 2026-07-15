@@ -25,7 +25,7 @@ function buildHtml(lead: BookingNotificationLead): string {
   return `
     <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:16px;color:#222">
       <h2 style="margin:0 0 12px">Nouvelle demande de réservation</h2>
-      <p style="margin:0 0 16px;color:#555">Une demande vient d'être enregistrée sur le site Villa d'Or.</p>
+      <p style="margin:0 0 16px;color:#555">Une demande vient d'être enregistrée sur le site Le Nid d'Or.</p>
       <table style="width:100%;border-collapse:collapse;font-size:14px">
         <tbody>
           <tr><td style="padding:6px 0;color:#666">Nom</td><td style="padding:6px 0"><strong>${esc(lead.guest_name)}</strong></td></tr>
@@ -108,7 +108,7 @@ export async function createAndSendBookingNotification(lead: BookingNotification
         type: "new_lead",
         to: recipientEmail,
         email: {
-          subject: "Nouvelle demande de réservation — Villa d'Or",
+          subject: "Nouvelle demande de réservation — Le Nid d'Or",
           html: buildHtml(lead),
           previewText: `Nouvelle demande de ${lead.guest_name} du ${lead.check_in} au ${lead.check_out}`,
         },
