@@ -163,13 +163,15 @@ function Intro() {
           </h2>
           <div className="mt-6 space-y-4 text-muted-foreground text-[15px] leading-relaxed">
             <p>
-              Niché sur les hauteurs de Hyères, ce studio a été pensé comme une retraite à deux :
+              Niché sur les hauteurs de Hyères dans une résidence privée & sécurisée, ce studio a été pensé comme une retraite à deux :
               un coin nuit confortable, une cuisine équipée, et surtout cette terrasse plein sud d'où l'on
-              suit le ballet des voiliers entre Port-Cros et Porquerolles.
+              suit le ballet des voiliers entre Port-Cros et Porquerolles (les îles d'Or).
             </p>
             <p>
-              Le matin, le soleil entre doucement. L'après-midi se passe au bord de la piscine de 17 mètres,
-              à l'ombre des pins. Le soir, la lumière dorée du sud descend sur la mer — et c'est tout.
+              Le matin, le soleil entre doucement. L'après-midi se passe au bord de la piscine de 18 mètres,
+              à l'ombre des pins avec une vue panoramique sur la baie de Hyères.
+
+              Le soir, la lumière dorée du sud descend sur la mer — et c'est tout. Vous pouvez vous relaxer sur les transats de la piscine ou tout simplement autour d'un verre sur notre terrasse.
             </p>
           </div>
         </div>
