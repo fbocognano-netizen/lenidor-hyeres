@@ -201,5 +201,22 @@ export const createBooking = createServerFn({ method: "POST" })
       console.error("booking notification send threw", { bookingId: insertedBooking.id, error: e });
     }
 
+    // Fire-and-forget guest confirmation.
+    try {
+      await sendGuestConfirmationEmail({
+        booking_id: insertedBooking.id,
+        guest_name: data.guest_name,
+        email: data.email,
+        phone: data.phone ?? null,
+        message: data.message ?? null,
+        check_in: data.check_in,
+        check_out: data.check_out,
+        guests: data.guests,
+        total_price: total,
+      });
+    } catch (e) {
+      console.error("guest confirmation send threw", { bookingId: insertedBooking.id, error: e });
+    }
+
     return { ok: true, nights, total };
   });
