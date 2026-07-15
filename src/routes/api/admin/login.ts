@@ -70,7 +70,6 @@ export const Route = createFileRoute("/api/admin/login")({
         const event = new H3Event(request);
         await updateSession(event, sessionConfig(secret), { unlocked: true });
         const cookies = extractSetCookie(event);
-        console.info("[admin-login]", "cookies_count", cookies.length, "first", cookies[0]?.slice(0, 60));
         const headers = new Headers({ "content-type": "application/json" });
         for (const c of cookies) headers.append("set-cookie", c);
         return new Response(JSON.stringify({ ok: true }), { status: 200, headers });
