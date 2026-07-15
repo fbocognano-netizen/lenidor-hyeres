@@ -482,7 +482,7 @@ function Location() {
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Le lieu</p>
           <h2 className="mt-3 font-display text-4xl sm:text-5xl">Hyères, porte des Îles d'Or.</h2>
           <p className="mt-5 text-muted-foreground leading-relaxed">
-            À 10 minutes des plages de l'Almanarre, à 15 minutes du port pour Porquerolles, à 15 minutes du
+            À 10 minutes en voiture des plages de l'Almanarre, à 15 minutes du port pour Porquerolles, à 15 minutes du
             centre historique.
             
             Tout est proche si vous le désirez, mais vous êtes au calme et au paradis en même temps.
