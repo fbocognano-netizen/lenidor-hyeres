@@ -14,6 +14,42 @@ export type Database = {
   }
   public: {
     Tables: {
+      app_logs: {
+        Row: {
+          area: string | null
+          created_at: string
+          details: Json
+          event: string
+          id: string
+          level: string
+          message: string | null
+          url: string | null
+          user_agent: string | null
+        }
+        Insert: {
+          area?: string | null
+          created_at?: string
+          details?: Json
+          event: string
+          id?: string
+          level: string
+          message?: string | null
+          url?: string | null
+          user_agent?: string | null
+        }
+        Update: {
+          area?: string | null
+          created_at?: string
+          details?: Json
+          event?: string
+          id?: string
+          level?: string
+          message?: string | null
+          url?: string | null
+          user_agent?: string | null
+        }
+        Relationships: []
+      }
       booking_notifications: {
         Row: {
           booking_id: string | null
