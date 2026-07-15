@@ -1,6 +1,6 @@
-const fallbackAdminEmail = "usertinder543@gmail.com";
-
 import { errorDetails, logAppEvent } from "./logging.server";
+
+const fallbackAdminEmail = "usertinder543@gmail.com";
 
 export interface BookingNotificationLead {
   booking_id: string;
