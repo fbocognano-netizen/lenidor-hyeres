@@ -467,10 +467,13 @@ function CalendarView({
   };
 
   const sourceColor = (src: string) => {
-    if (src === "airbnb") return "bg-rose-400/80 text-white";
-    if (src === "abritel") return "bg-blue-400/80 text-white";
-    return "bg-muted text-foreground";
+    const s = src.toLowerCase();
+    if (s.includes("airbnb")) return "bg-rose-400/80 text-white";
+    if (s.includes("abritel")) return "bg-blue-400/80 text-white";
+    if (s.includes("gens")) return "bg-emerald-500/80 text-white";
+    return "bg-slate-400/80 text-white";
   };
+
 
   const selectedEntries = selectedDay ? entriesForDay(selectedDay) : [];
 
