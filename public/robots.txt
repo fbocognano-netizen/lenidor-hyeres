@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /admin
+
+Sitemap: https://lenidor-hyeres.lovable.app/sitemap.xml
