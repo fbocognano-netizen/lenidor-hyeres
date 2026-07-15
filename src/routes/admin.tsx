@@ -166,7 +166,13 @@ function AdminPage() {
     setIsLoggingIn(true);
 
     try {
-      const result = await loginAdmin({ data: { code: accessCode } });
+      const res = await fetch("/api/admin/login", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ code: accessCode }),
+      });
+      const result = (await res.json()) as { ok: boolean; reason?: LoginError };
       if (!result.ok) {
         setLoginError(result.reason ?? "server_error");
         return;
@@ -184,7 +190,7 @@ function AdminPage() {
 
   async function handleLogout() {
     try {
-      await logoutAdmin();
+      await fetch("/api/admin/logout", { method: "POST", credentials: "same-origin" });
     } finally {
       queryClient.removeQueries({ queryKey: ["admin-bookings"] });
       window.location.reload();
