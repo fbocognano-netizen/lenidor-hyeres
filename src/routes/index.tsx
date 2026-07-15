@@ -61,11 +61,13 @@ export const Route = createFileRoute("/")({
       { property: "og:title", content: "Le Nid d'Or à Hyères • Studio vue mer & piscine" },
       { property: "og:description", content: "Studio vue mer, piscine et terrasse plein sud à Hyères. Réservez en direct sur le site officiel." },
       { property: "og:type", content: "website" },
+      { property: "og:url", content: "https://lenidor-hyeres.lovable.app/" },
       { property: "og:image", content: photo1 },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:image", content: photo1 },
     ],
     links: [
+      { rel: "canonical", href: "https://lenidor-hyeres.lovable.app/" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "" },
       {
@@ -73,9 +75,38 @@ export const Route = createFileRoute("/")({
         href: "https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Inter:wght@300;400;500;600&display=swap",
       },
     ],
+    scripts: [
+      {
+        type: "application/ld+json",
+        children: JSON.stringify({
+          "@context": "https://schema.org",
+          "@type": "LodgingBusiness",
+          name: "Le Nid d'Or",
+          description:
+            "Studio vue mer avec piscine et terrasse plein sud à Hyères, face aux Îles d'Or. Location de vacances en direct.",
+          image: "https://lenidor-hyeres.lovable.app" + photo1,
+          url: "https://lenidor-hyeres.lovable.app/",
+          address: {
+            "@type": "PostalAddress",
+            addressLocality: "Hyères",
+            addressRegion: "Var",
+            postalCode: "83400",
+            addressCountry: "FR",
+          },
+          geo: { "@type": "GeoCoordinates", latitude: 43.09284, longitude: 6.113301 },
+          priceRange: "€€",
+          amenityFeature: [
+            { "@type": "LocationFeatureSpecification", name: "Piscine", value: true },
+            { "@type": "LocationFeatureSpecification", name: "Vue mer", value: true },
+            { "@type": "LocationFeatureSpecification", name: "Terrasse", value: true },
+          ],
+        }),
+      },
+    ],
   }),
   component: Index,
 });
+
 
 function Index() {
   return (
