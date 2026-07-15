@@ -295,25 +295,84 @@ export const getAdminOtaRanges = createServerFn({ method: "GET" }).handler(async
   if (!(await isAdminUnlocked())) {
     return { authenticated: false as const, ranges: [] as Array<{ source: string; start: string; end: string }> };
   }
-  const sources: Array<{ source: "airbnb" | "abritel"; url: string }> = [
-    {
-      source: "airbnb",
-      url:
-        process.env.AIRBNB_ICAL_URL ??
-        "https://www.airbnb.fr/calendar/ical/1526120631746320177.ics?t=774616f2469d47389d29985aecbbead5",
-    },
-    {
-      source: "abritel",
-      url:
-        process.env.ABRITEL_ICAL_URL ??
-        "https://www.abritel.fr/icalendar/cf2da2a6506e4b74b4663602f0dd9803.ics?nonTentative&includeTentative=false",
-    },
-  ];
+  const { getActiveIcalSources } = await import("./ical-sources.server");
+  const sources = await getActiveIcalSources();
   const results = await Promise.all(
-    sources.map(async ({ source, url }) => {
+    sources.map(async ({ label, url }) => {
       const ranges = await fetchICalRanges(url);
-      return ranges.map((r) => ({ source, start: r.start.toISOString(), end: r.end.toISOString() }));
+      return ranges.map((r) => ({ source: label, start: r.start.toISOString(), end: r.end.toISOString() }));
     }),
   );
   return { authenticated: true as const, ranges: results.flat() };
 });
+
+// --- iCal sources CRUD (admin only) ---
+
+export const listIcalSources = createServerFn({ method: "GET" }).handler(async () => {
+  if (!(await isAdminUnlocked())) return { authenticated: false as const, sources: [] as Array<{ id: string; label: string; url: string; enabled: boolean }> };
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data, error } = await supabaseAdmin
+    .from("ical_sources")
+    .select("id, label, url, enabled")
+    .order("label", { ascending: true });
+  if (error) {
+    console.error("list ical_sources failed", error);
+    throw new Error("Impossible de charger les calendriers.");
+  }
+  return { authenticated: true as const, sources: data ?? [] };
+});
+
+const urlSchema = z.string().url().max(2000);
+
+export const createIcalSource = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) =>
+    z.object({ label: z.string().min(1).max(80), url: urlSchema }).parse(data),
+  )
+  .handler(async ({ data }) => {
+    if (!(await isAdminUnlocked())) return { authenticated: false as const, ok: false as const };
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.from("ical_sources").insert({ label: data.label, url: data.url });
+    if (error) {
+      console.error("create ical_source failed", error);
+      throw new Error("Impossible d'ajouter ce calendrier.");
+    }
+    return { authenticated: true as const, ok: true as const };
+  });
+
+export const updateIcalSource = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) =>
+    z.object({
+      id: z.string().uuid(),
+      label: z.string().min(1).max(80).optional(),
+      url: urlSchema.optional(),
+      enabled: z.boolean().optional(),
+    }).parse(data),
+  )
+  .handler(async ({ data }) => {
+    if (!(await isAdminUnlocked())) return { authenticated: false as const, ok: false as const };
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const patch: { label?: string; url?: string; enabled?: boolean } = {};
+    if (data.label !== undefined) patch.label = data.label;
+    if (data.url !== undefined) patch.url = data.url;
+    if (data.enabled !== undefined) patch.enabled = data.enabled;
+    const { error } = await supabaseAdmin.from("ical_sources").update(patch).eq("id", data.id);
+
+    if (error) {
+      console.error("update ical_source failed", error);
+      throw new Error("Impossible de modifier ce calendrier.");
+    }
+    return { authenticated: true as const, ok: true as const };
+  });
+
+export const deleteIcalSource = createServerFn({ method: "POST" })
+  .inputValidator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
+  .handler(async ({ data }) => {
+    if (!(await isAdminUnlocked())) return { authenticated: false as const, ok: false as const };
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.from("ical_sources").delete().eq("id", data.id);
+    if (error) {
+      console.error("delete ical_source failed", error);
+      throw new Error("Impossible de supprimer ce calendrier.");
+    }
+    return { authenticated: true as const, ok: true as const };
+  });

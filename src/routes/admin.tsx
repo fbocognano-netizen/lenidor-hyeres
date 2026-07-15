@@ -28,15 +28,20 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import {
+  createIcalSource,
+  deleteIcalSource,
   getAdminBookings,
   getAdminConfigStatus,
   getAdminOtaRanges,
+  listIcalSources,
   resendBookingNotification,
   signInAdmin,
   signOutAdmin,
   updateBookingStatus,
+  updateIcalSource,
 } from "@/lib/admin-bookings.functions";
 import { cn } from "@/lib/utils";
+
 
 
 type BookingStatus = "pending" | "confirmed" | "cancelled";
@@ -353,6 +358,7 @@ function AdminPage() {
           <TabsList className="rounded-full">
             <TabsTrigger value="calendar" className="rounded-full">Calendrier</TabsTrigger>
             <TabsTrigger value="list" className="rounded-full">Liste ({data.counts.total})</TabsTrigger>
+            <TabsTrigger value="ical" className="rounded-full">Calendriers iCal</TabsTrigger>
           </TabsList>
 
           <TabsContent value="calendar" className="mt-6">
@@ -386,7 +392,12 @@ function AdminPage() {
               )}
             </div>
           </TabsContent>
+
+          <TabsContent value="ical" className="mt-6">
+            <IcalSourcesPanel />
+          </TabsContent>
         </Tabs>
+
 
       </section>
     </main>
@@ -462,10 +473,13 @@ function CalendarView({
   };
 
   const sourceColor = (src: string) => {
-    if (src === "airbnb") return "bg-rose-400/80 text-white";
-    if (src === "abritel") return "bg-blue-400/80 text-white";
-    return "bg-muted text-foreground";
+    const s = src.toLowerCase();
+    if (s.includes("airbnb")) return "bg-rose-400/80 text-white";
+    if (s.includes("abritel")) return "bg-blue-400/80 text-white";
+    if (s.includes("gens")) return "bg-emerald-500/80 text-white";
+    return "bg-slate-400/80 text-white";
   };
+
 
   const selectedEntries = selectedDay ? entriesForDay(selectedDay) : [];
 
@@ -822,4 +836,151 @@ function buildMailto(booking: Booking, nights: number) {
   ].filter(Boolean).join("\n");
 
   return `mailto:${encodeURIComponent(booking.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+type IcalSourceRow = { id: string; label: string; url: string; enabled: boolean };
+
+function IcalSourcesPanel() {
+  const load = useServerFn(listIcalSources);
+  const create = useServerFn(createIcalSource);
+  const update = useServerFn(updateIcalSource);
+  const remove = useServerFn(deleteIcalSource);
+  const queryClient = useQueryClient();
+
+  const query = useQuery({
+    queryKey: ["admin-ical-sources"],
+    queryFn: () => load(),
+    retry: false,
+  });
+
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: ["admin-ical-sources"] });
+    queryClient.invalidateQueries({ queryKey: ["admin-ota-ranges"] });
+  };
+
+  const createMutation = useMutation({
+    mutationFn: (input: { label: string; url: string }) => create({ data: input }),
+    onSuccess: () => { toast.success("Calendrier ajouté"); invalidate(); },
+    onError: (e: Error) => toast.error(e.message ?? "Ajout impossible"),
+  });
+  const updateMutation = useMutation({
+    mutationFn: (input: { id: string; label?: string; url?: string; enabled?: boolean }) => update({ data: input }),
+    onSuccess: () => { toast.success("Mis à jour"); invalidate(); },
+    onError: (e: Error) => toast.error(e.message ?? "Modification impossible"),
+  });
+  const deleteMutation = useMutation({
+    mutationFn: (input: { id: string }) => remove({ data: input }),
+    onSuccess: () => { toast.success("Supprimé"); invalidate(); },
+    onError: (e: Error) => toast.error(e.message ?? "Suppression impossible"),
+  });
+
+  const [newLabel, setNewLabel] = useState("");
+  const [newUrl, setNewUrl] = useState("");
+
+  const sources = (query.data?.authenticated ? query.data.sources : []) as IcalSourceRow[];
+
+  return (
+    <div className="space-y-6">
+      <Card className="rounded-3xl border-border/60 p-5 shadow-none sm:p-6">
+        <h3 className="font-display text-2xl">Calendriers synchronisés (iCal)</h3>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Chaque calendrier actif bloque automatiquement les dates réservées sur la plateforme correspondante. Ajoute ici les liens iCal (.ics) fournis par tes plateformes de location (Airbnb, Abritel, Gens de Confiance, etc.).
+        </p>
+
+        <form
+          className="mt-5 grid gap-3 sm:grid-cols-[1fr,2fr,auto]"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!newLabel.trim() || !newUrl.trim()) return;
+            createMutation.mutate({ label: newLabel.trim(), url: newUrl.trim() }, {
+              onSuccess: () => { setNewLabel(""); setNewUrl(""); },
+            });
+          }}
+        >
+          <Input placeholder="Nom (ex: Airbnb)" value={newLabel} onChange={(e) => setNewLabel(e.target.value)} />
+          <Input placeholder="https://.../calendar.ics" value={newUrl} onChange={(e) => setNewUrl(e.target.value)} />
+          <Button type="submit" disabled={createMutation.isPending} className="rounded-full">
+            {createMutation.isPending ? "Ajout…" : "Ajouter"}
+          </Button>
+        </form>
+      </Card>
+
+      <div className="space-y-3">
+        {query.isLoading && <p className="text-sm text-muted-foreground">Chargement…</p>}
+        {sources.length === 0 && !query.isLoading && (
+          <Card className="rounded-2xl border-border/60 p-6 text-center text-sm text-muted-foreground shadow-none">
+            Aucun calendrier configuré. Ajoute-en un ci-dessus.
+          </Card>
+        )}
+        {sources.map((s) => (
+          <IcalSourceRowItem
+            key={s.id}
+            source={s}
+            onSave={(patch) => updateMutation.mutate({ id: s.id, ...patch })}
+            onDelete={() => {
+              if (confirm(`Supprimer le calendrier "${s.label}" ?`)) deleteMutation.mutate({ id: s.id });
+            }}
+            savePending={updateMutation.isPending}
+            deletePending={deleteMutation.isPending}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function IcalSourceRowItem({
+  source,
+  onSave,
+  onDelete,
+  savePending,
+  deletePending,
+}: {
+  source: IcalSourceRow;
+  onSave: (patch: { label?: string; url?: string; enabled?: boolean }) => void;
+  onDelete: () => void;
+  savePending: boolean;
+  deletePending: boolean;
+}) {
+  const [label, setLabel] = useState(source.label);
+  const [url, setUrl] = useState(source.url);
+  const dirty = label !== source.label || url !== source.url;
+
+  return (
+    <Card className="rounded-2xl border-border/60 p-4 shadow-none">
+      <div className="grid gap-3 sm:grid-cols-[1fr,2fr,auto,auto,auto] sm:items-center">
+        <Input value={label} onChange={(e) => setLabel(e.target.value)} placeholder="Nom" />
+        <Input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="URL .ics" className="font-mono text-xs" />
+        <Button
+          type="button"
+          variant={source.enabled ? "default" : "outline"}
+          size="sm"
+          className="rounded-full"
+          disabled={savePending}
+          onClick={() => onSave({ enabled: !source.enabled })}
+        >
+          {source.enabled ? "Actif" : "Désactivé"}
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          className="rounded-full"
+          disabled={!dirty || savePending || !label.trim() || !url.trim()}
+          onClick={() => onSave({ label: label.trim(), url: url.trim() })}
+        >
+          Enregistrer
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="rounded-full text-destructive hover:text-destructive"
+          disabled={deletePending}
+          onClick={onDelete}
+        >
+          Supprimer
+        </Button>
+      </div>
+    </Card>
+  );
 }

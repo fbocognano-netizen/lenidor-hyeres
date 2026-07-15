@@ -66,12 +66,10 @@ function computeNightsTotal(checkIn: Date, checkOut: Date): { nights: number; ni
 }
 
 async function fetchBlockedRanges(): Promise<Array<{ start: Date; end: Date }>> {
-  const urls = [
-    process.env.AIRBNB_ICAL_URL ?? "https://www.airbnb.fr/calendar/ical/1526120631746320177.ics?t=774616f2469d47389d29985aecbbead5",
-    process.env.ABRITEL_ICAL_URL ?? "https://www.abritel.fr/icalendar/cf2da2a6506e4b74b4663602f0dd9803.ics?nonTentative&includeTentative=false",
-  ].filter(Boolean) as string[];
+  const { getActiveIcalSources } = await import("./ical-sources.server");
+  const sources = await getActiveIcalSources();
   const all: Array<{ start: Date; end: Date }> = [];
-  await Promise.all(urls.map(async (url) => {
+  await Promise.all(sources.map(async ({ url }) => {
     try {
       const res = await fetch(url, { headers: { "User-Agent": "BnB-Hyeres-Site/1.0" } });
       if (!res.ok) return;
@@ -83,6 +81,7 @@ async function fetchBlockedRanges(): Promise<Array<{ start: Date; end: Date }>> 
   }));
   return all;
 }
+
 
 export const quoteStay = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => z.object({

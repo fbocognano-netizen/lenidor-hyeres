@@ -1,50 +1,63 @@
-# Audit notifications de réservation
+# Intégration Gens de Confiance + gestion des ICS dans l'admin
 
-## Diagnostic
+## Étape 1 — Ajout immédiat de l'ICS Gens de Confiance (sans régression)
 
-Les logs `booking_notifications` montrent que **toutes les tentatives d'envoi depuis le 3 juillet échouent** avec la même erreur Pingram :
+Aujourd'hui les URLs iCal sont codées en dur à deux endroits :
+- `src/lib/bookings.functions.ts` → `fetchBlockedRanges()` (Airbnb + Abritel)
+- `src/lib/admin-bookings.functions.ts` → `getAdminOtaRanges()` (Airbnb + Abritel)
 
+Action : ajouter dans les deux endroits la source `gensdeconfiance` avec l'URL fournie, et une variable d'env optionnelle `GENSDECONFIANCE_ICAL_URL` (même pattern que `AIRBNB_ICAL_URL` / `ABRITEL_ICAL_URL`). Le parseur iCal existant gère déjà ce format standard — aucune autre logique à toucher.
+
+Résultat : dès cette étape, les dates réservées sur Gens de Confiance bloquent le calendrier et apparaissent dans la vue admin des OTAs.
+
+## Étape 2 — Rendre la liste des ICS configurable dans l'admin
+
+### Nouvelle table `ical_sources`
+Champs métier : `label` (texte affiché, ex : "Airbnb"), `url` (URL du .ics), `enabled` (booléen, défaut true). RLS activée, accès `service_role` uniquement (les server functions passent par `supabaseAdmin`, jamais exposé au client). Timestamps standards + trigger updated_at.
+
+Migration seed : insère les 3 sources actuelles (Airbnb, Abritel, Gens de Confiance) avec les URLs actuellement en dur, pour garantir zéro régression au premier chargement.
+
+### Server functions admin (dans `src/lib/admin-bookings.functions.ts`)
+Toutes protégées par `isAdminUnlocked()` (même pattern que le reste du fichier) :
+- `listIcalSources` — liste toutes les sources
+- `createIcalSource({ label, url })`
+- `updateIcalSource({ id, label?, url?, enabled? })`
+- `deleteIcalSource({ id })`
+
+### Refactor de la lecture des ICS
+Créer un helper partagé `src/lib/ical-sources.server.ts` avec `getActiveIcalSources()` qui lit la table (via `supabaseAdmin`) et retourne `[{ source, url }]`. En cas d'échec DB, fallback sur la liste actuellement hardcodée pour ne rien casser.
+
+Remplacer :
+- `fetchBlockedRanges()` dans `bookings.functions.ts` → utilise `getActiveIcalSources()` puis mappe sur `fetch` + `parseICal` (comportement inchangé, juste la liste devient dynamique).
+- `getAdminOtaRanges()` dans `admin-bookings.functions.ts` → idem, la couleur/label affiché côté admin devient le `label` stocké en base au lieu du littéral `"airbnb"|"abritel"`.
+
+### UI admin (`src/routes/admin.tsx`)
+Nouvelle section "Calendriers synchronisés (iCal)" en dessous des réservations :
+- Tableau des sources existantes : label, URL (tronquée), toggle enabled, boutons Modifier / Supprimer
+- Formulaire d'ajout : label + URL + bouton "Ajouter"
+- Refetch de `getAdminOtaRanges` après chaque mutation pour que le calendrier admin reflète tout de suite le changement
+
+### Anti-régression
+- Le parseur iCal, le calcul de chevauchement, les tarifs, l'email Pingram et l'espace admin ne sont pas touchés.
+- Les URLs actuelles sont préservées via le seed migration → même comportement au 1er déploiement.
+- Le fallback hardcodé dans `getActiveIcalSources()` couvre une éventuelle erreur DB.
+- Les couleurs Airbnb/Abritel côté admin restent gérées par label (case-insensitive) pour ne pas perdre le code couleur existant.
+
+## Détails techniques
+
+```text
+Table public.ical_sources
+  id uuid pk
+  label text not null
+  url text not null
+  enabled boolean not null default true
+  created_at / updated_at timestamptz
+RLS on, aucune policy anon/authenticated → seul service_role accède
+GRANT ALL ... TO service_role
 ```
-HTTP 400 — missing_subject
-"The email subject is required. Include a non-empty \"subject\" string in the request body."
-```
 
-### Cause racine
-Dans `src/lib/pingram-notifications.server.ts`, la payload envoyée à Pingram place `subject` dans un objet imbriqué `email` :
-```ts
-body: JSON.stringify({
-  type: "new_lead",
-  to: recipientEmail,
-  email: { subject: "...", html, previewText },  // ❌ Pingram ne le lit pas ici
-})
-```
-Or Pingram attend `subject` au **niveau racine** (comme le faisait l'ancienne edge function `supabase/functions/notify-lead/index.ts`, qui elle fonctionnait). C'est bien une régression introduite en migrant l'envoi vers `.server.ts`.
-
-### Point secondaire
-Tu mentionnes "pour moi admin, **et pour mes clients**" — actuellement aucun email de confirmation n'est envoyé au client qui fait la demande. Seul l'admin est notifié (et cassé).
-
-## Corrections
-
-### 1. Fix payload Pingram (`src/lib/pingram-notifications.server.ts`)
-Remettre le format plat qui fonctionnait :
-```ts
-body: JSON.stringify({
-  type: "new_lead",
-  to: recipientEmail,
-  subject: "Nouvelle demande de réservation — Le Nid d'Or",
-  html: buildHtml(lead),
-})
-```
-
-### 2. Ajouter email de confirmation client
-- Nouvelle fonction `sendGuestConfirmationEmail(lead)` dans `pingram-notifications.server.ts` avec un template HTML dédié (récap dates, voyageurs, total estimé, rappel que la demande sera confirmée manuellement sous 2h).
-- Tracker aussi dans `booking_notifications` avec `recipient_email = lead.email` (le champ existe déjà).
-- Appel après `createAndSendBookingNotification` dans `src/lib/bookings.functions.ts` (fire-and-forget, ne bloque jamais la réservation).
-
-### 3. Nettoyage
-Supprimer l'edge function obsolète `supabase/functions/notify-lead/` (plus appelée nulle part) pour éviter la confusion.
-
-## Vérification
-- Créer une réservation de test depuis le site.
-- Vérifier dans `booking_notifications` : deux lignes `status='sent'` (admin + client).
-- Confirmer réception dans la boîte `usertinder543@gmail.com` et sur l'email du test.
+## Ce que je t'expliquerai à la fin
+Une fois livré, je te dirai :
+1. Comment ajouter/supprimer/désactiver un calendrier depuis `/admin` (parcours UI, effet immédiat sur le calendrier public).
+2. Où voir la sync (section OTA de l'admin, code couleur par label).
+3. Le comportement de secours si la table est vide ou inaccessible (fallback sur les 3 URLs historiques).
