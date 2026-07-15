@@ -107,12 +107,10 @@ export async function createAndSendBookingNotification(lead: BookingNotification
       body: JSON.stringify({
         type: "new_lead",
         to: recipientEmail,
-        email: {
-          subject: "Nouvelle demande de réservation — Le Nid d'Or",
-          html: buildHtml(lead),
-          previewText: `Nouvelle demande de ${lead.guest_name} du ${lead.check_in} au ${lead.check_out}`,
-        },
+        subject: "Nouvelle demande de réservation — Le Nid d'Or",
+        html: buildHtml(lead),
       }),
+
     });
 
     const responseText = await res.text();
