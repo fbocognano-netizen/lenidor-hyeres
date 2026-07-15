@@ -351,11 +351,12 @@ export const updateIcalSource = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     if (!(await isAdminUnlocked())) return { authenticated: false as const, ok: false as const };
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const patch: Record<string, unknown> = {};
+    const patch: { label?: string; url?: string; enabled?: boolean } = {};
     if (data.label !== undefined) patch.label = data.label;
     if (data.url !== undefined) patch.url = data.url;
     if (data.enabled !== undefined) patch.enabled = data.enabled;
     const { error } = await supabaseAdmin.from("ical_sources").update(patch).eq("id", data.id);
+
     if (error) {
       console.error("update ical_source failed", error);
       throw new Error("Impossible de modifier ce calendrier.");
