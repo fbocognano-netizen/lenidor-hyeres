@@ -1,9 +1,9 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
+import { adminCodeMatches, getAdminSessionState } from "./admin-session.server";
+import { errorDetails, logAppEvent } from "./logging.server";
 import { createAndSendBookingNotification } from "./pingram-notifications.server";
-
-type AdminSession = { unlocked?: boolean };
 
 const statusSchema = z.enum(["pending", "confirmed", "cancelled"]);
 
@@ -45,52 +45,43 @@ async function fetchICalRanges(url: string): Promise<Array<{ start: Date; end: D
     return parseICal(await res.text());
   } catch (e) {
     console.error("iCal fetch failed", url, e);
+    await logAppEvent({
+      level: "warning",
+      event: "ical_fetch_failed",
+      area: "admin",
+      message: "Impossible de récupérer un calendrier iCal côté admin.",
+      details: errorDetails(e, { url }),
+    });
     return [];
   }
 }
 
-async function getAdminSession() {
-  const secret = process.env.ADMIN_SESSION_SECRET;
-  if (!secret) throw new Error("La session admin n'est pas configurée.");
-
-  const { useSession } = await import("@tanstack/react-start/server");
-  return useSession<AdminSession>({
-    password: secret,
-    name: "villa-admin-session",
-    maxAge: 60 * 60 * 24 * 14,
-    cookie: {
-      httpOnly: true,
-      secure: process.env.NODE_ENV === "production",
-      sameSite: "lax",
-      path: "/",
-    },
-  });
-}
-
-async function passwordMatches(input: string, expected: string): Promise<boolean> {
-  const { createHash, timingSafeEqual } = await import("node:crypto");
-  const normalizeSecret = (value: string) =>
-    value
-      .normalize("NFKC")
-      .trim()
-      .replace(/[\u200B-\u200D\uFEFF]/g, "")
-      .replace(/\u00A0/g, " ")
-      .replace(/^["']|["']$/g, "");
-  const normalizedInput = normalizeSecret(input);
-  const normalizedExpected = normalizeSecret(expected);
-  const inputHash = createHash("sha256").update(normalizedInput, "utf8").digest();
-  const expectedHash = createHash("sha256").update(normalizedExpected, "utf8").digest();
-  return timingSafeEqual(inputHash, expectedHash);
-}
-
 async function isAdminUnlocked() {
   try {
-    const session = await getAdminSession();
+    const { session, cookiePresent } = await getAdminSessionState();
     const authenticated = Boolean(session.data.unlocked);
-    console.info(adminLogPrefix, "authenticated", { authenticated });
+    console.info(adminLogPrefix, "authenticated", { authenticated, cookiePresent });
+    if (!authenticated) {
+      await logAppEvent({
+        level: cookiePresent ? "warning" : "info",
+        event: "admin_session_not_authenticated",
+        area: "admin",
+        message: cookiePresent
+          ? "Le cookie admin existe mais la session ne s'ouvre pas."
+          : "Aucun cookie admin reçu pour cette requête.",
+        details: { cookiePresent },
+      });
+    }
     return authenticated;
   } catch (error) {
     console.error(adminLogPrefix, "session_read_failed", { error: String(error) });
+    await logAppEvent({
+      level: "error",
+      event: "admin_session_read_failed",
+      area: "admin",
+      message: "Lecture de session admin impossible.",
+      details: errorDetails(error),
+    });
     return false;
   }
 }
@@ -117,34 +108,68 @@ export const signInAdmin = createServerFn({ method: "POST" })
     const expected = process.env.ADMIN_ACCESS_CODE;
     if (!expected) {
       console.info(adminLogPrefix, "login_missing_access_code");
+      await logAppEvent({
+        level: "error",
+        event: "admin_login_missing_access_code",
+        area: "admin",
+        message: "ADMIN_ACCESS_CODE n'est pas configuré.",
+      });
       return { ok: false as const, reason: "not_configured" as const };
     }
 
     if (!process.env.ADMIN_SESSION_SECRET) {
       console.error(adminLogPrefix, "login_missing_session_secret");
+      await logAppEvent({
+        level: "error",
+        event: "admin_login_missing_session_secret",
+        area: "admin",
+        message: "ADMIN_SESSION_SECRET n'est pas configuré.",
+      });
       return { ok: false as const, reason: "session_not_configured" as const };
     }
 
-    const ok = await passwordMatches(data.code, expected);
+    const ok = adminCodeMatches(data.code, expected);
     if (!ok) {
       console.info(adminLogPrefix, "login_invalid_code");
+      await logAppEvent({
+        level: "warning",
+        event: "admin_login_invalid_code",
+        area: "admin",
+        message: "Tentative de connexion admin avec un code incorrect.",
+        details: { codeLength: data.code.length },
+      });
       return { ok: false as const, reason: "invalid" as const };
     }
 
     try {
-      const session = await getAdminSession();
-      await session.update({ unlocked: true });
+      await logAppEvent({
+        level: "info",
+        event: "admin_login_valid_code_serverfn",
+        area: "admin",
+        message: "Code admin validé via server function.",
+      });
       console.info(adminLogPrefix, "login_ok_session_updated");
-      return { ok: true as const };
+      return { ok: false as const, reason: "session_error" as const };
     } catch (error) {
       console.error(adminLogPrefix, "login_session_update_failed", { error: String(error) });
+      await logAppEvent({
+        level: "error",
+        event: "admin_login_session_update_failed",
+        area: "admin",
+        message: "Ouverture de session admin impossible via server function.",
+        details: errorDetails(error),
+      });
       return { ok: false as const, reason: "session_error" as const };
     }
   });
 
 export const signOutAdmin = createServerFn({ method: "POST" }).handler(async () => {
-  const session = await getAdminSession();
-  await session.clear();
+  await logAppEvent({
+    level: "info",
+    event: "admin_logout_serverfn_called",
+    area: "admin",
+    message: "Ancienne fonction de déconnexion admin appelée.",
+  });
   return { ok: true as const };
 });
 
@@ -165,6 +190,13 @@ export const getAdminBookings = createServerFn({ method: "GET" }).handler(async 
 
   if (error) {
     console.error("admin bookings fetch failed", error);
+    await logAppEvent({
+      level: "error",
+      event: "admin_bookings_fetch_failed",
+      area: "admin",
+      message: "Chargement des réservations admin impossible.",
+      details: errorDetails(error),
+    });
     throw new Error("Impossible de charger les demandes de réservation.");
   }
 
@@ -200,6 +232,13 @@ export const getAdminBookings = createServerFn({ method: "GET" }).handler(async 
 
     if (notificationsError) {
       console.error("admin booking notifications fetch failed", notificationsError);
+      await logAppEvent({
+        level: "warning",
+        event: "admin_booking_notifications_fetch_failed",
+        area: "admin",
+        message: "Chargement des statuts de notification impossible.",
+        details: errorDetails(notificationsError),
+      });
     } else {
       const latestByBooking = new Map<string, NonNullable<(typeof bookings)[number]["notification"]>>();
       for (const notification of notifications ?? []) {
@@ -248,6 +287,13 @@ export const updateBookingStatus = createServerFn({ method: "POST" })
 
     if (error) {
       console.error("admin booking status update failed", error);
+      await logAppEvent({
+        level: "error",
+        event: "admin_booking_status_update_failed",
+        area: "admin",
+        message: "Modification du statut de réservation impossible.",
+        details: errorDetails(error, { bookingId: data.id, status: data.status }),
+      });
       throw new Error("Impossible de modifier le statut de la réservation.");
     }
 
@@ -268,6 +314,13 @@ export const resendBookingNotification = createServerFn({ method: "POST" })
 
     if (bookingError || !booking) {
       console.error("admin booking notification resend fetch failed", { bookingId: data.id, error: bookingError });
+      await logAppEvent({
+        level: "error",
+        event: "admin_booking_notification_resend_fetch_failed",
+        area: "admin",
+        message: "Réservation introuvable pour renvoyer la notification.",
+        details: errorDetails(bookingError, { bookingId: data.id }),
+      });
       throw new Error("Impossible de retrouver cette demande.");
     }
 
@@ -285,6 +338,13 @@ export const resendBookingNotification = createServerFn({ method: "POST" })
 
     if (!result.ok) {
       console.error("admin booking notification resend failed", { bookingId: booking.id, result });
+      await logAppEvent({
+        level: "error",
+        event: "admin_booking_notification_resend_failed",
+        area: "admin",
+        message: "Renvoi de notification admin impossible.",
+        details: { bookingId: booking.id, result },
+      });
       throw new Error("La notification n'a pas pu être renvoyée.");
     }
 
@@ -317,6 +377,13 @@ export const listIcalSources = createServerFn({ method: "GET" }).handler(async (
     .order("label", { ascending: true });
   if (error) {
     console.error("list ical_sources failed", error);
+    await logAppEvent({
+      level: "error",
+      event: "list_ical_sources_failed",
+      area: "admin",
+      message: "Chargement des sources iCal impossible.",
+      details: errorDetails(error),
+    });
     throw new Error("Impossible de charger les calendriers.");
   }
   return { authenticated: true as const, sources: data ?? [] };
@@ -334,6 +401,13 @@ export const createIcalSource = createServerFn({ method: "POST" })
     const { error } = await supabaseAdmin.from("ical_sources").insert({ label: data.label, url: data.url });
     if (error) {
       console.error("create ical_source failed", error);
+      await logAppEvent({
+        level: "error",
+        event: "create_ical_source_failed",
+        area: "admin",
+        message: "Ajout d'une source iCal impossible.",
+        details: errorDetails(error, { label: data.label, url: data.url }),
+      });
       throw new Error("Impossible d'ajouter ce calendrier.");
     }
     return { authenticated: true as const, ok: true as const };
@@ -359,6 +433,13 @@ export const updateIcalSource = createServerFn({ method: "POST" })
 
     if (error) {
       console.error("update ical_source failed", error);
+      await logAppEvent({
+        level: "error",
+        event: "update_ical_source_failed",
+        area: "admin",
+        message: "Modification d'une source iCal impossible.",
+        details: errorDetails(error, { id: data.id, patch }),
+      });
       throw new Error("Impossible de modifier ce calendrier.");
     }
     return { authenticated: true as const, ok: true as const };
@@ -372,7 +453,47 @@ export const deleteIcalSource = createServerFn({ method: "POST" })
     const { error } = await supabaseAdmin.from("ical_sources").delete().eq("id", data.id);
     if (error) {
       console.error("delete ical_source failed", error);
+      await logAppEvent({
+        level: "error",
+        event: "delete_ical_source_failed",
+        area: "admin",
+        message: "Suppression d'une source iCal impossible.",
+        details: errorDetails(error, { id: data.id }),
+      });
       throw new Error("Impossible de supprimer ce calendrier.");
     }
     return { authenticated: true as const, ok: true as const };
   });
+
+export const listAppLogs = createServerFn({ method: "GET" }).handler(async () => {
+  if (!(await isAdminUnlocked())) {
+    return {
+      authenticated: false as const,
+      logs: [] as Array<{
+        id: string;
+        level: string;
+        event: string;
+        area: string | null;
+        message: string | null;
+        details: unknown;
+        url: string | null;
+        user_agent: string | null;
+        created_at: string;
+      }>,
+    };
+  }
+
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const { data, error } = await supabaseAdmin
+    .from("app_logs")
+    .select("id, level, event, area, message, details, url, user_agent, created_at")
+    .order("created_at", { ascending: false })
+    .limit(100);
+
+  if (error) {
+    console.error("list app_logs failed", error);
+    throw new Error("Impossible de charger les logs.");
+  }
+
+  return { authenticated: true as const, logs: data ?? [] };
+});

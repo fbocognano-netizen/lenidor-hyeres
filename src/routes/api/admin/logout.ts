@@ -1,7 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { H3Event, clearSession } from "h3-v2";
 
-const COOKIE_NAME = "villa-admin-session";
+import { ADMIN_COOKIE_NAME, adminSessionConfig } from "@/lib/admin-session.server";
+import { errorDetails, logAppEvent } from "@/lib/logging.server";
 
 function extractSetCookie(event: H3Event): string[] {
   const h = event.res.headers as Headers & { getSetCookie?: () => string[] };
@@ -15,16 +16,32 @@ export const Route = createFileRoute("/api/admin/logout")({
     handlers: {
       POST: async ({ request }) => {
         const secret = process.env.ADMIN_SESSION_SECRET ?? "x".repeat(32);
-        const event = new H3Event(request);
-        await clearSession(event, {
-          password: secret,
-          name: COOKIE_NAME,
-          cookie: { path: "/", httpOnly: true, sameSite: "none", secure: true, partitioned: true },
-        });
-        const cookies = extractSetCookie(event);
-        const headers = new Headers({ "content-type": "application/json" });
-        for (const c of cookies) headers.append("set-cookie", c);
-        return new Response(JSON.stringify({ ok: true }), { status: 200, headers });
+        try {
+          const event = new H3Event(request);
+          await clearSession(event, adminSessionConfig(secret));
+          const cookies = extractSetCookie(event);
+          const headers = new Headers({ "content-type": "application/json" });
+          for (const c of cookies) headers.append("set-cookie", c);
+          await logAppEvent({
+            level: "info",
+            event: "admin_logout",
+            area: "admin",
+            message: "Session admin verrouillée.",
+            request,
+            details: { setCookieCount: cookies.length, cookieName: ADMIN_COOKIE_NAME },
+          });
+          return new Response(JSON.stringify({ ok: true }), { status: 200, headers });
+        } catch (error) {
+          await logAppEvent({
+            level: "error",
+            event: "admin_logout_failed",
+            area: "admin",
+            message: "Déconnexion admin impossible.",
+            request,
+            details: errorDetails(error),
+          });
+          return new Response(JSON.stringify({ ok: false }), { status: 500, headers: { "content-type": "application/json" } });
+        }
       },
     },
   },
