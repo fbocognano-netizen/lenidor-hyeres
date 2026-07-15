@@ -77,20 +77,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Mont des oiseaux" },
-      { name: "description", content: "Your Hyères Getaway is a modern website for booking a tranquil apartment rental in Hyères, France." },
-      { name: "author", content: "Lovable" },
-      { property: "og:title", content: "Mont des oiseaux" },
-      { property: "og:description", content: "Your Hyères Getaway is a modern website for booking a tranquil apartment rental in Hyères, France." },
+      { title: "Le Nid d'Or — Location studio vue mer à Hyères" },
+      { name: "description", content: "Le Nid d'Or : location en direct d'un studio vue mer avec piscine et terrasse plein sud à Hyères, face aux Îles d'Or." },
+      { property: "og:site_name", content: "Le Nid d'Or" },
       { property: "og:type", content: "website" },
-      { name: "twitter:card", content: "summary" },
-      { name: "twitter:site", content: "@Lovable" },
-      { name: "twitter:title", content: "Mont des oiseaux" },
-      { name: "twitter:description", content: "Your Hyères Getaway is a modern website for booking a tranquil apartment rental in Hyères, France." },
-      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a6107858-f6ef-4afb-940a-b24813a15dc4/id-preview-db0726e6--ff9f603a-9389-4ad2-a6b4-ee7aa118af46.lovable.app-1781350078247.png" },
-      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/a6107858-f6ef-4afb-940a-b24813a15dc4/id-preview-db0726e6--ff9f603a-9389-4ad2-a6b4-ee7aa118af46.lovable.app-1781350078247.png" },
+      { property: "og:locale", content: "fr_FR" },
+      { name: "twitter:card", content: "summary_large_image" },
       { name: "google-site-verification", content: "B4L6zAp6HnvBopD0J7lOHzKKXQTLWk9moM-ifcl39_c" },
     ],
+
     links: [
       {
         rel: "stylesheet",
