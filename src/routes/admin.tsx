@@ -208,7 +208,7 @@ function AdminPage() {
         <section className="mx-auto flex min-h-screen max-w-md items-center px-5 py-12">
           <Card className="w-full rounded-3xl border-border/60 bg-card p-7 shadow-sm">
             <a href="/" className="font-display text-2xl">
-              Villa <span className="italic text-[var(--color-sea)]">d'Or</span>
+              Le Nid&nbsp;d'Or
             </a>
             <p className="mt-8 text-xs uppercase tracking-[0.2em] text-muted-foreground">Espace hôte</p>
             <h1 className="mt-3 font-display text-4xl leading-tight">Demandes de réservation</h1>
