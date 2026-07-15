@@ -451,9 +451,10 @@ function BookingForm() {
           <div>
             <Label className="text-xs uppercase tracking-wider text-muted-foreground">Voyageurs</Label>
             <div className="mt-2 flex items-center gap-2 h-11 rounded-xl border border-input px-3">
-              <Button type="button" variant="ghost" size="sm" className="h-7 w-7 p-0 rounded-full" onClick={() => setGuests(Math.max(1, guests - 1))}>−</Button>
+              <Button type="button" variant="ghost" size="sm" aria-label="Diminuer le nombre de voyageurs" className="h-7 w-7 p-0 rounded-full" onClick={() => setGuests(Math.max(1, guests - 1))}>−</Button>
               <div className="flex-1 text-center text-sm">{guests} voyageur{guests > 1 ? "s" : ""}</div>
-              <Button type="button" variant="ghost" size="sm" className="h-7 w-7 p-0 rounded-full" onClick={() => setGuests(Math.min(2, guests + 1))}>+</Button>
+              <Button type="button" variant="ghost" size="sm" aria-label="Augmenter le nombre de voyageurs" className="h-7 w-7 p-0 rounded-full" onClick={() => setGuests(Math.min(2, guests + 1))}>+</Button>
+
             </div>
           </div>
         </div>
