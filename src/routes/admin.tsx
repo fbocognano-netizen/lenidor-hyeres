@@ -10,6 +10,7 @@ import {
   CheckCircle2,
   Clock,
   Copy,
+  Bug,
   ExternalLink,
   LogOut,
   Mail,
@@ -33,6 +34,7 @@ import {
   getAdminBookings,
   getAdminConfigStatus,
   getAdminOtaRanges,
+  listAppLogs,
   listIcalSources,
   resendBookingNotification,
   updateBookingStatus,
@@ -361,6 +363,7 @@ function AdminPage() {
             <TabsTrigger value="calendar" className="rounded-full">Calendrier</TabsTrigger>
             <TabsTrigger value="list" className="rounded-full">Liste ({data.counts.total})</TabsTrigger>
             <TabsTrigger value="ical" className="rounded-full">Calendriers iCal</TabsTrigger>
+            <TabsTrigger value="logs" className="rounded-full">Logs</TabsTrigger>
           </TabsList>
 
           <TabsContent value="calendar" className="mt-6">
@@ -397,6 +400,10 @@ function AdminPage() {
 
           <TabsContent value="ical" className="mt-6">
             <IcalSourcesPanel />
+          </TabsContent>
+
+          <TabsContent value="logs" className="mt-6">
+            <AppLogsPanel />
           </TabsContent>
         </Tabs>
 
@@ -982,6 +989,87 @@ function IcalSourceRowItem({
         >
           Supprimer
         </Button>
+      </div>
+    </Card>
+  );
+}
+
+type AppLogRow = {
+  id: string;
+  level: string;
+  event: string;
+  area: string | null;
+  message: string | null;
+  details: unknown;
+  url: string | null;
+  user_agent: string | null;
+  created_at: string;
+};
+
+function AppLogsPanel() {
+  const loadLogs = useServerFn(listAppLogs);
+  const query = useQuery({
+    queryKey: ["admin-app-logs"],
+    queryFn: () => loadLogs(),
+    retry: false,
+  });
+
+  const logs = (query.data?.authenticated ? query.data.logs : []) as AppLogRow[];
+
+  return (
+    <Card className="rounded-3xl border-border/60 p-5 shadow-none sm:p-6">
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+        <div>
+          <h3 className="flex items-center gap-2 font-display text-2xl">
+            <Bug className="h-5 w-5 text-primary" />
+            Logs techniques
+          </h3>
+          <p className="mt-2 text-sm text-muted-foreground">
+            Les 100 derniers événements serveur et erreurs navigateur sont conservés ici pour investiguer les blocages silencieux.
+          </p>
+        </div>
+        <Button type="button" variant="outline" className="rounded-full" onClick={() => query.refetch()} disabled={query.isFetching}>
+          <RefreshCw className={cn("mr-2 h-4 w-4", query.isFetching && "animate-spin")} />
+          Actualiser
+        </Button>
+      </div>
+
+      <div className="mt-5 space-y-3">
+        {query.isLoading && <p className="text-sm text-muted-foreground">Chargement des logs…</p>}
+        {!query.isLoading && logs.length === 0 && (
+          <div className="rounded-2xl border border-border/60 p-5 text-sm text-muted-foreground">
+            Aucun log enregistré pour le moment.
+          </div>
+        )}
+        {logs.map((log) => (
+          <div key={log.id} className="rounded-2xl border border-border/60 bg-background p-4">
+            <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between">
+              <div>
+                <div className="flex flex-wrap items-center gap-2">
+                  <Badge className={cn(
+                    "border",
+                    log.level === "error" && "border-destructive/20 bg-destructive/10 text-destructive",
+                    log.level === "warning" && "border-accent bg-accent/40 text-accent-foreground",
+                    log.level === "info" && "border-primary/20 bg-primary/10 text-primary",
+                    log.level === "debug" && "border-border bg-secondary text-muted-foreground",
+                  )}>
+                    {log.level}
+                  </Badge>
+                  <span className="font-mono text-xs text-muted-foreground">{log.event}</span>
+                  {log.area && <span className="text-xs text-muted-foreground">· {log.area}</span>}
+                </div>
+                {log.message && <p className="mt-2 text-sm font-medium text-foreground">{log.message}</p>}
+              </div>
+              <time className="shrink-0 text-xs text-muted-foreground">
+                {format(new Date(log.created_at), "d MMM yyyy HH:mm:ss", { locale: fr })}
+              </time>
+            </div>
+            {log.url && <p className="mt-2 break-all text-xs text-muted-foreground">URL : {log.url}</p>}
+            <pre className="mt-3 max-h-56 overflow-auto rounded-xl bg-secondary/60 p-3 text-xs leading-relaxed text-muted-foreground">
+              {JSON.stringify(log.details ?? {}, null, 2)}
+            </pre>
+          </div>
+        ))}
       </div>
     </Card>
   );
