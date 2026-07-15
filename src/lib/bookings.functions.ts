@@ -1,7 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-import { createAndSendBookingNotification } from "./pingram-notifications.server";
+import { createAndSendBookingNotification, sendGuestConfirmationEmail } from "./pingram-notifications.server";
 
 // --- iCal parser (minimal, handles VEVENT DTSTART/DTEND) ---
 function parseICal(ics: string): Array<{ start: Date; end: Date }> {
