@@ -98,7 +98,7 @@ function Nav() {
     <header className="sticky top-0 z-40 backdrop-blur-md bg-background/75 border-b border-border/60">
       <div className="mx-auto max-w-6xl px-5 h-16 flex items-center justify-between">
         <a href="#top" className="font-display text-xl tracking-tight">
-          Villa <span className="italic text-[var(--color-sea)]">d'Or</span>
+          Le Nid d'Or à Hyères
         </a>
         <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
           <a href="#sejour" className="hover:text-foreground transition">Le studio</a>
