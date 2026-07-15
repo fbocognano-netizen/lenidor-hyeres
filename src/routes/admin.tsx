@@ -35,8 +35,6 @@ import {
   getAdminOtaRanges,
   listIcalSources,
   resendBookingNotification,
-  signInAdmin,
-  signOutAdmin,
   updateBookingStatus,
   updateIcalSource,
 } from "@/lib/admin-bookings.functions";
@@ -102,8 +100,6 @@ export const Route = createFileRoute("/admin")({
 function AdminPage() {
   const loadBookings = useServerFn(getAdminBookings);
   const loadConfigStatus = useServerFn(getAdminConfigStatus);
-  const loginAdmin = useServerFn(signInAdmin);
-  const logoutAdmin = useServerFn(signOutAdmin);
   const changeStatus = useServerFn(updateBookingStatus);
   const resendNotification = useServerFn(resendBookingNotification);
   const loadOtaRanges = useServerFn(getAdminOtaRanges);
@@ -166,7 +162,13 @@ function AdminPage() {
     setIsLoggingIn(true);
 
     try {
-      const result = await loginAdmin({ data: { code: accessCode } });
+      const res = await fetch("/api/admin/login", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { "content-type": "application/json" },
+        body: JSON.stringify({ code: accessCode }),
+      });
+      const result = (await res.json()) as { ok: boolean; reason?: LoginError };
       if (!result.ok) {
         setLoginError(result.reason ?? "server_error");
         return;
@@ -184,7 +186,7 @@ function AdminPage() {
 
   async function handleLogout() {
     try {
-      await logoutAdmin();
+      await fetch("/api/admin/logout", { method: "POST", credentials: "same-origin" });
     } finally {
       queryClient.removeQueries({ queryKey: ["admin-bookings"] });
       window.location.reload();
