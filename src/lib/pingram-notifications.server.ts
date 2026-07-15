@@ -1,5 +1,7 @@
 const fallbackAdminEmail = "usertinder543@gmail.com";
 
+import { errorDetails, logAppEvent } from "./logging.server";
+
 export interface BookingNotificationLead {
   booking_id: string;
   guest_name: string;
@@ -63,6 +65,13 @@ async function updateNotification(
 
   if (error) {
     console.error("booking notification status update failed", { notificationId, error });
+    await logAppEvent({
+      level: "error",
+      event: "booking_notification_status_update_failed",
+      area: "notification",
+      message: "Mise à jour du statut de notification impossible.",
+      details: errorDetails(error, { notificationId }),
+    });
   }
 }
 
@@ -86,6 +95,13 @@ export async function createAndSendBookingNotification(lead: BookingNotification
       bookingId: lead.booking_id,
       error: notificationError,
     });
+    await logAppEvent({
+      level: "error",
+      event: "booking_notification_tracking_insert_failed",
+      area: "notification",
+      message: "Création du suivi de notification admin impossible.",
+      details: errorDetails(notificationError, { bookingId: lead.booking_id }),
+    });
   }
 
   const apiKey = process.env.PINGRAM_API_KEY;
@@ -93,6 +109,13 @@ export async function createAndSendBookingNotification(lead: BookingNotification
     await updateNotification(notification?.id, {
       status: "failed",
       error_message: "PINGRAM_API_KEY not configured",
+    });
+    await logAppEvent({
+      level: "error",
+      event: "pingram_api_key_missing",
+      area: "notification",
+      message: "PINGRAM_API_KEY n'est pas configuré.",
+      details: { bookingId: lead.booking_id, notificationId: notification?.id },
     });
     return { ok: false as const, notificationId: notification?.id, error: "PINGRAM_API_KEY not configured" };
   }
@@ -127,6 +150,13 @@ export async function createAndSendBookingNotification(lead: BookingNotification
         status: res.status,
         body: responseText,
       });
+      await logAppEvent({
+        level: "error",
+        event: "pingram_admin_send_failed",
+        area: "notification",
+        message: "Pingram a refusé l'envoi de la notification admin.",
+        details: { bookingId: lead.booking_id, notificationId: notification?.id, status: res.status, body: responseText },
+      });
       return { ok: false as const, notificationId: notification?.id, status: res.status, error: responseText };
     }
 
@@ -144,6 +174,13 @@ export async function createAndSendBookingNotification(lead: BookingNotification
       error_message: message,
     });
     console.error("Pingram send threw", { bookingId: lead.booking_id, notificationId: notification?.id, error: message });
+    await logAppEvent({
+      level: "error",
+      event: "pingram_admin_send_threw",
+      area: "notification",
+      message: "Exception pendant l'envoi Pingram admin.",
+      details: errorDetails(error, { bookingId: lead.booking_id, notificationId: notification?.id }),
+    });
     return { ok: false as const, notificationId: notification?.id, error: message };
   }
 }
@@ -187,6 +224,13 @@ export async function sendGuestConfirmationEmail(lead: BookingNotificationLead) 
       bookingId: lead.booking_id,
       error: notificationError,
     });
+    await logAppEvent({
+      level: "error",
+      event: "guest_notification_tracking_insert_failed",
+      area: "notification",
+      message: "Création du suivi de notification client impossible.",
+      details: errorDetails(notificationError, { bookingId: lead.booking_id }),
+    });
   }
 
   const apiKey = process.env.PINGRAM_API_KEY;
@@ -194,6 +238,13 @@ export async function sendGuestConfirmationEmail(lead: BookingNotificationLead) 
     await updateNotification(notification?.id, {
       status: "failed",
       error_message: "PINGRAM_API_KEY not configured",
+    });
+    await logAppEvent({
+      level: "error",
+      event: "pingram_guest_api_key_missing",
+      area: "notification",
+      message: "PINGRAM_API_KEY n'est pas configuré pour la confirmation client.",
+      details: { bookingId: lead.booking_id, notificationId: notification?.id },
     });
     return { ok: false as const, notificationId: notification?.id, error: "PINGRAM_API_KEY not configured" };
   }
@@ -227,6 +278,13 @@ export async function sendGuestConfirmationEmail(lead: BookingNotificationLead) 
         status: res.status,
         body: responseText,
       });
+      await logAppEvent({
+        level: "error",
+        event: "pingram_guest_send_failed",
+        area: "notification",
+        message: "Pingram a refusé l'envoi de la confirmation client.",
+        details: { bookingId: lead.booking_id, notificationId: notification?.id, status: res.status, body: responseText },
+      });
       return { ok: false as const, notificationId: notification?.id, status: res.status, error: responseText };
     }
 
@@ -244,6 +302,13 @@ export async function sendGuestConfirmationEmail(lead: BookingNotificationLead) 
       error_message: message,
     });
     console.error("Pingram guest send threw", { bookingId: lead.booking_id, notificationId: notification?.id, error: message });
+    await logAppEvent({
+      level: "error",
+      event: "pingram_guest_send_threw",
+      area: "notification",
+      message: "Exception pendant l'envoi Pingram client.",
+      details: errorDetails(error, { bookingId: lead.booking_id, notificationId: notification?.id }),
+    });
     return { ok: false as const, notificationId: notification?.id, error: message };
   }
 }

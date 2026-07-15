@@ -1,6 +1,7 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
+import { errorDetails, logAppEvent } from "./logging.server";
 import { createAndSendBookingNotification, sendGuestConfirmationEmail } from "./pingram-notifications.server";
 
 // --- iCal parser (minimal, handles VEVENT DTSTART/DTEND) ---
@@ -77,6 +78,13 @@ async function fetchBlockedRanges(): Promise<Array<{ start: Date; end: Date }>> 
       all.push(...parseICal(text));
     } catch (e) {
       console.error("iCal fetch failed", url, e);
+      await logAppEvent({
+        level: "warning",
+        event: "ical_fetch_failed",
+        area: "booking",
+        message: "Impossible de récupérer un calendrier iCal public.",
+        details: errorDetails(e, { url }),
+      });
     }
   }));
   return all;
@@ -180,6 +188,17 @@ export const createBooking = createServerFn({ method: "POST" })
     }).select("id").single();
     if (error) {
       console.error("insert booking failed", error);
+      await logAppEvent({
+        level: "error",
+        event: "booking_insert_failed",
+        area: "booking",
+        message: "Enregistrement d'une demande de réservation impossible.",
+        details: errorDetails(error, {
+          check_in: data.check_in,
+          check_out: data.check_out,
+          guests: data.guests,
+        }),
+      });
       throw new Error("Impossible d'enregistrer votre demande. Réessayez.");
     }
 
@@ -198,6 +217,13 @@ export const createBooking = createServerFn({ method: "POST" })
       });
     } catch (e) {
       console.error("booking notification send threw", { bookingId: insertedBooking.id, error: e });
+      await logAppEvent({
+        level: "error",
+        event: "booking_admin_notification_threw",
+        area: "booking",
+        message: "Exception pendant l'envoi de notification admin.",
+        details: errorDetails(e, { bookingId: insertedBooking.id }),
+      });
     }
 
     // Fire-and-forget guest confirmation.
@@ -215,6 +241,13 @@ export const createBooking = createServerFn({ method: "POST" })
       });
     } catch (e) {
       console.error("guest confirmation send threw", { bookingId: insertedBooking.id, error: e });
+      await logAppEvent({
+        level: "error",
+        event: "booking_guest_confirmation_threw",
+        area: "booking",
+        message: "Exception pendant l'envoi de confirmation client.",
+        details: errorDetails(e, { bookingId: insertedBooking.id }),
+      });
     }
 
     return { ok: true, nights, total };
