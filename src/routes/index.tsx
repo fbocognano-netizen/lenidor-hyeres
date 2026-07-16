@@ -505,45 +505,45 @@ function BookingForm() {
 
 function Location() {
   return (
-    <section id="lieu" className="mx-auto max-w-6xl px-5 py-24">
-      <div className="grid md:grid-cols-2 gap-12 items-center">
+    <section id="lieu" className="mx-auto max-w-6xl px-5 py-14 sm:py-20 md:py-24">
+      <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
         <div>
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Le lieu</p>
-          <h2 className="mt-3 font-display text-4xl sm:text-5xl">Hyères, porte des Îles d'Or.</h2>
-          <p className="mt-5 text-muted-foreground leading-relaxed">
+          <h2 className="mt-2 sm:mt-3 font-display text-[1.75rem] sm:text-4xl md:text-5xl">Hyères, porte des Îles d'Or.</h2>
+          <p className="mt-4 sm:mt-5 text-muted-foreground leading-relaxed text-[15px]">
             À 10 minutes en voiture des plages de l'Almanarre, à 15 minutes du port pour Porquerolles, à 15 minutes du
             centre historique.
             
             Tout est proche si vous le désirez, mais vous êtes au calme et au paradis en même temps.
           </p>
-          <ul className="mt-8 space-y-3 text-sm">
-            <li className="flex justify-between border-b border-border/60 pb-3"><span>Plage de l'Almanarre</span><span className="text-muted-foreground">10 min</span></li>
-            <li className="flex justify-between border-b border-border/60 pb-3"><span>Port de la Tour Fondue</span><span className="text-muted-foreground">15 min</span></li>
-            <li className="flex justify-between border-b border-border/60 pb-3"><span>Centre historique</span><span className="text-muted-foreground">15 min</span></li>
-            <li className="flex justify-between border-b border-border/60 pb-3"><span>Aéroport Toulon-Hyères</span><span className="text-muted-foreground">11 min</span></li>
+          <ul className="mt-6 sm:mt-8 space-y-2 sm:space-y-3 text-sm">
+            <li className="flex justify-between border-b border-border/60 pb-2 sm:pb-3"><span>Plage de l'Almanarre</span><span className="text-muted-foreground">10 min</span></li>
+            <li className="flex justify-between border-b border-border/60 pb-2 sm:pb-3"><span>Port de la Tour Fondue</span><span className="text-muted-foreground">15 min</span></li>
+            <li className="flex justify-between border-b border-border/60 pb-2 sm:pb-3"><span>Centre historique</span><span className="text-muted-foreground">15 min</span></li>
+            <li className="flex justify-between border-b border-border/60 pb-2 sm:pb-3"><span>Aéroport Toulon-Hyères</span><span className="text-muted-foreground">11 min</span></li>
           </ul>
         </div>
         <div className="aspect-[4/5] overflow-hidden rounded-3xl">
           <img src={photo2} alt="Vue extérieure et piscine" className="h-full w-full object-cover" />
         </div>
       </div>
-      <div className="mt-16">
+      <div className="mt-10 sm:mt-16">
         <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Sur la carte</p>
-        <h3 className="mt-3 font-display text-3xl sm:text-4xl">L'emplacement du studio</h3>
-        <p className="mt-3 text-muted-foreground max-w-2xl">
+        <h3 className="mt-2 sm:mt-3 font-display text-2xl sm:text-3xl md:text-4xl">L'emplacement du studio</h3>
+        <p className="mt-2 sm:mt-3 text-muted-foreground max-w-2xl text-[15px]">
           Quartier du Mont des Oiseaux, sur les hauteurs de Hyères — à quelques minutes des plages et du port pour Porquerolles.
         </p>
-        <div className="mt-8 overflow-hidden rounded-3xl border border-border/60 shadow-sm">
+        <div className="mt-5 sm:mt-8 overflow-hidden rounded-3xl border border-border/60 shadow-sm">
           <iframe
             title="Emplacement du studio à Hyères sur Google Maps"
             src="https://www.google.com/maps?q=43.092840,6.113301&z=11&output=embed"
-            className="w-full h-[420px] md:h-[480px] border-0"
+            className="w-full h-[300px] sm:h-[420px] md:h-[480px] border-0"
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"
             allowFullScreen
           />
         </div>
-        <p className="mt-4 text-sm text-muted-foreground">
+        <p className="mt-3 sm:mt-4 text-sm text-muted-foreground">
           <a href="https://maps.app.goo.gl/zZbtek49skWEsvuB7" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground transition">
             Ouvrir dans Google Maps ↗
           </a>
