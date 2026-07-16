@@ -273,24 +273,24 @@ function Amenities() {
 
 function BookingSection() {
   return (
-    <section id="reserver" className="bg-[var(--color-deep)] text-primary-foreground py-24">
-      <div className="mx-auto max-w-6xl px-5 grid lg:grid-cols-12 gap-12">
+    <section id="reserver" className="bg-[var(--color-deep)] text-primary-foreground py-14 sm:py-20 md:py-24">
+      <div className="mx-auto max-w-6xl px-5 grid lg:grid-cols-12 gap-8 lg:gap-12">
         <div className="lg:col-span-5">
           <p className="text-xs uppercase tracking-[0.2em] text-primary-foreground/60">Réservation directe</p>
-          <h2 className="mt-3 font-display text-4xl sm:text-5xl">Réservez sans commission.</h2>
-          <p className="mt-5 text-primary-foreground/75 leading-relaxed">
+          <h2 className="mt-2 sm:mt-3 font-display text-[1.75rem] sm:text-4xl md:text-5xl">Réservez sans commission.</h2>
+          <p className="mt-4 sm:mt-5 text-primary-foreground/75 leading-relaxed text-[15px]">
             Calendrier synchronisé avec Airbnb en temps réel. Choisissez vos dates, envoyez votre demande,
             je confirme sous 24 h avec les modalités de paiement.
           </p>
-          <ul className="mt-8 space-y-3 text-sm text-primary-foreground/85">
+          <ul className="mt-6 sm:mt-8 space-y-2 sm:space-y-3 text-sm text-primary-foreground/85">
             <li className="flex gap-3"><span className="text-[var(--color-accent)]">—</span> Tarif direct, sans frais de service</li>
             <li className="flex gap-3"><span className="text-[var(--color-accent)]">—</span> Échange direct avec Joëlle, votre hôte</li>
             <li className="flex gap-3"><span className="text-[var(--color-accent)]">—</span> Minimum 2 nuits · 2 voyageurs</li>
           </ul>
-          <div className="mt-10 pt-8 border-t border-primary-foreground/15">
+          <div className="mt-6 pt-6 sm:mt-10 sm:pt-8 border-t border-primary-foreground/15">
             <p className="text-xs uppercase tracking-[0.2em] text-primary-foreground/60">Vous préférez une plateforme ?</p>
-            <p className="mt-3 text-sm text-primary-foreground/70">Réservez aussi via :</p>
-            <div className="mt-4 flex flex-wrap gap-3">
+            <p className="mt-2 sm:mt-3 text-sm text-primary-foreground/70">Réservez aussi via :</p>
+            <div className="mt-3 sm:mt-4 flex flex-wrap gap-3">
               <a
                 href="https://www.airbnb.fr/rooms/1526120631746320177"
                 target="_blank"
