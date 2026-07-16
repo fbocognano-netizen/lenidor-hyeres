@@ -482,10 +482,10 @@ function BookingForm() {
           <div>Caution de <span className="text-foreground font-medium">{DEPOSIT_CASH} €</span> en espèces à régler à l'arrivée (restituée au départ)</div>
         </div>
 
-        <div className="flex items-end justify-between pt-2 border-t border-border">
-          <div>
+        <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 pt-3 border-t border-border">
+          <div className="min-w-0">
             <div className="text-xs uppercase tracking-wider text-muted-foreground">Total estimé</div>
-            <div className="font-display text-3xl mt-1">
+            <div className="font-display text-2xl sm:text-3xl mt-1">
               {nights > 0 ? `${total} €` : `à partir de 75 € / nuit`}
             </div>
             {nights > 0 && (
@@ -494,7 +494,7 @@ function BookingForm() {
               </div>
             )}
           </div>
-          <Button type="submit" disabled={submitting} size="lg" className="rounded-full px-8">
+          <Button type="submit" disabled={submitting} className="rounded-full h-12 px-6 sm:px-8 w-full sm:w-auto shrink-0">
             {submitting ? "Envoi…" : "Demander à réserver"}
           </Button>
         </div>
