@@ -185,14 +185,14 @@ function Hero() {
 
 function Intro() {
   return (
-    <section id="sejour" className="mx-auto max-w-6xl px-5 py-24">
-      <div className="grid md:grid-cols-12 gap-10 items-start">
+    <section id="sejour" className="mx-auto max-w-6xl px-5 py-14 sm:py-20 md:py-24">
+      <div className="grid md:grid-cols-12 gap-8 md:gap-10 items-start">
         <div className="md:col-span-7">
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Le séjour</p>
-          <h2 className="mt-3 font-display text-4xl sm:text-5xl leading-tight">
+          <h2 className="mt-3 font-display text-[1.75rem] sm:text-4xl md:text-5xl leading-[1.15]">
             Le Nid d'Or — Une vue qui s'étire jusqu'à Porquerolles.
           </h2>
-          <div className="mt-6 space-y-4 text-muted-foreground text-[15px] leading-relaxed whitespace-pre-line">
+          <div className="mt-5 sm:mt-6 space-y-4 text-muted-foreground text-[15px] leading-relaxed whitespace-pre-line">
             <p>
               Niché sur les hauteurs de Hyères dans une résidence privée, ce studio a été pensé comme une retraite à deux : un coin nuit confortable, une cuisine équipée, et surtout cette terrasse plein sud d'où l'on suit le ballet des voiliers entre Port-Cros et Porquerolles.
 
@@ -201,7 +201,7 @@ function Intro() {
             </p>
           </div>
         </div>
-        <div className="md:col-span-5 grid grid-cols-2 gap-4">
+        <div className="md:col-span-5 grid grid-cols-2 gap-3 sm:gap-4">
           <Stat icon={<Users className="h-4 w-4" />} label="Voyageurs" value="2" />
           <Stat icon={<Bed className="h-4 w-4" />} label="Lits" value="1" />
           <Stat icon={<Bath className="h-4 w-4" />} label="Salle de bain" value="1" />
@@ -214,10 +214,10 @@ function Intro() {
 
 function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; value: string }) {
   return (
-    <Card className="p-5 bg-secondary/60 border-border/50 shadow-none">
+    <Card className="p-4 sm:p-5 bg-secondary/60 border-border/50 shadow-none">
       <div className="text-muted-foreground">{icon}</div>
-      <div className="mt-3 font-display text-3xl">{value}</div>
-      <div className="text-xs uppercase tracking-wider text-muted-foreground mt-1">{label}</div>
+      <div className="mt-2 sm:mt-3 font-display text-2xl sm:text-3xl">{value}</div>
+      <div className="text-[11px] sm:text-xs uppercase tracking-wider text-muted-foreground mt-0.5 sm:mt-1">{label}</div>
     </Card>
   );
 }
