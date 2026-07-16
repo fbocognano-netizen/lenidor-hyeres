@@ -2,7 +2,7 @@ import { createHash, timingSafeEqual } from "node:crypto";
 
 export type AdminSession = { unlocked?: boolean };
 
-export const ADMIN_COOKIE_NAME = "villa-admin-session";
+export const ADMIN_COOKIE_NAME = "nid-dor-admin-v2";
 export const ADMIN_SESSION_MAX_AGE = 60 * 60 * 24 * 14;
 
 export function normalizeAdminCode(value: string) {
