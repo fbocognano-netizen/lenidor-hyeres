@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { H3Event, updateSession } from "h3-v2";
 
-import { adminCodeMatches, adminSessionConfig } from "@/lib/admin-session.server";
+import { adminCodeMatches, adminSessionConfig, ADMIN_COOKIE_NAME } from "@/lib/admin-session.server";
 import { errorDetails, logAppEvent } from "@/lib/logging.server";
 
 function json(body: unknown, extraHeaders: Record<string, string> = {}, status = 200) {
