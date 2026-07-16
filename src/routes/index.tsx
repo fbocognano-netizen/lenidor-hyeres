@@ -227,22 +227,22 @@ const REVIEWS = [
   {
     name: "Emmanuelle",
     stay: "19–23 juin · 4 nuits",
-    text: "Je recommande vivement le petit coin de Paradis proposé par Joëlle. Le lieu est serein, on est réveillé par les oiseaux et les cigales, la vue est superbe et Joëlle une hôte extrêmement sympathique et proactive. C'est un endroit idéal pour se ressourcer loin de l'agitation de la ville mais proche des plages et lieux d'intérêt en 20 minutes de voiture. J'y retournerai avec grand plaisir !",
+    text: "❤️❤️\u00a0Je recommande vivement le petit coin de Paradis proposé par Joëlle. Le lieu est serein, on est réveillé par les oiseaux et les cigales, la vue est superbe et Joëlle une hôte extrêmement sympathique et proactive.\u00a0\nC'est un endroit idéal pour se ressourcer loin de l'agitation de la ville mais proche des plages et lieux d'intérêt en 20 minutes de voiture.\u00a0\nJ'y retournerai avec grand plaisir !",
   },
   {
     name: "Benjamin",
     stay: "23–26 juin · 3 nuits",
-    text: "Petit logement dans une résidence privée avec place de parking. C'était très bien. Parlons de la vue qui est juste incroyable, pas besoin de TV ou de téléphone quand on a un spectacle pareil. J'ai passé mes soirées à contempler ce paysage rayonnant de couleur. Rien que pour ça vous pouvez réserver, vous serez émerveillé.",
+    text: "Petit logement dans une résidence privée avec place de parking. C'était très bien. Parlons de la vue qui est juste INCROYABLEEEEE, pas besoin de TV ou de téléphone quand on a un spectacle pareil. J'ai passé mes soirées à contempler ce paysage rayonnant de couleur.\u00a0\nRien que pour ça vous pouvez réserver, vous serez émerveillé.",
   },
   {
     name: "Manon",
     stay: "19–21 mai · 2 nuits",
-    text: "Très bon séjour dans le merveilleux studio de Joëlle. Et surtout quelle vue ! On ne voit clairement pas cela tous les jours… De la contemplation matin midi et soir (vue mer depuis le lit). Studio fonctionnel, canapé lit très confortable, grande piscine dans la résidence tout proche (avec vue bien sûr !), bref un super séjour, le plus dur c'est de repartir…",
+    text: "Très bon séjour dans le merveilleux studio de Joëlle. Et surtout quelle vue !\u00a0\nOn ne voit clairement pas cela tous les jours… De la contemplation matin midi et soir (vue mer depuis le lit). Studio fonctionnel, canapé lit très confortable, grande piscine dans la résidence tout proche (avec vue bien sûr !).\nBref un super séjour, le plus dur c'est de repartir !",
   },
   {
     name: "Eric",
     stay: "26–28 juin · 2 nuits",
-    text: "Ce studio va vous offrir une vue imprenable et une invitation à la contemplation. Il y a un petit chemin piéton juste devant le studio mais très peu de passage lors de notre séjour. La literie du canapé était bonne et nous avons passé un excellent séjour. À refaire…",
+    text: "Ce studio va vous offrir une vue imprenable et une invitation à la contemplation. Il y a un petit chemin piéton juste devant le studio mais très peu de passage lors de notre séjour.\u00a0\n\n\nLa literie du canapé était bonne et nous avons passé un excellent séjour.\nÀ refaire !!\u00a0❤️❤️\u00a0\u00a0",
   },
 ];
 
