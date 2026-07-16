@@ -190,19 +190,14 @@ function Intro() {
         <div className="md:col-span-7">
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Le séjour</p>
           <h2 className="mt-3 font-display text-4xl sm:text-5xl leading-tight">
-            Une vue qui s'étire jusqu'à Porquerolles.
+            Le Nid d'Or — Une vue qui s'étire jusqu'à Porquerolles.
           </h2>
-          <div className="mt-6 space-y-4 text-muted-foreground text-[15px] leading-relaxed">
+          <div className="mt-6 space-y-4 text-muted-foreground text-[15px] leading-relaxed whitespace-pre-line">
             <p>
-              Niché sur les hauteurs de Hyères dans une résidence privée & sécurisée, ce studio a été pensé comme une retraite à deux :
-              un coin nuit confortable, une cuisine équipée, et surtout cette terrasse plein sud d'où l'on
-              suit le ballet des voiliers entre Port-Cros et Porquerolles (les îles d'Or).
-            </p>
-            <p>
-              Le matin, le soleil entre doucement. L'après-midi se passe au bord de la piscine de 18 mètres,
-              à l'ombre des pins avec une vue panoramique sur la baie de Hyères.
+              Niché sur les hauteurs de Hyères dans une résidence privée, ce studio a été pensé comme une retraite à deux : un coin nuit confortable, une cuisine équipée, et surtout cette terrasse plein sud d'où l'on suit le ballet des voiliers entre Port-Cros et Porquerolles.
 
-              Le soir, la lumière dorée du sud descend sur la mer — et c'est tout. Vous pouvez vous relaxer sur les transats de la piscine ou tout simplement autour d'un verre sur notre terrasse.
+
+              Le matin, le soleil entre doucement. L'après-midi se passe au bord de la piscine de 18m, à l'ombre des pins, face à la baie de Hyères. Le soir, la lumière dorée du sud descend sur la mer — et c'est tout.
             </p>
           </div>
         </div>
