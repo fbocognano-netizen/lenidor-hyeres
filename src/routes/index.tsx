@@ -115,6 +115,7 @@ function Index() {
       <Nav />
       <Hero />
       <Intro />
+      <Testimonials />
       <Gallery />
       <Amenities />
       <BookingSection />
