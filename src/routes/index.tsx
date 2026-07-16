@@ -148,31 +148,31 @@ function Nav() {
 function Hero() {
   return (
     <section id="top" className="relative">
-      <div className="relative h-[78vh] min-h-[520px] w-full overflow-hidden">
+      <div className="relative h-[82vh] min-h-[460px] sm:h-[78vh] sm:min-h-[520px] w-full overflow-hidden">
         <img
           src={photo2}
           alt="Coucher de soleil sur les Îles d'Or depuis la terrasse du studio à Hyères, deux verres en premier plan"
           className="absolute inset-0 h-full w-full object-cover"
           fetchPriority="high"
         />
-        <div className="absolute inset-0 bg-gradient-to-b from-deep/30 via-deep/10 to-deep/60" />
+        <div className="absolute inset-0 bg-gradient-to-b from-deep/30 via-deep/10 to-deep/75" />
         <div className="absolute inset-0 flex items-end">
-          <div className="mx-auto max-w-6xl w-full px-5 pb-14 text-primary-foreground">
-            <div className="inline-flex items-center gap-2 rounded-full bg-background/15 backdrop-blur px-3 py-1 text-xs uppercase tracking-[0.18em]">
+          <div className="mx-auto max-w-6xl w-full px-5 pb-8 sm:pb-14 text-primary-foreground">
+            <div className="inline-flex items-center gap-2 rounded-full bg-background/15 backdrop-blur px-3 py-1 text-[10px] sm:text-xs uppercase tracking-[0.18em]">
               <MapPin className="h-3 w-3" /> HYÈRES · CÔTE D'AZUR
             </div>
-            <h1 className="mt-5 font-display text-5xl sm:text-6xl md:text-7xl leading-[1.05] max-w-3xl">
-              Le silence du sud,<br />face aux Îles d'Or
+            <h1 className="mt-4 sm:mt-5 font-display text-[2.25rem] sm:text-6xl md:text-7xl leading-[1.08] sm:leading-[1.05] max-w-3xl">
+              Le silence du sud,<br className="hidden sm:inline" /> face aux Îles d'Or
             </h1>
-            <p className="mt-5 max-w-xl text-base sm:text-lg text-primary-foreground/85 whitespace-pre-line">
+            <p className="mt-3 sm:mt-5 max-w-xl text-sm sm:text-lg text-primary-foreground/90 whitespace-pre-line">
               18m de piscine vue mer. Une terrasse plein sud.
               Les îles juste là, devant vous. Pour deux ❤️
             </p>
-            <div className="mt-8 flex flex-wrap gap-3">
-              <Button asChild size="lg" className="rounded-full bg-background text-foreground hover:bg-background/90">
+            <div className="mt-5 sm:mt-8 flex flex-wrap gap-3">
+              <Button asChild className="rounded-full bg-background text-foreground hover:bg-background/90 h-11 sm:h-12 px-5 sm:px-8 text-sm sm:text-base">
                 <a href="#reserver">Vérifier les disponibilités</a>
               </Button>
-              <Button asChild size="lg" variant="outline" className="rounded-full bg-transparent border-background/40 text-primary-foreground hover:bg-background/15 hover:text-primary-foreground">
+              <Button asChild variant="outline" className="rounded-full bg-transparent border-background/40 text-primary-foreground hover:bg-background/15 hover:text-primary-foreground h-11 sm:h-12 px-5 sm:px-8 text-sm sm:text-base">
                 <a href="#galerie">Voir le lieu</a>
               </Button>
             </div>
