@@ -223,6 +223,74 @@ function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; va
   );
 }
 
+const REVIEWS = [
+  {
+    name: "Emmanuelle",
+    stay: "19–23 juin · 4 nuits",
+    text: "Je recommande vivement le petit coin de Paradis proposé par Joëlle. Le lieu est serein, on est réveillé par les oiseaux et les cigales, la vue est superbe et Joëlle une hôte extrêmement sympathique et proactive. C'est un endroit idéal pour se ressourcer loin de l'agitation de la ville mais proche des plages et lieux d'intérêt en 20 minutes de voiture. J'y retournerai avec grand plaisir !",
+  },
+  {
+    name: "Benjamin",
+    stay: "23–26 juin · 3 nuits",
+    text: "Petit logement dans une résidence privée avec place de parking. C'était très bien. Parlons de la vue qui est juste incroyable, pas besoin de TV ou de téléphone quand on a un spectacle pareil. J'ai passé mes soirées à contempler ce paysage rayonnant de couleur. Rien que pour ça vous pouvez réserver, vous serez émerveillé.",
+  },
+  {
+    name: "Manon",
+    stay: "19–21 mai · 2 nuits",
+    text: "Très bon séjour dans le merveilleux studio de Joëlle. Et surtout quelle vue ! On ne voit clairement pas cela tous les jours… De la contemplation matin midi et soir (vue mer depuis le lit). Studio fonctionnel, canapé lit très confortable, grande piscine dans la résidence tout proche (avec vue bien sûr !), bref un super séjour, le plus dur c'est de repartir…",
+  },
+  {
+    name: "Eric",
+    stay: "26–28 juin · 2 nuits",
+    text: "Ce studio va vous offrir une vue imprenable et une invitation à la contemplation. Il y a un petit chemin piéton juste devant le studio mais très peu de passage lors de notre séjour. La literie du canapé était bonne et nous avons passé un excellent séjour. À refaire…",
+  },
+];
+
+function Testimonials() {
+  return (
+    <section id="avis" className="bg-secondary/40 py-14 sm:py-20 md:py-24 border-y border-border/40">
+      <div className="mx-auto max-w-6xl px-5">
+        <div className="flex flex-wrap items-end justify-between gap-4 mb-8 sm:mb-12">
+          <div className="min-w-0">
+            <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Ils ont séjourné ici</p>
+            <h2 className="mt-2 sm:mt-3 font-display text-[1.75rem] sm:text-4xl md:text-5xl leading-[1.15]">
+              Note 5,0 sur Airbnb
+            </h2>
+          </div>
+          <div className="flex items-center gap-1 text-[var(--color-accent)]" aria-label="Note 5 sur 5">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <Star key={i} className="h-4 w-4 sm:h-5 sm:w-5 fill-current" />
+            ))}
+          </div>
+        </div>
+        <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
+          {REVIEWS.map((r) => (
+            <Card key={r.name} className="p-5 sm:p-7 bg-background border-border/60 rounded-2xl shadow-none flex flex-col">
+              <div className="flex items-center gap-1 text-[var(--color-accent)]">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <Star key={i} className="h-3.5 w-3.5 fill-current" />
+                ))}
+              </div>
+              <blockquote className="mt-3 sm:mt-4 text-[15px] leading-relaxed text-foreground/85">
+                « {r.text} »
+              </blockquote>
+              <div className="mt-4 sm:mt-5 pt-4 border-t border-border/60">
+                <div className="font-display text-lg">{r.name}</div>
+                <div className="text-xs text-muted-foreground mt-0.5">{r.stay}</div>
+              </div>
+            </Card>
+          ))}
+        </div>
+        <p className="mt-6 sm:mt-8 text-xs text-muted-foreground text-center">
+          Avis authentiques laissés sur Airbnb par d'anciens voyageurs.
+        </p>
+      </div>
+    </section>
+  );
+}
+
+
+
 function Gallery() {
   return (
     <section id="galerie" className="bg-secondary/40 py-14 sm:py-20 md:py-24">
