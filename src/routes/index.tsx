@@ -224,22 +224,22 @@ function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; va
 
 function Gallery() {
   return (
-    <section id="galerie" className="bg-secondary/40 py-24">
+    <section id="galerie" className="bg-secondary/40 py-14 sm:py-20 md:py-24">
       <div className="mx-auto max-w-6xl px-5">
-        <div className="flex items-end justify-between mb-10">
+        <div className="flex items-end justify-between mb-6 sm:mb-10">
           <div>
             <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Galerie</p>
-            <h2 className="mt-3 font-display text-4xl sm:text-5xl">Le lieu en images</h2>
+            <h2 className="mt-2 sm:mt-3 font-display text-[1.75rem] sm:text-4xl md:text-5xl">Le lieu en images</h2>
           </div>
         </div>
-        <div className="grid grid-cols-4 grid-rows-2 gap-3 md:gap-4 h-[420px] md:h-[560px]">
+        <div className="grid grid-cols-4 grid-rows-2 gap-2 sm:gap-3 md:gap-4 h-[320px] sm:h-[420px] md:h-[560px]">
           <img src={PHOTOS[0]} alt="Vue mer depuis le studio" className="col-span-2 row-span-2 h-full w-full object-cover rounded-2xl" />
           <img src={PHOTOS[1]} alt="Piscine de 18 mètres" className="col-span-2 row-span-1 h-full w-full object-cover rounded-2xl" />
           <img src={PHOTOS[2]} alt="Terrasse plein sud" className="col-span-1 row-span-1 h-full w-full object-cover rounded-2xl" />
           <img src={PHOTOS[3]} alt="Intérieur du studio" className="col-span-1 row-span-1 h-full w-full object-cover rounded-2xl" />
         </div>
-        <div className="mt-4">
-          <img src={PHOTOS[4]} alt="Détail du studio" className="h-64 w-full object-cover rounded-2xl" />
+        <div className="mt-3 sm:mt-4">
+          <img src={PHOTOS[4]} alt="Détail du studio" className="h-40 sm:h-64 w-full object-cover rounded-2xl" />
         </div>
       </div>
     </section>
@@ -256,13 +256,13 @@ function Amenities() {
     { icon: <Car className="h-5 w-5" />, label: "Parking privé" },
   ];
   return (
-    <section id="equipements" className="mx-auto max-w-6xl px-5 py-24">
+    <section id="equipements" className="mx-auto max-w-6xl px-5 py-14 sm:py-20 md:py-24">
       <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Équipements</p>
-      <h2 className="mt-3 font-display text-4xl sm:text-5xl max-w-2xl">Tout ce qu'il faut, rien de superflu.</h2>
-      <div className="mt-12 grid grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-6">
+      <h2 className="mt-2 sm:mt-3 font-display text-[1.75rem] sm:text-4xl md:text-5xl max-w-2xl">Tout ce qu'il faut, rien de superflu.</h2>
+      <div className="mt-8 sm:mt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-2 sm:gap-y-6">
         {items.map((it) => (
-          <div key={it.label} className="flex items-center gap-4 py-4 border-t border-border/60">
-            <span className="text-[var(--color-sea)]">{it.icon}</span>
+          <div key={it.label} className="flex items-center gap-3 py-3 sm:py-4 border-t border-border/60">
+            <span className="text-[var(--color-sea)] shrink-0">{it.icon}</span>
             <span className="text-[15px]">{it.label}</span>
           </div>
         ))}
