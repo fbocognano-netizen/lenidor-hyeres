@@ -159,15 +159,14 @@ function Hero() {
         <div className="absolute inset-0 flex items-end">
           <div className="mx-auto max-w-6xl w-full px-5 pb-14 text-primary-foreground">
             <div className="inline-flex items-center gap-2 rounded-full bg-background/15 backdrop-blur px-3 py-1 text-xs uppercase tracking-[0.18em]">
-              <MapPin className="h-3 w-3" /> Hyères · Côte d'Azur
+              <MapPin className="h-3 w-3" /> HYÈRES · CÔTE D'AZUR
             </div>
             <h1 className="mt-5 font-display text-5xl sm:text-6xl md:text-7xl leading-[1.05] max-w-3xl">
-              Le silence du sud, face aux Îles d'Or
+              Le silence du sud,<br />face aux Îles d'Or
             </h1>
             <p className="mt-5 max-w-xl text-base sm:text-lg text-primary-foreground/85 whitespace-pre-line">
-              Bienvenue au Nid d'Or, studio vue mer sur les hauteurs de Hyères. Perché au Mont des Oiseaux face aux Îles d'Or, Porquerolles et la presqu'île de Giens, c'est l'adresse secrète de ceux qui veulent tout — la mer, le calme, le soleil — sans rien sacrifier.
-              Une piscine de 18m, une terrasse plein sud, un studio pensé pour deux.
-              Pour deux, le temps d'une parenthèse au bord de la Méditerranée.
+              18m de piscine vue mer. Une terrasse plein sud.
+              Les îles juste là, devant vous. Pour deux ❤️
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
               <Button asChild size="lg" className="rounded-full bg-background text-foreground hover:bg-background/90">
