@@ -127,8 +127,8 @@ function Index() {
 function Nav() {
   return (
     <header className="sticky top-0 z-40 backdrop-blur-md bg-background/75 border-b border-border/60">
-      <div className="mx-auto max-w-6xl px-5 h-16 flex items-center justify-between">
-        <a href="#top" className="font-display text-xl tracking-tight">
+      <div className="mx-auto max-w-6xl px-5 h-14 sm:h-16 flex items-center justify-between gap-3">
+        <a href="#top" className="font-display text-base sm:text-xl tracking-tight truncate">
           Le Nid d'Or à Hyères
         </a>
         <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
