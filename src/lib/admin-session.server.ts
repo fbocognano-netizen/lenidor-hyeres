@@ -2,7 +2,7 @@ import { createHash, timingSafeEqual } from "node:crypto";
 
 export type AdminSession = { unlocked?: boolean };
 
-export const ADMIN_COOKIE_NAME = "villa-admin-session";
+export const ADMIN_COOKIE_NAME = "nid-dor-admin-v2";
 export const ADMIN_SESSION_MAX_AGE = 60 * 60 * 24 * 14;
 
 export function normalizeAdminCode(value: string) {
@@ -47,11 +47,15 @@ export async function getAdminSessionState(request?: Request) {
   const resolvedRequest = request ?? (await currentRequest());
   const { H3Event, getSession } = await import("h3-v2");
   const event = new H3Event(resolvedRequest);
-  const session = await getSession<AdminSession>(event, adminSessionConfig(secret));
+  
   const cookieHeader = resolvedRequest.headers.get("cookie") ?? "";
-
+  const cookiePresent = cookieHeader.includes(`${ADMIN_COOKIE_NAME}=`);
+  
+  // On essaye de récupérer la session
+  const session = await getSession<AdminSession>(event, adminSessionConfig(secret));
+  
   return {
     session,
-    cookiePresent: cookieHeader.includes(`${ADMIN_COOKIE_NAME}=`),
+    cookiePresent,
   };
 }

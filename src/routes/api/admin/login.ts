@@ -1,7 +1,7 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { H3Event, updateSession } from "h3-v2";
 
-import { adminCodeMatches, adminSessionConfig } from "@/lib/admin-session.server";
+import { adminCodeMatches, adminSessionConfig, ADMIN_COOKIE_NAME } from "@/lib/admin-session.server";
 import { errorDetails, logAppEvent } from "@/lib/logging.server";
 
 function json(body: unknown, extraHeaders: Record<string, string> = {}, status = 200) {
@@ -88,18 +88,25 @@ export const Route = createFileRoute("/api/admin/login")({
           await updateSession(event, adminSessionConfig(secret), { unlocked: true });
           const cookies = extractSetCookie(event);
 
-          await logAppEvent({
-            level: cookies.length > 0 ? "info" : "error",
-            event: cookies.length > 0 ? "admin_login_cookie_created" : "admin_login_cookie_missing",
-            area: "admin",
-            message: cookies.length > 0
-              ? "Code admin valide et cookie de session généré."
-              : "Code admin valide mais aucun cookie de session n'a été généré.",
-            request,
-            details: { setCookieCount: cookies.length },
-          });
+          if (cookies.length === 0) {
+            await logAppEvent({
+              level: "error",
+              event: "admin_login_no_cookie_generated",
+              area: "admin",
+              message: "UpdateSession n'a généré aucun cookie Set-Cookie.",
+              request,
+            });
+            return json({ ok: false, reason: "session_error" });
+          }
 
-          if (cookies.length === 0) return json({ ok: false, reason: "session_error" });
+          await logAppEvent({
+            level: "info",
+            event: "admin_login_cookie_created",
+            area: "admin",
+            message: "Code admin valide et cookie de session généré.",
+            request,
+            details: { setCookieCount: cookies.length, cookieName: ADMIN_COOKIE_NAME },
+          });
 
           const headers = new Headers({ "content-type": "application/json" });
           for (const c of cookies) headers.append("set-cookie", c);

@@ -164,8 +164,9 @@ function Hero() {
             <h1 className="mt-5 font-display text-5xl sm:text-6xl md:text-7xl leading-[1.05] max-w-3xl">
               Le silence du sud, face aux Îles d'Or
             </h1>
-            <p className="mt-5 max-w-xl text-base sm:text-lg text-primary-foreground/85">
-              Un studio lumineux, une piscine de 18 m, une terrasse plein sud.
+            <p className="mt-5 max-w-xl text-base sm:text-lg text-primary-foreground/85 whitespace-pre-line">
+              Bienvenue au Nid d'Or, studio vue mer sur les hauteurs de Hyères. Perché au Mont des Oiseaux face aux Îles d'Or, Porquerolles et la presqu'île de Giens, c'est l'adresse secrète de ceux qui veulent tout — la mer, le calme, le soleil — sans rien sacrifier.
+              Une piscine de 18m, une terrasse plein sud, un studio pensé pour deux.
               Pour deux, le temps d'une parenthèse au bord de la Méditerranée.
             </p>
             <div className="mt-8 flex flex-wrap gap-3">
