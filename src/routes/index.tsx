@@ -405,8 +405,8 @@ function BookingForm() {
   }
 
   return (
-    <Card className="p-6 sm:p-8 bg-background text-foreground rounded-3xl border-0 shadow-2xl">
-      <form onSubmit={handleSubmit} className="space-y-5">
+    <Card className="p-5 sm:p-8 bg-background text-foreground rounded-3xl border-0 shadow-2xl">
+      <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-5">
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
             <Label className="text-xs uppercase tracking-wider text-muted-foreground">Arrivée — Départ</Label>
