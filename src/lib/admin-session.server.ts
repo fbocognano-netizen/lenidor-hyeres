@@ -47,11 +47,15 @@ export async function getAdminSessionState(request?: Request) {
   const resolvedRequest = request ?? (await currentRequest());
   const { H3Event, getSession } = await import("h3-v2");
   const event = new H3Event(resolvedRequest);
-  const session = await getSession<AdminSession>(event, adminSessionConfig(secret));
+  
   const cookieHeader = resolvedRequest.headers.get("cookie") ?? "";
-
+  const cookiePresent = cookieHeader.includes(`${ADMIN_COOKIE_NAME}=`);
+  
+  // On essaye de récupérer la session
+  const session = await getSession<AdminSession>(event, adminSessionConfig(secret));
+  
   return {
     session,
-    cookiePresent: cookieHeader.includes(`${ADMIN_COOKIE_NAME}=`),
+    cookiePresent,
   };
 }
