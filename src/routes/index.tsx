@@ -34,9 +34,11 @@ function nightlyRate(d: Date): number {
   return 75;
 }
 function computeStay(from: Date, to: Date): { nights: number; nightsTotal: number } {
-  let nights = 0, nightsTotal = 0;
+  let nights = 0,
+    nightsTotal = 0;
   for (let d = new Date(from); d < to; d = new Date(d.getTime() + 86400000)) {
-    nights++; nightsTotal += nightlyRate(d);
+    nights++;
+    nightsTotal += nightlyRate(d);
   }
   return { nights, nightsTotal };
 }
@@ -59,15 +61,19 @@ export const Route = createFileRoute("/")({
           "Réservez en direct au Nid d'Or à Hyères : studio vue mer & piscine, terrasse plein sud, calme assuré. Site officiel, sans intermédiaire. Meilleur Prix assuré",
       },
       { property: "og:title", content: "Le Nid d'Or à Hyères • Studio vue mer & piscine • Site officiel" },
-      { property: "og:description", content: "Réservez en direct au Nid d'Or à Hyères : studio vue mer & piscine, terrasse plein sud, calme assuré. Site officiel, sans intermédiaire. Meilleur Prix assuré" },
+      {
+        property: "og:description",
+        content:
+          "Réservez en direct au Nid d'Or à Hyères : studio vue mer & piscine, terrasse plein sud, calme assuré. Site officiel, sans intermédiaire. Meilleur Prix assuré",
+      },
       { property: "og:type", content: "website" },
-      { property: "og:url", content: "https://lenidor-hyeres.lovable.app/" },
+      { property: "og:url", content: "https://lenidor-hyeres.fr/" },
       { property: "og:image", content: photo1 },
       { name: "twitter:card", content: "summary_large_image" },
       { name: "twitter:image", content: photo1 },
     ],
     links: [
-      { rel: "canonical", href: "https://lenidor-hyeres.lovable.app/" },
+      { rel: "canonical", href: "https://lenidor-hyeres.fr/" },
       { rel: "preconnect", href: "https://fonts.googleapis.com" },
       { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "" },
       {
@@ -84,8 +90,8 @@ export const Route = createFileRoute("/")({
           name: "Le Nid d'Or",
           description:
             "Studio vue mer avec piscine et terrasse plein sud à Hyères, face aux Îles d'Or. Location de vacances en direct.",
-          image: "https://lenidor-hyeres.lovable.app" + photo1,
-          url: "https://lenidor-hyeres.lovable.app/",
+          image: "https://lenidor-hyeres.fr" + photo1,
+          url: "https://lenidor-hyeres.fr/",
           address: {
             "@type": "PostalAddress",
             addressLocality: "Hyères",
@@ -106,7 +112,6 @@ export const Route = createFileRoute("/")({
   }),
   component: Index,
 });
-
 
 function Index() {
   return (
@@ -133,10 +138,18 @@ function Nav() {
           Le Nid d'Or à Hyères
         </a>
         <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
-          <a href="#sejour" className="hover:text-foreground transition">Le studio</a>
-          <a href="#galerie" className="hover:text-foreground transition">Photos</a>
-          <a href="#equipements" className="hover:text-foreground transition">Équipements</a>
-          <a href="#lieu" className="hover:text-foreground transition">Le lieu</a>
+          <a href="#sejour" className="hover:text-foreground transition">
+            Le studio
+          </a>
+          <a href="#galerie" className="hover:text-foreground transition">
+            Photos
+          </a>
+          <a href="#equipements" className="hover:text-foreground transition">
+            Équipements
+          </a>
+          <a href="#lieu" className="hover:text-foreground transition">
+            Le lieu
+          </a>
         </nav>
         <Button asChild size="sm" className="rounded-full">
           <a href="#reserver">Réserver</a>
@@ -163,17 +176,24 @@ function Hero() {
               <MapPin className="h-3 w-3" /> HYÈRES · CÔTE D'AZUR
             </div>
             <h1 className="mt-4 sm:mt-5 font-display text-[2.25rem] sm:text-6xl md:text-7xl leading-[1.08] sm:leading-[1.05] max-w-3xl">
-              Le silence du sud,<br className="hidden sm:inline" /> face aux Îles d'Or
+              Le silence du sud,
+              <br className="hidden sm:inline" /> face aux Îles d'Or
             </h1>
             <p className="mt-3 sm:mt-5 max-w-xl text-sm sm:text-lg text-primary-foreground/90 whitespace-pre-line">
-              18m de piscine vue mer. Une terrasse plein sud.
-              Les îles juste là, devant vous. Pour deux ❤️
+              18m de piscine vue mer. Une terrasse plein sud. Les îles juste là, devant vous. Pour deux ❤️
             </p>
             <div className="mt-5 sm:mt-8 flex flex-wrap gap-3">
-              <Button asChild className="rounded-full bg-background text-foreground hover:bg-background/90 h-11 sm:h-12 px-5 sm:px-8 text-sm sm:text-base">
+              <Button
+                asChild
+                className="rounded-full bg-background text-foreground hover:bg-background/90 h-11 sm:h-12 px-5 sm:px-8 text-sm sm:text-base"
+              >
                 <a href="#reserver">Vérifier les disponibilités</a>
               </Button>
-              <Button asChild variant="outline" className="rounded-full bg-transparent border-background/40 text-primary-foreground hover:bg-background/15 hover:text-primary-foreground h-11 sm:h-12 px-5 sm:px-8 text-sm sm:text-base">
+              <Button
+                asChild
+                variant="outline"
+                className="rounded-full bg-transparent border-background/40 text-primary-foreground hover:bg-background/15 hover:text-primary-foreground h-11 sm:h-12 px-5 sm:px-8 text-sm sm:text-base"
+              >
                 <a href="#galerie">Voir le lieu</a>
               </Button>
             </div>
@@ -195,10 +215,11 @@ function Intro() {
           </h2>
           <div className="mt-5 sm:mt-6 space-y-4 text-muted-foreground text-[15px] leading-relaxed whitespace-pre-line">
             <p>
-              Niché sur les hauteurs de Hyères dans une résidence privée, ce studio a été pensé comme une retraite à deux : un coin nuit confortable, une cuisine équipée, et surtout cette terrasse plein sud d'où l'on suit le ballet des voiliers entre Port-Cros et Porquerolles.
-
-
-              Le matin, le soleil entre doucement. L'après-midi se passe au bord de la piscine de 18m, à l'ombre des pins, face à la baie de Hyères. Le soir, la lumière dorée du sud descend sur la mer — et c'est tout.
+              Niché sur les hauteurs de Hyères dans une résidence privée, ce studio a été pensé comme une retraite à
+              deux : un coin nuit confortable, une cuisine équipée, et surtout cette terrasse plein sud d'où l'on suit
+              le ballet des voiliers entre Port-Cros et Porquerolles. Le matin, le soleil entre doucement. L'après-midi
+              se passe au bord de la piscine de 18m, à l'ombre des pins, face à la baie de Hyères. Le soir, la lumière
+              dorée du sud descend sur la mer — et c'est tout.
             </p>
           </div>
         </div>
@@ -218,7 +239,9 @@ function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; va
     <Card className="p-4 sm:p-5 bg-secondary/60 border-border/50 shadow-none">
       <div className="text-muted-foreground">{icon}</div>
       <div className="mt-2 sm:mt-3 font-display text-2xl sm:text-3xl">{value}</div>
-      <div className="text-[11px] sm:text-xs uppercase tracking-wider text-muted-foreground mt-0.5 sm:mt-1">{label}</div>
+      <div className="text-[11px] sm:text-xs uppercase tracking-wider text-muted-foreground mt-0.5 sm:mt-1">
+        {label}
+      </div>
     </Card>
   );
 }
@@ -265,7 +288,10 @@ function Testimonials() {
         </div>
         <div className="grid md:grid-cols-2 gap-4 sm:gap-6">
           {REVIEWS.map((r) => (
-            <Card key={r.name} className="p-5 sm:p-7 bg-background border-border/60 rounded-2xl shadow-none flex flex-col">
+            <Card
+              key={r.name}
+              className="p-5 sm:p-7 bg-background border-border/60 rounded-2xl shadow-none flex flex-col"
+            >
               <div className="flex items-center gap-1 text-[var(--color-accent)]">
                 {Array.from({ length: 5 }).map((_, i) => (
                   <Star key={i} className="h-3.5 w-3.5 fill-current" />
@@ -289,8 +315,6 @@ function Testimonials() {
   );
 }
 
-
-
 function Gallery() {
   return (
     <section id="galerie" className="bg-secondary/40 py-14 sm:py-20 md:py-24">
@@ -302,10 +326,26 @@ function Gallery() {
           </div>
         </div>
         <div className="grid grid-cols-4 grid-rows-2 gap-2 sm:gap-3 md:gap-4 h-[320px] sm:h-[420px] md:h-[560px]">
-          <img src={PHOTOS[0]} alt="Vue mer depuis le studio" className="col-span-2 row-span-2 h-full w-full object-cover rounded-2xl" />
-          <img src={PHOTOS[1]} alt="Piscine de 18 mètres" className="col-span-2 row-span-1 h-full w-full object-cover rounded-2xl" />
-          <img src={PHOTOS[2]} alt="Terrasse plein sud" className="col-span-1 row-span-1 h-full w-full object-cover rounded-2xl" />
-          <img src={PHOTOS[3]} alt="Intérieur du studio" className="col-span-1 row-span-1 h-full w-full object-cover rounded-2xl" />
+          <img
+            src={PHOTOS[0]}
+            alt="Vue mer depuis le studio"
+            className="col-span-2 row-span-2 h-full w-full object-cover rounded-2xl"
+          />
+          <img
+            src={PHOTOS[1]}
+            alt="Piscine de 18 mètres"
+            className="col-span-2 row-span-1 h-full w-full object-cover rounded-2xl"
+          />
+          <img
+            src={PHOTOS[2]}
+            alt="Terrasse plein sud"
+            className="col-span-1 row-span-1 h-full w-full object-cover rounded-2xl"
+          />
+          <img
+            src={PHOTOS[3]}
+            alt="Intérieur du studio"
+            className="col-span-1 row-span-1 h-full w-full object-cover rounded-2xl"
+          />
         </div>
         <div className="mt-3 sm:mt-4">
           <img src={PHOTOS[4]} alt="Détail du studio" className="h-40 sm:h-64 w-full object-cover rounded-2xl" />
@@ -327,7 +367,9 @@ function Amenities() {
   return (
     <section id="equipements" className="mx-auto max-w-6xl px-5 py-14 sm:py-20 md:py-24">
       <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Équipements</p>
-      <h2 className="mt-2 sm:mt-3 font-display text-[1.75rem] sm:text-4xl md:text-5xl max-w-2xl">Tout ce qu'il faut, rien de superflu.</h2>
+      <h2 className="mt-2 sm:mt-3 font-display text-[1.75rem] sm:text-4xl md:text-5xl max-w-2xl">
+        Tout ce qu'il faut, rien de superflu.
+      </h2>
       <div className="mt-8 sm:mt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-2 sm:gap-y-6">
         {items.map((it) => (
           <div key={it.label} className="flex items-center gap-3 py-3 sm:py-4 border-t border-border/60">
@@ -346,18 +388,28 @@ function BookingSection() {
       <div className="mx-auto max-w-6xl px-5 grid lg:grid-cols-12 gap-8 lg:gap-12">
         <div className="lg:col-span-5">
           <p className="text-xs uppercase tracking-[0.2em] text-primary-foreground/60">Réservation directe</p>
-          <h2 className="mt-2 sm:mt-3 font-display text-[1.75rem] sm:text-4xl md:text-5xl">Réservez sans commission.</h2>
+          <h2 className="mt-2 sm:mt-3 font-display text-[1.75rem] sm:text-4xl md:text-5xl">
+            Réservez sans commission.
+          </h2>
           <p className="mt-4 sm:mt-5 text-primary-foreground/75 leading-relaxed text-[15px]">
-            Calendrier synchronisé avec Airbnb en temps réel. Choisissez vos dates, envoyez votre demande,
-            je confirme sous 24 h avec les modalités de paiement.
+            Calendrier synchronisé avec Airbnb en temps réel. Choisissez vos dates, envoyez votre demande, je confirme
+            sous 24 h avec les modalités de paiement.
           </p>
           <ul className="mt-6 sm:mt-8 space-y-2 sm:space-y-3 text-sm text-primary-foreground/85">
-            <li className="flex gap-3"><span className="text-[var(--color-accent)]">—</span> Tarif direct, sans frais de service</li>
-            <li className="flex gap-3"><span className="text-[var(--color-accent)]">—</span> Échange direct avec Joëlle, votre hôte</li>
-            <li className="flex gap-3"><span className="text-[var(--color-accent)]">—</span> Minimum 2 nuits · 2 voyageurs</li>
+            <li className="flex gap-3">
+              <span className="text-[var(--color-accent)]">—</span> Tarif direct, sans frais de service
+            </li>
+            <li className="flex gap-3">
+              <span className="text-[var(--color-accent)]">—</span> Échange direct avec Joëlle, votre hôte
+            </li>
+            <li className="flex gap-3">
+              <span className="text-[var(--color-accent)]">—</span> Minimum 2 nuits · 2 voyageurs
+            </li>
           </ul>
           <div className="mt-6 pt-6 sm:mt-10 sm:pt-8 border-t border-primary-foreground/15">
-            <p className="text-xs uppercase tracking-[0.2em] text-primary-foreground/60">Vous préférez une plateforme ?</p>
+            <p className="text-xs uppercase tracking-[0.2em] text-primary-foreground/60">
+              Vous préférez une plateforme ?
+            </p>
             <p className="mt-2 sm:mt-3 text-sm text-primary-foreground/70">Réservez aussi via :</p>
             <div className="mt-3 sm:mt-4 flex flex-wrap gap-3">
               <a
@@ -418,9 +470,7 @@ function BookingForm() {
 
     // A day is "occupied" if it's a booked night: start <= d < end.
     // The end date itself is a turnover (checkout) day and stays free.
-    const occupied = ranges.some(
-      (r) => day >= r.start && day < r.end,
-    );
+    const occupied = ranges.some((r) => day >= r.start && day < r.end);
 
     // When selecting the checkout date, allow the next booking's check-in
     // day as a valid checkout (same-day turnover, hotel-style).
@@ -465,7 +515,11 @@ function BookingForm() {
         },
       });
       toast.success("Demande envoyée ! Vous recevrez une confirmation sous 24 h.");
-      setName(""); setEmail(""); setPhone(""); setMessage(""); setRange(undefined);
+      setName("");
+      setEmail("");
+      setPhone("");
+      setMessage("");
+      setRange(undefined);
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Une erreur est survenue");
     } finally {
@@ -515,40 +569,100 @@ function BookingForm() {
           <div>
             <Label className="text-xs uppercase tracking-wider text-muted-foreground">Voyageurs</Label>
             <div className="mt-2 flex items-center gap-2 h-11 rounded-xl border border-input px-3">
-              <Button type="button" variant="ghost" size="sm" aria-label="Diminuer le nombre de voyageurs" className="h-7 w-7 p-0 rounded-full" onClick={() => setGuests(Math.max(1, guests - 1))}>−</Button>
-              <div className="flex-1 text-center text-sm">{guests} voyageur{guests > 1 ? "s" : ""}</div>
-              <Button type="button" variant="ghost" size="sm" aria-label="Augmenter le nombre de voyageurs" className="h-7 w-7 p-0 rounded-full" onClick={() => setGuests(Math.min(2, guests + 1))}>+</Button>
-
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                aria-label="Diminuer le nombre de voyageurs"
+                className="h-7 w-7 p-0 rounded-full"
+                onClick={() => setGuests(Math.max(1, guests - 1))}
+              >
+                −
+              </Button>
+              <div className="flex-1 text-center text-sm">
+                {guests} voyageur{guests > 1 ? "s" : ""}
+              </div>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                aria-label="Augmenter le nombre de voyageurs"
+                className="h-7 w-7 p-0 rounded-full"
+                onClick={() => setGuests(Math.min(2, guests + 1))}
+              >
+                +
+              </Button>
             </div>
           </div>
         </div>
 
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
-            <Label htmlFor="name" className="text-xs uppercase tracking-wider text-muted-foreground">Nom complet</Label>
-            <Input id="name" value={name} onChange={(e) => setName(e.target.value)} required className="mt-2 h-11 rounded-xl" />
+            <Label htmlFor="name" className="text-xs uppercase tracking-wider text-muted-foreground">
+              Nom complet
+            </Label>
+            <Input
+              id="name"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              required
+              className="mt-2 h-11 rounded-xl"
+            />
           </div>
           <div>
-            <Label htmlFor="email" className="text-xs uppercase tracking-wider text-muted-foreground">Email</Label>
-            <Input id="email" type="email" value={email} onChange={(e) => setEmail(e.target.value)} required className="mt-2 h-11 rounded-xl" />
+            <Label htmlFor="email" className="text-xs uppercase tracking-wider text-muted-foreground">
+              Email
+            </Label>
+            <Input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              required
+              className="mt-2 h-11 rounded-xl"
+            />
           </div>
         </div>
 
         <div>
-          <Label htmlFor="phone" className="text-xs uppercase tracking-wider text-muted-foreground">Téléphone (optionnel)</Label>
+          <Label htmlFor="phone" className="text-xs uppercase tracking-wider text-muted-foreground">
+            Téléphone (optionnel)
+          </Label>
           <Input id="phone" value={phone} onChange={(e) => setPhone(e.target.value)} className="mt-2 h-11 rounded-xl" />
         </div>
 
         <div>
-          <Label htmlFor="msg" className="text-xs uppercase tracking-wider text-muted-foreground">Message (optionnel)</Label>
-          <Textarea id="msg" value={message} onChange={(e) => setMessage(e.target.value)} rows={3} className="mt-2 rounded-xl" placeholder="Heure d'arrivée, occasion spéciale…" />
+          <Label htmlFor="msg" className="text-xs uppercase tracking-wider text-muted-foreground">
+            Message (optionnel)
+          </Label>
+          <Textarea
+            id="msg"
+            value={message}
+            onChange={(e) => setMessage(e.target.value)}
+            rows={3}
+            className="mt-2 rounded-xl"
+            placeholder="Heure d'arrivée, occasion spéciale…"
+          />
         </div>
 
         <div className="rounded-xl bg-muted/40 p-3 text-xs text-muted-foreground space-y-1">
-          <div>Tarifs par nuit : <span className="text-foreground font-medium">75 €</span> basse · <span className="text-foreground font-medium">95 €</span> moyenne (avr-juin, sept) · <span className="text-foreground font-medium">130 €</span> haute (juil-août)</div>
-          <div>+ <span className="text-foreground font-medium">{CLEANING_FEE} €</span> de frais de ménage (une fois par séjour)</div>
-          <div>+ <span className="text-foreground font-medium">~{TOURIST_TAX_PER_PERSON_NIGHT} €</span> de taxe de séjour / personne / nuit (collectée à l'arrivée, reversée à la commune)</div>
-          <div>Caution de <span className="text-foreground font-medium">{DEPOSIT_CASH} €</span> en espèces à régler à l'arrivée (restituée au départ)</div>
+          <div>
+            Tarifs par nuit : <span className="text-foreground font-medium">75 €</span> basse ·{" "}
+            <span className="text-foreground font-medium">95 €</span> moyenne (avr-juin, sept) ·{" "}
+            <span className="text-foreground font-medium">130 €</span> haute (juil-août)
+          </div>
+          <div>
+            + <span className="text-foreground font-medium">{CLEANING_FEE} €</span> de frais de ménage (une fois par
+            séjour)
+          </div>
+          <div>
+            + <span className="text-foreground font-medium">~{TOURIST_TAX_PER_PERSON_NIGHT} €</span> de taxe de séjour /
+            personne / nuit (collectée à l'arrivée, reversée à la commune)
+          </div>
+          <div>
+            Caution de <span className="text-foreground font-medium">{DEPOSIT_CASH} €</span> en espèces à régler à
+            l'arrivée (restituée au départ)
+          </div>
         </div>
 
         <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-4 pt-3 border-t border-border">
@@ -559,11 +673,16 @@ function BookingForm() {
             </div>
             {nights > 0 && (
               <div className="text-xs text-muted-foreground mt-1">
-                {nights} nuit{nights > 1 ? "s" : ""} · {nightsTotal} € ({avgRate} €/nuit moy.) + {CLEANING_FEE} € ménage + {touristTax} € taxe séjour
+                {nights} nuit{nights > 1 ? "s" : ""} · {nightsTotal} € ({avgRate} €/nuit moy.) + {CLEANING_FEE} € ménage
+                + {touristTax} € taxe séjour
               </div>
             )}
           </div>
-          <Button type="submit" disabled={submitting} className="rounded-full h-12 px-6 sm:px-8 w-full sm:w-auto shrink-0">
+          <Button
+            type="submit"
+            disabled={submitting}
+            className="rounded-full h-12 px-6 sm:px-8 w-full sm:w-auto shrink-0"
+          >
             {submitting ? "Envoi…" : "Demander à réserver"}
           </Button>
         </div>
@@ -578,18 +697,30 @@ function Location() {
       <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
         <div>
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Le lieu</p>
-          <h2 className="mt-2 sm:mt-3 font-display text-[1.75rem] sm:text-4xl md:text-5xl">Hyères, porte des Îles d'Or.</h2>
+          <h2 className="mt-2 sm:mt-3 font-display text-[1.75rem] sm:text-4xl md:text-5xl">
+            Hyères, porte des Îles d'Or.
+          </h2>
           <p className="mt-4 sm:mt-5 text-muted-foreground leading-relaxed text-[15px]">
             À 10 minutes en voiture des plages de l'Almanarre, à 15 minutes du port pour Porquerolles, à 15 minutes du
-            centre historique.
-            
-            Tout est proche si vous le désirez, mais vous êtes au calme et au paradis en même temps.
+            centre historique. Tout est proche si vous le désirez, mais vous êtes au calme et au paradis en même temps.
           </p>
           <ul className="mt-6 sm:mt-8 space-y-2 sm:space-y-3 text-sm">
-            <li className="flex justify-between border-b border-border/60 pb-2 sm:pb-3"><span>Plage de l'Almanarre</span><span className="text-muted-foreground">10 min</span></li>
-            <li className="flex justify-between border-b border-border/60 pb-2 sm:pb-3"><span>Port de la Tour Fondue</span><span className="text-muted-foreground">15 min</span></li>
-            <li className="flex justify-between border-b border-border/60 pb-2 sm:pb-3"><span>Centre historique</span><span className="text-muted-foreground">15 min</span></li>
-            <li className="flex justify-between border-b border-border/60 pb-2 sm:pb-3"><span>Aéroport Toulon-Hyères</span><span className="text-muted-foreground">11 min</span></li>
+            <li className="flex justify-between border-b border-border/60 pb-2 sm:pb-3">
+              <span>Plage de l'Almanarre</span>
+              <span className="text-muted-foreground">10 min</span>
+            </li>
+            <li className="flex justify-between border-b border-border/60 pb-2 sm:pb-3">
+              <span>Port de la Tour Fondue</span>
+              <span className="text-muted-foreground">15 min</span>
+            </li>
+            <li className="flex justify-between border-b border-border/60 pb-2 sm:pb-3">
+              <span>Centre historique</span>
+              <span className="text-muted-foreground">15 min</span>
+            </li>
+            <li className="flex justify-between border-b border-border/60 pb-2 sm:pb-3">
+              <span>Aéroport Toulon-Hyères</span>
+              <span className="text-muted-foreground">11 min</span>
+            </li>
           </ul>
         </div>
         <div className="aspect-[4/5] overflow-hidden rounded-3xl">
@@ -600,7 +731,8 @@ function Location() {
         <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Sur la carte</p>
         <h3 className="mt-2 sm:mt-3 font-display text-2xl sm:text-3xl md:text-4xl">L'emplacement du studio</h3>
         <p className="mt-2 sm:mt-3 text-muted-foreground max-w-2xl text-[15px]">
-          Quartier du Mont des Oiseaux, sur les hauteurs de Hyères — à quelques minutes des plages et du port pour Porquerolles.
+          Quartier du Mont des Oiseaux, sur les hauteurs de Hyères — à quelques minutes des plages et du port pour
+          Porquerolles.
         </p>
         <div className="mt-5 sm:mt-8 overflow-hidden rounded-3xl border border-border/60 shadow-sm">
           <iframe
@@ -613,7 +745,12 @@ function Location() {
           />
         </div>
         <p className="mt-3 sm:mt-4 text-sm text-muted-foreground">
-          <a href="https://maps.app.goo.gl/zZbtek49skWEsvuB7" target="_blank" rel="noopener noreferrer" className="underline hover:text-foreground transition">
+          <a
+            href="https://maps.app.goo.gl/zZbtek49skWEsvuB7"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="underline hover:text-foreground transition"
+          >
             Ouvrir dans Google Maps ↗
           </a>
         </p>
@@ -639,7 +776,6 @@ function Footer() {
           <div className="text-xs uppercase tracking-wider text-muted-foreground">Bon à savoir</div>
           <p className="mt-2 text-muted-foreground">Arrivée à partir de 16 h · Départ avant 11 h</p>
           <p className="text-muted-foreground">Non-fumeur · Animaux non admis</p>
-          
         </div>
       </div>
       <div className="border-t border-border/60 py-5 text-center text-xs text-muted-foreground">
