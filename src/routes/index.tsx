@@ -151,7 +151,7 @@ function Nav() {
             Le lieu
           </a>
         </nav>
-        <Button asChild size="sm" className="rounded-full">
+        <Button asChild variant="cta" className="rounded-full h-10 px-5 text-sm sm:h-11 sm:px-6 sm:text-base shadow-lg">
           <a href="#reserver">Réserver</a>
         </Button>
       </div>
