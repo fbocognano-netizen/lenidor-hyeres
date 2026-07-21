@@ -750,7 +750,7 @@ function Location() {
           <Button
             asChild
             variant="cta"
-            className="rounded-full h-12 px-6 text-sm sm:h-13 sm:px-8 sm:text-base"
+            className="rounded-full h-12 px-6 text-sm sm:h-14 sm:px-8 sm:text-base"
           >
             <a
               href="https://maps.app.goo.gl/zZbtek49skWEsvuB7"
