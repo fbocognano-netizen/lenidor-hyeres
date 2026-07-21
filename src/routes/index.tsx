@@ -746,16 +746,21 @@ function Location() {
             allowFullScreen
           />
         </div>
-        <p className="mt-3 sm:mt-4 text-sm text-muted-foreground">
-          <a
-            href="https://maps.app.goo.gl/zZbtek49skWEsvuB7"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline hover:text-foreground transition"
+        <div className="mt-4 sm:mt-6">
+          <Button
+            asChild
+            variant="cta"
+            className="rounded-full h-12 px-6 text-sm sm:h-13 sm:px-8 sm:text-base"
           >
-            Ouvrir dans Google Maps ↗
-          </a>
-        </p>
+            <a
+              href="https://maps.app.goo.gl/zZbtek49skWEsvuB7"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Ouvrir dans Google Maps <span aria-hidden>↗</span>
+            </a>
+          </Button>
+        </div>
       </div>
     </section>
   );
