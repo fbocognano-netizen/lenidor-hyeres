@@ -80,6 +80,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         charSet: "utf-8",
       },
       {
+        name: "robots",
+        content: "index, follow, max-image-preview:large",
+      },
+      {
         name: "viewport",
         content: "width=device-width, initial-scale=1",
       },
@@ -178,6 +182,19 @@ function RootShell({ children }: { children: ReactNode }) {
                 f.parentNode.insertBefore(j,f);
               })(window,document,'script','dataLayer','GTM-M8GFVC9G');
             `,
+          }}
+        />
+
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              url: "https://lenidor-hyeres.fr/",
+              name: "Le Nid d'Or",
+              alternateName: ["Le Nid d'Or à Hyères", "Nid d'Or Hyères"],
+            }),
           }}
         />
 
