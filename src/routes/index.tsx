@@ -186,14 +186,14 @@ function Hero() {
               <Button
                 asChild
                 variant="cta"
-                className="rounded-full h-13 px-6 text-base w-full sm:w-auto sm:h-14 sm:px-8 sm:text-lg"
+                className="rounded-full h-14 px-6 text-base w-full sm:w-auto sm:h-16 sm:px-8 sm:text-lg"
               >
                 <a href="#reserver">Vérifier les disponibilités</a>
               </Button>
               <Button
                 asChild
                 variant="outline"
-                className="rounded-full bg-background/10 border-background/50 text-primary-foreground hover:bg-background/25 hover:text-primary-foreground hover:border-background/70 h-13 px-6 text-base w-full sm:w-auto sm:h-14 sm:px-8 sm:text-lg"
+                className="rounded-full bg-background/10 border-background/50 text-primary-foreground hover:bg-background/25 hover:text-primary-foreground hover:border-background/70 h-14 px-6 text-base w-full sm:w-auto sm:h-16 sm:px-8 sm:text-lg"
               >
                 <a href="#galerie">Voir le lieu</a>
               </Button>
