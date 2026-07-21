@@ -150,6 +150,12 @@ function Nav() {
           <a href="#lieu" className="hover:text-foreground transition">
             Le lieu
           </a>
+          <Link
+            to="/guide-plages-hyeres"
+            className="hover:text-foreground transition"
+          >
+            Plages
+          </Link>
         </nav>
         <Button asChild variant="cta" className="rounded-full h-11 px-5 text-sm sm:h-12 sm:px-6 sm:text-base shadow-lg">
           <a href="#reserver">Réserver</a>
