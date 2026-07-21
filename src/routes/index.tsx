@@ -417,7 +417,7 @@ function BookingSection() {
                 href="https://www.airbnb.fr/rooms/1526120631746320177"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-full bg-primary-foreground text-deep hover:bg-primary-foreground/90 transition px-6 py-3 text-sm font-semibold shadow-lg"
+                className="inline-flex items-center gap-2 rounded-full bg-primary-foreground text-deep hover:bg-primary-foreground/90 transition px-7 h-12 text-sm sm:px-8 sm:text-base font-semibold shadow-lg"
               >
                 Airbnb <span aria-hidden>↗</span>
               </a>
@@ -425,7 +425,7 @@ function BookingSection() {
                 href="https://www.leboncoin.fr/ad/locations_saisonnieres/3216372939"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-full bg-primary-foreground text-deep hover:bg-primary-foreground/90 transition px-6 py-3 text-sm font-semibold shadow-lg"
+                className="inline-flex items-center gap-2 rounded-full bg-primary-foreground text-deep hover:bg-primary-foreground/90 transition px-7 h-12 text-sm sm:px-8 sm:text-base font-semibold shadow-lg"
               >
                 Leboncoin <span aria-hidden>↗</span>
               </a>
