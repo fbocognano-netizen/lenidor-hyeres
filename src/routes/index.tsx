@@ -151,7 +151,7 @@ function Nav() {
             Le lieu
           </a>
         </nav>
-        <Button asChild size="sm" className="rounded-full">
+        <Button asChild variant="cta" className="rounded-full h-11 px-5 text-sm sm:h-12 sm:px-6 sm:text-base shadow-lg">
           <a href="#reserver">Réserver</a>
         </Button>
       </div>
@@ -182,17 +182,18 @@ function Hero() {
             <p className="mt-3 sm:mt-5 max-w-xl text-sm sm:text-lg text-primary-foreground/90 whitespace-pre-line">
               18m de piscine vue mer. Une terrasse plein sud. Les îles juste là, devant vous. Pour deux ❤️
             </p>
-            <div className="mt-5 sm:mt-8 flex flex-wrap gap-3">
+            <div className="mt-5 sm:mt-8 flex flex-col sm:flex-row gap-3">
               <Button
                 asChild
-                className="rounded-full bg-background text-foreground hover:bg-background/90 h-11 sm:h-12 px-5 sm:px-8 text-sm sm:text-base"
+                variant="cta"
+                className="rounded-full h-14 px-6 text-base w-full sm:w-auto sm:h-16 sm:px-8 sm:text-lg"
               >
                 <a href="#reserver">Vérifier les disponibilités</a>
               </Button>
               <Button
                 asChild
                 variant="outline"
-                className="rounded-full bg-transparent border-background/40 text-primary-foreground hover:bg-background/15 hover:text-primary-foreground h-11 sm:h-12 px-5 sm:px-8 text-sm sm:text-base"
+                className="rounded-full bg-background/10 border-background/50 text-primary-foreground hover:bg-background/25 hover:text-primary-foreground hover:border-background/70 h-14 px-6 text-base w-full sm:w-auto sm:h-16 sm:px-8 sm:text-lg"
               >
                 <a href="#galerie">Voir le lieu</a>
               </Button>
@@ -416,7 +417,7 @@ function BookingSection() {
                 href="https://www.airbnb.fr/rooms/1526120631746320177"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 transition px-5 py-2.5 text-sm font-medium"
+                className="inline-flex items-center gap-2 rounded-full bg-primary-foreground text-deep hover:bg-primary-foreground/90 transition px-7 h-12 text-sm sm:px-8 sm:text-base font-semibold shadow-lg"
               >
                 Airbnb <span aria-hidden>↗</span>
               </a>
@@ -424,7 +425,7 @@ function BookingSection() {
                 href="https://www.leboncoin.fr/ad/locations_saisonnieres/3216372939"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="inline-flex items-center gap-2 rounded-full bg-primary-foreground/10 hover:bg-primary-foreground/20 transition px-5 py-2.5 text-sm font-medium"
+                className="inline-flex items-center gap-2 rounded-full bg-primary-foreground text-deep hover:bg-primary-foreground/90 transition px-7 h-12 text-sm sm:px-8 sm:text-base font-semibold shadow-lg"
               >
                 Leboncoin <span aria-hidden>↗</span>
               </a>
@@ -681,7 +682,8 @@ function BookingForm() {
           <Button
             type="submit"
             disabled={submitting}
-            className="rounded-full h-12 px-6 sm:px-8 w-full sm:w-auto shrink-0"
+            variant="cta"
+            className="rounded-full h-14 px-8 text-base w-full sm:w-auto sm:h-16 sm:px-10 sm:text-lg shrink-0"
           >
             {submitting ? "Envoi…" : "Demander à réserver"}
           </Button>
@@ -744,16 +746,21 @@ function Location() {
             allowFullScreen
           />
         </div>
-        <p className="mt-3 sm:mt-4 text-sm text-muted-foreground">
-          <a
-            href="https://maps.app.goo.gl/zZbtek49skWEsvuB7"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="underline hover:text-foreground transition"
+        <div className="mt-4 sm:mt-6">
+          <Button
+            asChild
+            variant="cta"
+            className="rounded-full h-12 px-6 text-sm sm:h-14 sm:px-8 sm:text-base"
           >
-            Ouvrir dans Google Maps ↗
-          </a>
-        </p>
+            <a
+              href="https://maps.app.goo.gl/zZbtek49skWEsvuB7"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Ouvrir dans Google Maps <span aria-hidden>↗</span>
+            </a>
+          </Button>
+        </div>
       </div>
     </section>
   );

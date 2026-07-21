@@ -39,6 +39,9 @@
   --color-sand: var(--sand);
   --color-sea: var(--sea);
   --color-deep: var(--deep);
+  --color-cta: var(--cta);
+  --color-cta-foreground: var(--cta-foreground);
+  --color-cta-glow: var(--cta-glow);
 }
 
 :root {
@@ -76,6 +79,11 @@
   --sand: oklch(0.92 0.025 80);
   --sea: oklch(0.65 0.08 215);
   --deep: oklch(0.28 0.06 230);
+
+  /* Lumière du sud — CTA doré hautement contrasté */
+  --cta: oklch(0.78 0.13 80);
+  --cta-foreground: oklch(0.22 0.04 230);
+  --cta-glow: oklch(0.72 0.14 75);
 }
 
 .dark {
@@ -98,6 +106,10 @@
   --border: oklch(1 0 0 / 12%);
   --input: oklch(1 0 0 / 15%);
   --ring: oklch(0.7 0.05 200);
+
+  --cta: oklch(0.82 0.12 80);
+  --cta-foreground: oklch(0.18 0.03 230);
+  --cta-glow: oklch(0.76 0.13 75);
 }
 
 @layer base {
