@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as GuidePlagesHyeresRouteImport } from './routes/guide-plages-hyeres'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiAppLogRouteImport } from './routes/api/app-log'
@@ -19,6 +20,11 @@ import { Route as ApiAdminLoginRouteImport } from './routes/api/admin/login'
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuidePlagesHyeresRoute = GuidePlagesHyeresRouteImport.update({
+  id: '/guide-plages-hyeres',
+  path: '/guide-plages-hyeres',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -50,6 +56,7 @@ const ApiAdminLoginRoute = ApiAdminLoginRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/guide-plages-hyeres': typeof GuidePlagesHyeresRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/app-log': typeof ApiAppLogRoute
   '/api/admin/login': typeof ApiAdminLoginRoute
@@ -58,6 +65,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/guide-plages-hyeres': typeof GuidePlagesHyeresRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/app-log': typeof ApiAppLogRoute
   '/api/admin/login': typeof ApiAdminLoginRoute
@@ -67,6 +75,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/admin': typeof AdminRoute
+  '/guide-plages-hyeres': typeof GuidePlagesHyeresRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/app-log': typeof ApiAppLogRoute
   '/api/admin/login': typeof ApiAdminLoginRoute
@@ -77,6 +86,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/admin'
+    | '/guide-plages-hyeres'
     | '/sitemap.xml'
     | '/api/app-log'
     | '/api/admin/login'
@@ -85,6 +95,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/admin'
+    | '/guide-plages-hyeres'
     | '/sitemap.xml'
     | '/api/app-log'
     | '/api/admin/login'
@@ -93,6 +104,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/admin'
+    | '/guide-plages-hyeres'
     | '/sitemap.xml'
     | '/api/app-log'
     | '/api/admin/login'
@@ -102,6 +114,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AdminRoute: typeof AdminRoute
+  GuidePlagesHyeresRoute: typeof GuidePlagesHyeresRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiAppLogRoute: typeof ApiAppLogRoute
   ApiAdminLoginRoute: typeof ApiAdminLoginRoute
@@ -115,6 +128,13 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guide-plages-hyeres': {
+      id: '/guide-plages-hyeres'
+      path: '/guide-plages-hyeres'
+      fullPath: '/guide-plages-hyeres'
+      preLoaderRoute: typeof GuidePlagesHyeresRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -158,6 +178,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AdminRoute: AdminRoute,
+  GuidePlagesHyeresRoute: GuidePlagesHyeresRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiAppLogRoute: ApiAppLogRoute,
   ApiAdminLoginRoute: ApiAdminLoginRoute,
@@ -166,13 +187,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
