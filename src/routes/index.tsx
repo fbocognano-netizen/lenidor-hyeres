@@ -182,17 +182,18 @@ function Hero() {
             <p className="mt-3 sm:mt-5 max-w-xl text-sm sm:text-lg text-primary-foreground/90 whitespace-pre-line">
               18m de piscine vue mer. Une terrasse plein sud. Les îles juste là, devant vous. Pour deux ❤️
             </p>
-            <div className="mt-5 sm:mt-8 flex flex-wrap gap-3">
+            <div className="mt-5 sm:mt-8 flex flex-col sm:flex-row gap-3">
               <Button
                 asChild
-                className="rounded-full bg-background text-foreground hover:bg-background/90 h-11 sm:h-12 px-5 sm:px-8 text-sm sm:text-base"
+                variant="cta"
+                className="rounded-full h-13 px-6 text-base w-full sm:w-auto sm:h-14 sm:px-8 sm:text-lg"
               >
                 <a href="#reserver">Vérifier les disponibilités</a>
               </Button>
               <Button
                 asChild
                 variant="outline"
-                className="rounded-full bg-transparent border-background/40 text-primary-foreground hover:bg-background/15 hover:text-primary-foreground h-11 sm:h-12 px-5 sm:px-8 text-sm sm:text-base"
+                className="rounded-full bg-background/10 border-background/50 text-primary-foreground hover:bg-background/25 hover:text-primary-foreground hover:border-background/70 h-13 px-6 text-base w-full sm:w-auto sm:h-14 sm:px-8 sm:text-lg"
               >
                 <a href="#galerie">Voir le lieu</a>
               </Button>
