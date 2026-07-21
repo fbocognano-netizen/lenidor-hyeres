@@ -79,6 +79,11 @@
   --sand: oklch(0.92 0.025 80);
   --sea: oklch(0.65 0.08 215);
   --deep: oklch(0.28 0.06 230);
+
+  /* Lumière du sud — CTA doré hautement contrasté */
+  --cta: oklch(0.78 0.13 80);
+  --cta-foreground: oklch(0.22 0.04 230);
+  --cta-glow: oklch(0.72 0.14 75);
 }
 
 .dark {
