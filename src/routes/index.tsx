@@ -121,6 +121,7 @@ function Index() {
       <Hero />
       <Intro />
       <Testimonials />
+      <BeachesGuide />
       <Gallery />
       <Amenities />
       <BookingSection />
