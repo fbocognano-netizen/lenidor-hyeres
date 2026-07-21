@@ -1,4 +1,4 @@
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
@@ -121,6 +121,7 @@ function Index() {
       <Hero />
       <Intro />
       <Testimonials />
+      <BeachesGuide />
       <Gallery />
       <Amenities />
       <BookingSection />
@@ -150,6 +151,12 @@ function Nav() {
           <a href="#lieu" className="hover:text-foreground transition">
             Le lieu
           </a>
+          <Link
+            to="/guide-plages-hyeres"
+            className="hover:text-foreground transition"
+          >
+            Plages
+          </Link>
         </nav>
         <Button asChild variant="cta" className="rounded-full h-11 px-5 text-sm sm:h-12 sm:px-6 sm:text-base shadow-lg">
           <a href="#reserver">Réserver</a>
@@ -316,8 +323,51 @@ function Testimonials() {
   );
 }
 
+function BeachesGuide() {
+  return (
+    <section className="mx-auto max-w-6xl px-5 py-14 sm:py-20 md:py-24">
+      <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
+        <div>
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Guide</p>
+          <h2 className="mt-3 font-display text-[1.75rem] sm:text-4xl md:text-5xl leading-[1.15]">
+            Les plus belles plages de Hyères
+          </h2>
+          <p className="mt-5 sm:mt-6 text-muted-foreground text-[15px] leading-relaxed">
+            De la célèbre <strong>plage de l'Almanarre</strong> à 10 minutes, aux criques de Porquerolles accessibles en bateau, découvrez les spots de rêve pour vos <strong>vacances à Hyères</strong>.
+          </p>
+          <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3">
+            <Button
+              asChild
+              variant="cta"
+              className="rounded-full h-12 px-6 text-sm sm:h-14 sm:px-8 sm:text-base"
+            >
+              <Link to="/guide-plages-hyeres">Lire le guide des plages</Link>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              className="rounded-full h-12 px-6 text-sm sm:h-14 sm:px-8 sm:text-base"
+            >
+              <a href="#reserver">Réserver le studio</a>
+            </Button>
+          </div>
+        </div>
+        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
+          <img
+            src={photo2}
+            alt="Vue mer depuis la terrasse du Nid d'Or, proche des plages de Hyères"
+            className="absolute inset-0 h-full w-full object-cover"
+            loading="lazy"
+          />
+        </div>
+      </div>
+    </section>
+  );
+}
+
 function Gallery() {
   return (
+
     <section id="galerie" className="bg-secondary/40 py-14 sm:py-20 md:py-24">
       <div className="mx-auto max-w-6xl px-5">
         <div className="flex items-end justify-between mb-6 sm:mb-10">
