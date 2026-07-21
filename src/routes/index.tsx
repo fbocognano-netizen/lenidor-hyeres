@@ -683,7 +683,7 @@ function BookingForm() {
             type="submit"
             disabled={submitting}
             variant="cta"
-            className="rounded-full h-14 px-8 text-base w-full sm:w-auto sm:px-10 sm:text-lg shrink-0"
+            className="rounded-full h-14 px-8 text-base w-full sm:w-auto sm:h-16 sm:px-10 sm:text-lg shrink-0"
           >
             {submitting ? "Envoi…" : "Demander à réserver"}
           </Button>
