@@ -46,6 +46,20 @@ function computeStay(from: Date, to: Date): { nights: number; nightsTotal: numbe
 }
 const PHOTOS = [photo1, photo2, photo3, photo4, photo5];
 
+const FALLBACK_GALLERY: GalleryPhoto[] = [
+  { name: "fallback-1", url: photo1, alt: "Vue mer depuis le studio" },
+  { name: "fallback-2", url: photo2, alt: "Piscine de 18 mètres" },
+  { name: "fallback-3", url: photo3, alt: "Terrasse plein sud" },
+  { name: "fallback-4", url: photo4, alt: "Intérieur du studio" },
+  { name: "fallback-5", url: photo5, alt: "Détail du studio" },
+];
+
+const galleryQueryOptions = queryOptions({
+  queryKey: ["gallery-photos"],
+  queryFn: () => listGalleryPhotos(),
+  staleTime: 5 * 60 * 1000,
+});
+
 function dateKey(date: Date): string {
   const year = date.getFullYear();
   const month = String(date.getMonth() + 1).padStart(2, "0");
