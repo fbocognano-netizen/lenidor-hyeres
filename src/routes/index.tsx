@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery, queryOptions } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { format, differenceInCalendarDays } from "date-fns";
 import { fr } from "date-fns/locale";
 import type { DateRange } from "react-day-picker";
-import { CalendarIcon, Waves, Sun, Bed, Bath, Users, MapPin, Wifi, Wind, ChefHat, Car, Star } from "lucide-react";
+import { CalendarIcon, Waves, Sun, Bed, Bath, Users, MapPin, Wifi, Wind, ChefHat, Car, Star, Expand } from "lucide-react";
 import { toast, Toaster } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { getBlockedDates, createBooking } from "@/lib/bookings.functions";
+import { listGalleryPhotos, type GalleryPhoto } from "@/lib/gallery.functions";
+import { Lightbox, useLightbox } from "@/components/lightbox";
 
 import photo1 from "@/assets/listing/photo-1.jpg";
 import photo2 from "@/assets/listing/photo-2.jpg";
