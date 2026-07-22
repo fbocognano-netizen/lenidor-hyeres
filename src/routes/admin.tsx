@@ -44,6 +44,7 @@ import {
   updateBookingStatus,
   updateIcalSource,
 } from "@/lib/admin-bookings.functions";
+import { deleteGalleryPhoto, listGalleryPhotos, reorderGalleryPhotos } from "@/lib/gallery.functions";
 import { cn } from "@/lib/utils";
 
 
