@@ -1,11 +1,11 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery, queryOptions } from "@tanstack/react-query";
 import { useServerFn } from "@tanstack/react-start";
 import { format, differenceInCalendarDays } from "date-fns";
 import { fr } from "date-fns/locale";
 import type { DateRange } from "react-day-picker";
-import { CalendarIcon, Waves, Sun, Bed, Bath, Users, MapPin, Wifi, Wind, ChefHat, Car, Star } from "lucide-react";
+import { CalendarIcon, Waves, Sun, Bed, Bath, Users, MapPin, Wifi, Wind, ChefHat, Car, Star, Expand } from "lucide-react";
 import { toast, Toaster } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -17,6 +17,8 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Card } from "@/components/ui/card";
 import { cn } from "@/lib/utils";
 import { getBlockedDates, createBooking } from "@/lib/bookings.functions";
+import { listGalleryPhotos, type GalleryPhoto } from "@/lib/gallery.functions";
+import { Lightbox, useLightbox } from "@/components/lightbox";
 
 import photo1 from "@/assets/listing/photo-1.jpg";
 import photo2 from "@/assets/listing/photo-2.jpg";
@@ -43,6 +45,20 @@ function computeStay(from: Date, to: Date): { nights: number; nightsTotal: numbe
   return { nights, nightsTotal };
 }
 const PHOTOS = [photo1, photo2, photo3, photo4, photo5];
+
+const FALLBACK_GALLERY: GalleryPhoto[] = [
+  { name: "fallback-1", url: photo1, alt: "Vue mer depuis le studio" },
+  { name: "fallback-2", url: photo2, alt: "Piscine de 18 mètres" },
+  { name: "fallback-3", url: photo3, alt: "Terrasse plein sud" },
+  { name: "fallback-4", url: photo4, alt: "Intérieur du studio" },
+  { name: "fallback-5", url: photo5, alt: "Détail du studio" },
+];
+
+const galleryQueryOptions = queryOptions({
+  queryKey: ["gallery-photos"],
+  queryFn: () => listGalleryPhotos(),
+  staleTime: 5 * 60 * 1000,
+});
 
 function dateKey(date: Date): string {
   const year = date.getFullYear();
@@ -110,6 +126,9 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
+  loader: ({ context }) => {
+    context.queryClient.ensureQueryData(galleryQueryOptions);
+  },
   component: Index,
 });
 
@@ -366,42 +385,103 @@ function BeachesGuide() {
 }
 
 function Gallery() {
-  return (
+  const { data } = useSuspenseQuery(galleryQueryOptions);
+  const photos: GalleryPhoto[] = data.photos.length > 0 ? data.photos : FALLBACK_GALLERY;
+  const lb = useLightbox();
 
+  const featured = photos.slice(0, 5);
+  const extras = photos.slice(5);
+
+  const tile = (i: number, extra: string) => {
+    const p = featured[i];
+    if (!p) return null;
+    return (
+      <button
+        type="button"
+        onClick={() => lb.open(i)}
+        aria-label={`Agrandir : ${p.alt}`}
+        className={cn(
+          "group relative overflow-hidden rounded-2xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary",
+          extra,
+        )}
+      >
+        <img
+          src={p.url}
+          alt={p.alt}
+          loading="lazy"
+          className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+        />
+        <span className="pointer-events-none absolute inset-0 bg-gradient-to-t from-deep/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition" />
+        <span className="pointer-events-none absolute right-2 top-2 sm:right-3 sm:top-3 grid h-9 w-9 place-items-center rounded-full bg-white/85 text-deep opacity-0 group-hover:opacity-100 transition">
+          <Expand className="h-4 w-4" />
+        </span>
+      </button>
+    );
+  };
+
+  return (
     <section id="galerie" className="bg-secondary/40 py-14 sm:py-20 md:py-24">
       <div className="mx-auto max-w-6xl px-5">
         <div className="flex items-end justify-between mb-6 sm:mb-10">
           <div>
             <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Galerie</p>
             <h2 className="mt-2 sm:mt-3 font-display text-[1.75rem] sm:text-4xl md:text-5xl">Le lieu en images</h2>
+            <p className="mt-2 text-sm text-muted-foreground">Cliquez sur une photo pour l'agrandir.</p>
           </div>
         </div>
-        <div className="grid grid-cols-4 grid-rows-2 gap-2 sm:gap-3 md:gap-4 h-[320px] sm:h-[420px] md:h-[560px]">
-          <img
-            src={PHOTOS[0]}
-            alt="Vue mer depuis le studio"
-            className="col-span-2 row-span-2 h-full w-full object-cover rounded-2xl"
-          />
-          <img
-            src={PHOTOS[1]}
-            alt="Piscine de 18 mètres"
-            className="col-span-2 row-span-1 h-full w-full object-cover rounded-2xl"
-          />
-          <img
-            src={PHOTOS[2]}
-            alt="Terrasse plein sud"
-            className="col-span-1 row-span-1 h-full w-full object-cover rounded-2xl"
-          />
-          <img
-            src={PHOTOS[3]}
-            alt="Intérieur du studio"
-            className="col-span-1 row-span-1 h-full w-full object-cover rounded-2xl"
-          />
-        </div>
-        <div className="mt-3 sm:mt-4">
-          <img src={PHOTOS[4]} alt="Détail du studio" className="h-40 sm:h-64 w-full object-cover rounded-2xl" />
-        </div>
+
+        {featured.length >= 4 ? (
+          <div className="grid grid-cols-4 grid-rows-2 gap-2 sm:gap-3 md:gap-4 h-[320px] sm:h-[420px] md:h-[560px]">
+            {tile(0, "col-span-2 row-span-2")}
+            {tile(1, "col-span-2 row-span-1")}
+            {tile(2, "col-span-1 row-span-1")}
+            {tile(3, "col-span-1 row-span-1")}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4">
+            {featured.map((_, i) => (
+              <div key={featured[i].name} className="h-56 sm:h-72">
+                {tile(i, "h-full w-full")}
+              </div>
+            ))}
+          </div>
+        )}
+
+        {featured[4] && (
+          <div className="mt-3 sm:mt-4 h-40 sm:h-64">{tile(4, "h-full w-full")}</div>
+        )}
+
+        {extras.length > 0 && (
+          <div className="mt-3 sm:mt-4 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 sm:gap-3 md:gap-4">
+            {extras.map((p, i) => {
+              const globalIndex = i + 5;
+              return (
+                <button
+                  key={p.name}
+                  type="button"
+                  onClick={() => lb.open(globalIndex)}
+                  aria-label={`Agrandir : ${p.alt}`}
+                  className="group relative overflow-hidden rounded-2xl h-36 sm:h-44 md:h-48 focus:outline-none focus-visible:ring-2 focus-visible:ring-primary"
+                >
+                  <img
+                    src={p.url}
+                    alt={p.alt}
+                    loading="lazy"
+                    className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                  />
+                </button>
+              );
+            })}
+          </div>
+        )}
       </div>
+
+      <Lightbox
+        photos={photos}
+        index={lb.openIndex}
+        onClose={lb.close}
+        onIndexChange={lb.setIndex}
+      />
     </section>
   );
 }
