@@ -368,6 +368,7 @@ function AdminPage() {
             <TabsTrigger value="calendar" className="rounded-full">Calendrier</TabsTrigger>
             <TabsTrigger value="list" className="rounded-full">Liste ({data.counts.total})</TabsTrigger>
             <TabsTrigger value="ical" className="rounded-full">Calendriers iCal</TabsTrigger>
+            <TabsTrigger value="photos" className="rounded-full">Photos</TabsTrigger>
             <TabsTrigger value="logs" className="rounded-full">Logs</TabsTrigger>
           </TabsList>
 
