@@ -1,63 +1,58 @@
+## Objectif
 
-## Audit mobile (390 px)
+Tu ajoutes/retires des photos quand tu veux, **sans code, sans build, sans consommer de tokens**. Le site les affiche automatiquement à la prochaine visite.
 
-Constats principaux :
+## Solution : bucket Storage `gallery` sur Lovable Cloud
 
-1. **Hero** — le H1 est en `text-5xl` sur mobile : « Le silence du sud, face aux Îles d'Or » prend 4 lignes et cache le coucher de soleil. Le padding `pb-14` + les 2 boutons full-width empilés poussent tout hors du visuel « rêve ». Résultat : la promesse visuelle (mer + verres) disparaît.
-2. **Espacement vertical excessif partout** — toutes les sections utilisent `py-24` (≈ 192 px haut + bas). Sur mobile, ça crée des bandes de vide énormes entre chaque bloc (visibles entre Séjour / Galerie / Équipements / Réservation / Lieu).
-3. **Section Séjour** — H2 en `text-4xl` casse en 4 lignes ; les 4 « Stats » (Voyageurs / Lits / Bain / Note) sont en cartes trop grandes (padding 5, chiffres `text-3xl`) → occupent un écran entier pour peu d'info.
-4. **Galerie** — hauteur `h-[420px]` + une 5ᵉ photo `h-64` ajoutent presque 700 px de scroll pour 5 images.
-5. **Équipements** — grille 2 colonnes sur mobile → « Piscine de 18 m, vue mer & îles d'Or » wrappe sur 3 lignes tordues. Passer en 1 colonne mobile est plus lisible.
-6. **Réservation** — titre `text-4xl`, bloc `py-24`, liste + boutons plateformes + formulaire → énorme scroll. Espacements internes du formulaire trop généreux (`mt-10 pt-8`).
-7. **Carte / Lieu** — H2 « Hyères, porte des Îles d'Or » suivi de gros vides, puis carte pleine hauteur, puis encore un bloc footer très aéré.
+1. Je crée un bucket public `gallery` sur Lovable Cloud (backend déjà en place).
+2. J'y uploade les **5 photos actuelles** pour amorcer.
+3. Le site liste dynamiquement les photos du bucket à chaque chargement (via un `serverFn` `listGalleryPhotos` avec cache 5 min) et les affiche dans la galerie + la lightbox.
+4. **Pour toi ensuite** : tu ouvres l'onglet **Photos** que j'ajoute dans `/admin`, tu glisses-déposes tes photos, tu peux les réordonner et supprimer. Rien d'autre à faire. Zéro token, zéro attente de build.
 
-## Corrections proposées (mobile-first, desktop conservé)
+### Convention pour le tri
 
-Toutes les modifications se limitent à des classes Tailwind — **aucun texte ni logique modifiés**. Le pattern : ajuster mobile en base + garder valeurs actuelles derrière `sm:`/`md:`.
+Les fichiers sont triés alphabétiquement. L'admin les nomme automatiquement `010-nom.jpg`, `020-nom.jpg`, etc. — tu peux glisser-déposer dans l'ordre voulu, je re-numérote côté serveur. La première photo devient l'image principale de la grille.
 
-### 1. Hero (`Hero`)
-- Hauteur : `h-[72vh] min-h-[460px]` en mobile (au lieu de 78vh/520).
-- Padding container : `px-5 pb-8 sm:pb-14` (moins de marge basse pour recentrer sur l'image).
-- H1 : `text-[2.25rem] sm:text-6xl md:text-7xl leading-[1.08]` + retirer le `<br />` forcé (garder pour ≥ sm) → texte plus compact mobile.
-- Paragraphe : `text-sm sm:text-lg mt-3 sm:mt-5`.
-- Boutons : `mt-5 sm:mt-8`, `size="default" sm:size="lg"`, largeur auto (pas full-width forcé).
-- Overlay dégradé un peu plus sombre en bas (`to-deep/75`) pour lisibilité sans agrandir le texte.
+### Métadonnées
 
-### 2. Sections — rythme vertical
-Remplacer partout `py-24` par `py-14 sm:py-20 md:py-24` :
-`Intro`, `Gallery`, `Amenities`, `BookingSection`, section Lieu, section Carte.
+Un champ `alt` (légende accessibilité + SEO) est stocké dans les **métadonnées Storage** de chaque fichier — pas besoin de table SQL. Tu peux éditer l'`alt` depuis l'admin. Si vide, on utilise un fallback générique.
 
-### 3. Séjour (`Intro`)
-- H2 : `text-[1.75rem] sm:text-4xl md:text-5xl leading-[1.15]`.
-- Grille stats : `gap-3 sm:gap-4`; Cartes `Stat` : padding `p-4 sm:p-5`, valeur `text-2xl sm:text-3xl`, marges internes réduites (`mt-2`, `mt-0.5`).
-- Espacement bloc texte → stats : `gap-8 md:gap-10`.
+## UX Lightbox (rappel de la proposition validée)
 
-### 4. Galerie
-- Hauteur : `h-[320px] sm:h-[420px] md:h-[560px]`.
-- Photo pleine largeur en dessous : `h-40 sm:h-64`.
-- Marge titre → grille : `mb-6 sm:mb-10`.
+- Clic sur une photo → ouverture plein écran, fond `deep/95`, animation `fade-in` + `scale-in`.
+- Flèches ← → discrètes (rondes, semi-transparentes), toujours visibles sur mobile.
+- **Swipe** tactile gauche/droite sur mobile.
+- Clavier ← → et `Échap`.
+- Compteur « 3 / 12 » en bas, bouton X en haut à droite.
+- Précharge photo suivante/précédente.
+- Miniatures scrollables en bas (utile dès 8+ photos).
+- Overlay **« Voir les N photos »** sur la grille.
 
-### 5. Équipements
-- Grille : `grid-cols-1 sm:grid-cols-2 md:grid-cols-3` (1 col mobile).
-- Padding items : `py-3 sm:py-4`, `gap-3` icône/texte.
-- H2 : `text-[1.75rem] sm:text-5xl`.
-- Marge titre → grille : `mt-8 sm:mt-12`.
+## Implémentation technique
 
-### 6. Réservation (`BookingSection` + `BookingForm`)
-- H2 : `text-[1.75rem] sm:text-5xl`.
-- `gap-8 lg:gap-12` entre colonne intro et formulaire.
-- Bloc « plateformes » : `mt-6 pt-6 sm:mt-10 sm:pt-8`.
-- Carte formulaire : padding réduit mobile, champs `space-y-4` au lieu de 5-6, TOTAL ESTIMÉ + CTA en ligne (flex) au lieu de bloc empilé — le titre « à partir de 75 € / nuit » ne doit pas wrapper sur 3 lignes.
+**Backend**
+- `supabase--storage_create_bucket` : bucket `gallery` public.
+- Politique RLS `storage.objects` : `SELECT` public sur `gallery`, `INSERT/UPDATE/DELETE` réservés au rôle admin (via cookie session existant).
+- `src/lib/gallery.functions.ts` :
+  - `listGalleryPhotos()` — liste + tri, renvoie `[{ url, alt, name }]`, cache 5 min.
+  - `uploadGalleryPhoto()`, `updateGalleryAlt()`, `deleteGalleryPhoto()`, `reorderGalleryPhotos()` — protégés par `requireAdminSession`.
+- Route API `/api/admin/gallery/upload` pour l'upload direct (multipart).
 
-### 7. Lieu / Carte / Footer
-- H2 « Hyères, porte des Îles d'Or » : `text-[1.75rem] sm:text-5xl`.
-- Tableau distances : `py-3` au lieu de `py-4`.
-- Carte : hauteur `h-[300px] sm:h-[420px]` au lieu de valeur fixe grande.
-- Footer / bloc contact : `py-12 sm:py-20` et espacements internes `space-y-4`.
+**Frontend**
+- `src/components/lightbox.tsx` (nouveau) — pas de dépendance externe, swipe via pointer events natifs.
+- `src/routes/index.tsx` — `Gallery` remplace le tableau `PHOTOS` en dur par `useSuspenseQuery(listGalleryPhotos)`, appel dans le loader. Fallback sur les 5 photos actuelles si le bucket est vide (le temps du premier upload).
+- `src/routes/admin.tsx` — nouvel onglet **Photos** : liste avec drag-and-drop de réordonnancement, upload par glisser-déposer, édition `alt` inline, suppression avec confirmation.
 
-### 8. Header
-- Vérifier padding vertical `py-3 sm:py-4` pour rester compact.
+**Amorçage**
+- Upload des 5 photos existantes dans le bucket via `supabase--storage_upload` pendant l'implémentation.
+- Suppression optionnelle des `photo-*.jpg` de `src/assets/listing/` **après** vérification que tout fonctionne — je garde `photo-2.jpg` (utilisé par `/guide-plages-hyeres`).
 
-## Livraison
+**Fichiers touchés**
+- Nouveau : `src/components/lightbox.tsx`, `src/lib/gallery.functions.ts`, `src/routes/api/admin/gallery/upload.ts`
+- Modifiés : `src/routes/index.tsx` (Gallery), `src/routes/admin.tsx` (onglet Photos)
+- Migration SQL : policies RLS sur `storage.objects`
 
-Un seul fichier édité : `src/routes/index.tsx`. Aucun changement de contenu, uniquement classes Tailwind responsive. Après implémentation, je recapture le mobile (390 px) pour valider avant de te rendre la main.
+## Ce que ça change pour toi
+
+- **Aujourd'hui** : rien à faire, tu vois les 5 photos actuelles avec la nouvelle lightbox.
+- **Dans une semaine** : `/admin` → onglet **Photos** → drag-and-drop → publié en 5 secondes, aucune interaction avec moi.
