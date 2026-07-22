@@ -17,6 +17,7 @@ import { Route as ApiAppLogRouteImport } from './routes/api/app-log'
 import { Route as ApiAdminLogoutRouteImport } from './routes/api/admin/logout'
 import { Route as ApiAdminLoginRouteImport } from './routes/api/admin/login'
 import { Route as ApiPublicGalleryNameRouteImport } from './routes/api/public/gallery/$name'
+import { Route as ApiAdminGalleryUploadRouteImport } from './routes/api/admin/gallery/upload'
 
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
@@ -58,6 +59,11 @@ const ApiPublicGalleryNameRoute = ApiPublicGalleryNameRouteImport.update({
   path: '/api/public/gallery/$name',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiAdminGalleryUploadRoute = ApiAdminGalleryUploadRouteImport.update({
+  id: '/api/admin/gallery/upload',
+  path: '/api/admin/gallery/upload',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -67,6 +73,7 @@ export interface FileRoutesByFullPath {
   '/api/app-log': typeof ApiAppLogRoute
   '/api/admin/login': typeof ApiAdminLoginRoute
   '/api/admin/logout': typeof ApiAdminLogoutRoute
+  '/api/admin/gallery/upload': typeof ApiAdminGalleryUploadRoute
   '/api/public/gallery/$name': typeof ApiPublicGalleryNameRoute
 }
 export interface FileRoutesByTo {
@@ -77,6 +84,7 @@ export interface FileRoutesByTo {
   '/api/app-log': typeof ApiAppLogRoute
   '/api/admin/login': typeof ApiAdminLoginRoute
   '/api/admin/logout': typeof ApiAdminLogoutRoute
+  '/api/admin/gallery/upload': typeof ApiAdminGalleryUploadRoute
   '/api/public/gallery/$name': typeof ApiPublicGalleryNameRoute
 }
 export interface FileRoutesById {
@@ -88,6 +96,7 @@ export interface FileRoutesById {
   '/api/app-log': typeof ApiAppLogRoute
   '/api/admin/login': typeof ApiAdminLoginRoute
   '/api/admin/logout': typeof ApiAdminLogoutRoute
+  '/api/admin/gallery/upload': typeof ApiAdminGalleryUploadRoute
   '/api/public/gallery/$name': typeof ApiPublicGalleryNameRoute
 }
 export interface FileRouteTypes {
@@ -100,6 +109,7 @@ export interface FileRouteTypes {
     | '/api/app-log'
     | '/api/admin/login'
     | '/api/admin/logout'
+    | '/api/admin/gallery/upload'
     | '/api/public/gallery/$name'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -110,6 +120,7 @@ export interface FileRouteTypes {
     | '/api/app-log'
     | '/api/admin/login'
     | '/api/admin/logout'
+    | '/api/admin/gallery/upload'
     | '/api/public/gallery/$name'
   id:
     | '__root__'
@@ -120,6 +131,7 @@ export interface FileRouteTypes {
     | '/api/app-log'
     | '/api/admin/login'
     | '/api/admin/logout'
+    | '/api/admin/gallery/upload'
     | '/api/public/gallery/$name'
   fileRoutesById: FileRoutesById
 }
@@ -131,6 +143,7 @@ export interface RootRouteChildren {
   ApiAppLogRoute: typeof ApiAppLogRoute
   ApiAdminLoginRoute: typeof ApiAdminLoginRoute
   ApiAdminLogoutRoute: typeof ApiAdminLogoutRoute
+  ApiAdminGalleryUploadRoute: typeof ApiAdminGalleryUploadRoute
   ApiPublicGalleryNameRoute: typeof ApiPublicGalleryNameRoute
 }
 
@@ -192,6 +205,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiPublicGalleryNameRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/admin/gallery/upload': {
+      id: '/api/admin/gallery/upload'
+      path: '/api/admin/gallery/upload'
+      fullPath: '/api/admin/gallery/upload'
+      preLoaderRoute: typeof ApiAdminGalleryUploadRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -203,6 +223,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAppLogRoute: ApiAppLogRoute,
   ApiAdminLoginRoute: ApiAdminLoginRoute,
   ApiAdminLogoutRoute: ApiAdminLogoutRoute,
+  ApiAdminGalleryUploadRoute: ApiAdminGalleryUploadRoute,
   ApiPublicGalleryNameRoute: ApiPublicGalleryNameRoute,
 }
 export const routeTree = rootRouteImport
