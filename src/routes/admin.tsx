@@ -408,6 +408,10 @@ function AdminPage() {
             <IcalSourcesPanel />
           </TabsContent>
 
+          <TabsContent value="photos" className="mt-6">
+            <GalleryPanel />
+          </TabsContent>
+
           <TabsContent value="logs" className="mt-6">
             <AppLogsPanel />
           </TabsContent>
