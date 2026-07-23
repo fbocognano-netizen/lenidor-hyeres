@@ -1182,6 +1182,8 @@ function GalleryPanel() {
           <h2 className="font-display text-2xl">Photos du site</h2>
           <p className="mt-1 text-sm text-muted-foreground">
             Ajoutez, réorganisez ou supprimez les photos affichées dans la galerie. JPG, PNG, WebP ou AVIF, 15 Mo max.
+            <br />
+            <span className="text-xs">Astuce : uploadez des images d'au moins <strong>2000 px</strong> côté long pour un rendu net en plein écran sur grand écran.</span>
           </p>
         </div>
         <div className="flex items-center gap-2">
