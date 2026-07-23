@@ -1,58 +1,70 @@
-## Objectif
+## Diagnostic
 
-Tu ajoutes/retires des photos quand tu veux, **sans code, sans build, sans consommer de tokens**. Le site les affiche automatiquement à la prochaine visite.
+Deux problèmes distincts sur la lightbox plein écran :
 
-## Solution : bucket Storage `gallery` sur Lovable Cloud
+### 1. Cadrage cassé (photo « zoomée vers le haut »)
 
-1. Je crée un bucket public `gallery` sur Lovable Cloud (backend déjà en place).
-2. J'y uploade les **5 photos actuelles** pour amorcer.
-3. Le site liste dynamiquement les photos du bucket à chaque chargement (via un `serverFn` `listGalleryPhotos` avec cache 5 min) et les affiche dans la galerie + la lightbox.
-4. **Pour toi ensuite** : tu ouvres l'onglet **Photos** que j'ajoute dans `/admin`, tu glisses-déposes tes photos, tu peux les réordonner et supprimer. Rien d'autre à faire. Zéro token, zéro attente de build.
+Dans `src/components/lightbox.tsx`, la scène est un conteneur `flex-1` contenant directement un `<img class="max-h-full max-w-full object-contain">`. Piège flexbox classique : par défaut un enfant flex a `min-height: auto`, donc `max-h-full` ne peut **pas** rétrécir l'image sous sa taille intrinsèque. Résultat : sur desktop en écran large, une photo portrait haute résolution déborde vers le bas ; on ne voit que le haut, la barre du compteur passe par-dessus, et le reste est masqué sous la caption/miniatures.
 
-### Convention pour le tri
+C'est le vrai coupable, pas la qualité source.
 
-Les fichiers sont triés alphabétiquement. L'admin les nomme automatiquement `010-nom.jpg`, `020-nom.jpg`, etc. — tu peux glisser-déposer dans l'ordre voulu, je re-numérote côté serveur. La première photo devient l'image principale de la grille.
+### 2. Impression de pixelisation
 
-### Métadonnées
+L'image affichée fait souvent plus large que sa résolution native (les photos Airbnb migrées font ~1280 px). En plein écran 1920 px, le navigateur upscale → flou.
 
-Un champ `alt` (légende accessibilité + SEO) est stocké dans les **métadonnées Storage** de chaque fichier — pas besoin de table SQL. Tu peux éditer l'`alt` depuis l'admin. Si vide, on utilise un fallback générique.
+## Correctifs
 
-## UX Lightbox (rappel de la proposition validée)
+### a) Cadrage — fix structurel dans `src/components/lightbox.tsx`
 
-- Clic sur une photo → ouverture plein écran, fond `deep/95`, animation `fade-in` + `scale-in`.
-- Flèches ← → discrètes (rondes, semi-transparentes), toujours visibles sur mobile.
-- **Swipe** tactile gauche/droite sur mobile.
-- Clavier ← → et `Échap`.
-- Compteur « 3 / 12 » en bas, bouton X en haut à droite.
-- Précharge photo suivante/précédente.
-- Miniatures scrollables en bas (utile dès 8+ photos).
-- Overlay **« Voir les N photos »** sur la grille.
+Remplacer la scène par un wrapper qui garantit un cadre borné :
 
-## Implémentation technique
+- Ajouter `min-h-0 min-w-0` sur la scène `flex-1` (débloque `max-h-full`).
+- Envelopper l'`<img>` dans un `<div class="relative flex-1 min-h-0 w-full flex items-center justify-center">` et donner à l'image `class="block h-full w-full object-contain"` (au lieu de `max-h-* max-w-*`). `object-contain` gère seul le ratio sans jamais dépasser le cadre.
+- Réserver explicitement la place de la caption + miniatures pour qu'elles ne mangent pas la zone photo (les mettre en `shrink-0`).
+- Ajouter `overscroll-contain` et retirer le padding latéral trop généreux sur desktop pour laisser l'image respirer.
 
-**Backend**
-- `supabase--storage_create_bucket` : bucket `gallery` public.
-- Politique RLS `storage.objects` : `SELECT` public sur `gallery`, `INSERT/UPDATE/DELETE` réservés au rôle admin (via cookie session existant).
-- `src/lib/gallery.functions.ts` :
-  - `listGalleryPhotos()` — liste + tri, renvoie `[{ url, alt, name }]`, cache 5 min.
-  - `uploadGalleryPhoto()`, `updateGalleryAlt()`, `deleteGalleryPhoto()`, `reorderGalleryPhotos()` — protégés par `requireAdminSession`.
-- Route API `/api/admin/gallery/upload` pour l'upload direct (multipart).
+Résultat : la photo tient toujours pile dans l'espace libre entre la barre du haut et les miniatures, centrée, sans découpe.
 
-**Frontend**
-- `src/components/lightbox.tsx` (nouveau) — pas de dépendance externe, swipe via pointer events natifs.
-- `src/routes/index.tsx` — `Gallery` remplace le tableau `PHOTOS` en dur par `useSuspenseQuery(listGalleryPhotos)`, appel dans le loader. Fallback sur les 5 photos actuelles si le bucket est vide (le temps du premier upload).
-- `src/routes/admin.tsx` — nouvel onglet **Photos** : liste avec drag-and-drop de réordonnancement, upload par glisser-déposer, édition `alt` inline, suppression avec confirmation.
+### b) Netteté — servir la bonne taille
 
-**Amorçage**
-- Upload des 5 photos existantes dans le bucket via `supabase--storage_upload` pendant l'implémentation.
-- Suppression optionnelle des `photo-*.jpg` de `src/assets/listing/` **après** vérification que tout fonctionne — je garde `photo-2.jpg` (utilisé par `/guide-plages-hyeres`).
+Améliorer la route de streaming `src/routes/api/public/gallery/$name.ts` pour :
 
-**Fichiers touchés**
-- Nouveau : `src/components/lightbox.tsx`, `src/lib/gallery.functions.ts`, `src/routes/api/admin/gallery/upload.ts`
-- Modifiés : `src/routes/index.tsx` (Gallery), `src/routes/admin.tsx` (onglet Photos)
-- Migration SQL : policies RLS sur `storage.objects`
+- Ajouter un `Content-Length` et un `ETag` (meilleur cache navigateur, évite le re-download entre vignette et plein écran).
+- Documenter que les images doivent être uploadées en ≥ 2000 px de large côté long (ajouté en note dans l'onglet Photos de `/admin`).
 
-## Ce que ça change pour toi
+Note : pas de redimensionnement serveur (sharp/canvas ne tournent pas sur le runtime edge — cf. contraintes du projet). La bonne pratique reste : uploader des originaux nets.
 
-- **Aujourd'hui** : rien à faire, tu vois les 5 photos actuelles avec la nouvelle lightbox.
-- **Dans une semaine** : `/admin` → onglet **Photos** → drag-and-drop → publié en 5 secondes, aucune interaction avec moi.
+### c) Bonus UX pendant qu'on y est
+
+- Ajouter un `loading="eager"` + `decoding="async"` sur l'image principale et un léger fondu entre deux photos.
+- Sur desktop, cliquer hors de l'image ferme la lightbox (déjà en place) — vérifier que ça ne se déclenche pas par erreur sur les flèches.
+
+## Fichiers modifiés
+
+- `src/components/lightbox.tsx` — refonte de la structure du stage (fix principal).
+- `src/routes/api/public/gallery/$name.ts` — headers cache/ETag.
+- `src/routes/admin.tsx` — courte note « uploadez des photos ≥ 2000 px » dans l'onglet Photos.
+
+## Détails techniques
+
+Nouvelle structure JSX (schéma) :
+
+```text
+<div fixed inset-0 flex flex-col>
+  <TopBar shrink-0 />
+  <div flex-1 min-h-0 min-w-0 relative flex items-center justify-center>
+     <img h-full w-full object-contain />
+     <PrevBtn absolute /> <NextBtn absolute />
+  </div>
+  <Caption shrink-0 />
+  <Thumbnails shrink-0 />
+</div>
+```
+
+Le `min-h-0` sur la zone `flex-1` est la clé — sans lui, `object-contain` ne peut jamais rétrécir sous la taille intrinsèque de l'image.
+
+## Ce qui change pour toi
+
+- Toute photo (portrait, paysage, carrée) s'affiche entièrement à l'écran, centrée, sans coupe.
+- Moins de flou visible car cache mieux géré et image jamais étirée au-delà de son ratio.
+- Consigne simple : upload en haute résolution (≥ 2000 px) pour un rendu net sur grands écrans.

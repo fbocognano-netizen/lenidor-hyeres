@@ -15,10 +15,13 @@ export const Route = createFileRoute("/api/public/gallery/$name")({
             return new Response("Not found", { status: 404 });
           }
           const buf = await data.arrayBuffer();
+          const etag = `"${name}-${buf.byteLength}"`;
           return new Response(buf, {
             headers: {
               "content-type": data.type || "image/jpeg",
-              "cache-control": "public, max-age=300, s-maxage=3600",
+              "content-length": String(buf.byteLength),
+              "cache-control": "public, max-age=31536000, immutable",
+              etag,
             },
           });
         } catch {
