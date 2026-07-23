@@ -82,13 +82,13 @@ export function Lightbox({ photos, index, onClose, onIndexChange }: Props) {
 
   return (
     <div
-      className="fixed inset-0 z-[100] flex flex-col bg-deep/95 backdrop-blur-sm animate-fade-in"
+      className="fixed inset-0 z-[100] flex flex-col bg-deep/95 backdrop-blur-sm animate-fade-in overscroll-contain"
       role="dialog"
       aria-modal="true"
       aria-label="Galerie photo plein écran"
     >
       {/* Top bar */}
-      <div className="flex items-center justify-between px-4 sm:px-6 pt-4 sm:pt-6 text-white/90">
+      <div className="shrink-0 flex items-center justify-between px-4 sm:px-6 pt-4 sm:pt-6 text-white/90">
         <span className="text-sm tracking-wide tabular-nums">
           {index! + 1} / {total}
         </span>
@@ -102,13 +102,12 @@ export function Lightbox({ photos, index, onClose, onIndexChange }: Props) {
         </button>
       </div>
 
-      {/* Main stage */}
+      {/* Main stage — min-h-0 débloque object-contain à l'intérieur d'un flex column */}
       <div
-        className="relative flex-1 flex items-center justify-center px-2 sm:px-6 select-none touch-pan-y"
+        className="relative flex-1 min-h-0 min-w-0 flex items-center justify-center px-2 sm:px-4 py-2 select-none touch-pan-y"
         onPointerDown={onPointerDown}
         onPointerUp={onPointerUp}
         onClick={(e) => {
-          // click on empty area (not on img/button) closes
           if (e.target === e.currentTarget) onClose();
         }}
       >
@@ -116,7 +115,9 @@ export function Lightbox({ photos, index, onClose, onIndexChange }: Props) {
           key={captionKey}
           src={current.url}
           alt={current.alt}
-          className="max-h-full max-w-full object-contain rounded-lg animate-scale-in"
+          loading="eager"
+          decoding="async"
+          className="block h-full w-full object-contain rounded-lg animate-fade-in"
           draggable={false}
         />
 
@@ -157,11 +158,13 @@ export function Lightbox({ photos, index, onClose, onIndexChange }: Props) {
       </div>
 
       {/* Caption */}
-      <div className="px-6 pb-3 text-center text-sm text-white/70">{current.alt}</div>
+      <div className="shrink-0 px-6 pb-2 text-center text-sm text-white/70 line-clamp-2">
+        {current.alt}
+      </div>
 
       {/* Thumbnails */}
       {total > 1 && (
-        <div className="pb-4 sm:pb-6 px-2 sm:px-4">
+        <div className="shrink-0 pb-4 sm:pb-6 px-2 sm:px-4">
           <div className="mx-auto flex max-w-full gap-2 overflow-x-auto scrollbar-none justify-start sm:justify-center">
             {photos.map((p, i) => (
               <button
