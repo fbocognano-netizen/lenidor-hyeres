@@ -45,6 +45,14 @@ import {
   updateIcalSource,
 } from "@/lib/admin-bookings.functions";
 import { deleteGalleryPhoto, listGalleryPhotos, reorderGalleryPhotos } from "@/lib/gallery.functions";
+import {
+  createOtaLink,
+  deleteOtaLink,
+  listOtaLinksAdmin,
+  updateOtaLink,
+  deriveLabelFromUrl,
+  type OtaLink,
+} from "@/lib/ota-links.functions";
 import { cn } from "@/lib/utils";
 
 
