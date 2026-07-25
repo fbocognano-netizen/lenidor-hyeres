@@ -14,6 +14,13 @@ export interface BookingNotificationLead {
   total_price?: number | null;
 }
 
+export interface ContactNotificationLead {
+  name: string;
+  email: string;
+  phone?: string | null;
+  message: string;
+}
+
 function esc(v: unknown): string {
   return String(v ?? "")
     .replace(/&/g, "&amp;")
