@@ -1,70 +1,73 @@
-## Diagnostic
+## Objectif
 
-Deux problèmes distincts sur la lightbox plein écran :
+Enrichir le footer du site avec une vraie section Contact : un accès rapide à Joëlle par WhatsApp/téléphone, plus un mini-formulaire de message. Les messages envoyés depuis le formulaire arrivent par email admin via le canal Pingram déjà en place.
 
-### 1. Cadrage cassé (photo « zoomée vers le haut »)
+## Préconisations pour ce type d'établissement
 
-Dans `src/components/lightbox.tsx`, la scène est un conteneur `flex-1` contenant directement un `<img class="max-h-full max-w-full object-contain">`. Piège flexbox classique : par défaut un enfant flex a `min-height: auto`, donc `max-h-full` ne peut **pas** rétrécir l'image sous sa taille intrinsèque. Résultat : sur desktop en écran large, une photo portrait haute résolution déborde vers le bas ; on ne voit que le haut, la barre du compteur passe par-dessus, et le reste est masqué sous la caption/miniatures.
+Pour une location saisonnière de particulier à particulier, la section Contact doit rassurer et rester simple :
 
-C'est le vrai coupable, pas la qualité source.
+- **WhatsApp en premier** : c'est le canal le plus naturel pour les voyageurs (questions rapides, photos, voix).
+- **Numéro de téléphone cliquable** (`tel:`) en complément pour ceux qui préfèrent appeler.
+- **Formulaire de message court** pour les visiteurs qui ne veulent pas sortir du site.
+- **Horaires de réponse** affichées : « Joëlle répond sous 2 h ».
+- **Pas d'email en clair** : on évite le spam en passant par le formulaire.
 
-### 2. Impression de pixelisation
+## Implémentation proposée
 
-L'image affichée fait souvent plus large que sa résolution native (les photos Airbnb migrées font ~1280 px). En plein écran 1920 px, le navigateur upscale → flou.
+### 1. Footer enrichi (`src/routes/index.tsx`)
 
-## Correctifs
+Transformer le bloc « Contact » existant du footer en une section plus actionnable :
 
-### a) Cadrage — fix structurel dans `src/components/lightbox.tsx`
+- Titre : « Une question ? Parlez à Joëlle ».
+- Bouton WhatsApp doré (`variant="cta"`) avec icône, ouvrant `https://wa/33XXXXXXXXX`.
+- Lien d'appel téléphonique secondaire.
+- Mention « Réponse sous 2 h ».
+- Mini-formulaire intégré : nom, email, téléphone (optionnel), message.
 
-Remplacer la scène par un wrapper qui garantit un cadre borné :
+Le design reste dans l'identité « Sable & Mer » du site (Fraunces + Inter, couleurs dorées et profondes).
 
-- Ajouter `min-h-0 min-w-0` sur la scène `flex-1` (débloque `max-h-full`).
-- Envelopper l'`<img>` dans un `<div class="relative flex-1 min-h-0 w-full flex items-center justify-center">` et donner à l'image `class="block h-full w-full object-contain"` (au lieu de `max-h-* max-w-*`). `object-contain` gère seul le ratio sans jamais dépasser le cadre.
-- Réserver explicitement la place de la caption + miniatures pour qu'elles ne mangent pas la zone photo (les mettre en `shrink-0`).
-- Ajouter `overscroll-contain` et retirer le padding latéral trop généreux sur desktop pour laisser l'image respirer.
+### 2. Envoi du formulaire de contact
 
-Résultat : la photo tient toujours pile dans l'espace libre entre la barre du haut et les miniatures, centrée, sans découpe.
+Créer une server function `sendContactMessage` dans `src/lib/contact.functions.ts` :
 
-### b) Netteté — servir la bonne taille
+- Valider les champs avec Zod (nom, email valide, message non vide, longueurs limitées).
+- Envoyer un email à l'admin via Pingram avec le même pattern que `createAndSendBookingNotification`.
+- Sujet : « Nouveau message depuis le site — Le Nid d'Or ».
+- Contenu : nom, email, téléphone, message, date/heure.
+- Retourner un statut `ok` au client pour afficher un toast de confirmation.
+- Logger les erreurs dans `app_logs` comme pour les réservations.
 
-Améliorer la route de streaming `src/routes/api/public/gallery/$name.ts` pour :
+### 3. Stockage du numéro WhatsApp/téléphone
 
-- Ajouter un `Content-Length` et un `ETag` (meilleur cache navigateur, évite le re-download entre vignette et plein écran).
-- Documenter que les images doivent être uploadées en ≥ 2000 px de large côté long (ajouté en note dans l'onglet Photos de `/admin`).
+Le numéro n'est pas une donnée sensible, mais il est préférable de le rendre configurable sans rebuild. Deux options :
 
-Note : pas de redimensionnement serveur (sharp/canvas ne tournent pas sur le runtime edge — cf. contraintes du projet). La bonne pratique reste : uploader des originaux nets.
+- **Option A (recommandée)** : le stocker dans une variable d'environnement côté serveur, par exemple `CONTACT_PHONE_NUMBER`, lue dans la server function et exposée au client via une server function publique `getContactInfo`.
+- **Option B** : le laisser en dur dans le code si Joëlle ne souhaite pas le changer régulièrement.
 
-### c) Bonus UX pendant qu'on y est
+Je préconise l'**Option A** pour garder la flexibilité.
 
-- Ajouter un `loading="eager"` + `decoding="async"` sur l'image principale et un léger fondu entre deux photos.
-- Sur desktop, cliquer hors de l'image ferme la lightbox (déjà en place) — vérifier que ça ne se déclenche pas par erreur sur les flèches.
+### 4. Validation et sécurité
 
-## Fichiers modifiés
+- Validation Zod côté client et serveur.
+- Longueur maximale sur les champs (nom 100 caractères, email 255, message 1000).
+- Pas de HTML dans le message (échappement côté email).
+- Limiter le débit côté serveur si possible (pas de rate-limit complexe, juste une vérification basique).
 
-- `src/components/lightbox.tsx` — refonte de la structure du stage (fix principal).
-- `src/routes/api/public/gallery/$name.ts` — headers cache/ETag.
-- `src/routes/admin.tsx` — courte note « uploadez des photos ≥ 2000 px » dans l'onglet Photos.
+### 5. UX mobile
 
-## Détails techniques
+- Le formulaire reste en une seule colonne sur mobile.
+- Le bouton WhatsApp reste bien visible et suffisamment grand pour le pouce.
+- Pas de champ obligatoire superflu.
 
-Nouvelle structure JSX (schéma) :
+## Fichiers modifiés ou créés
 
-```text
-<div fixed inset-0 flex flex-col>
-  <TopBar shrink-0 />
-  <div flex-1 min-h-0 min-w-0 relative flex items-center justify-center>
-     <img h-full w-full object-contain />
-     <PrevBtn absolute /> <NextBtn absolute />
-  </div>
-  <Caption shrink-0 />
-  <Thumbnails shrink-0 />
-</div>
-```
+- `src/routes/index.tsx` : footer enrichi + formulaire de contact.
+- `src/lib/contact.functions.ts` : nouvelle server function d'envoi de message.
+- `src/lib/pingram-notifications.server.ts` : ajout d'une fonction utilitaire `sendAdminContactNotification` (ou réutilisation du pattern existant).
+- Configuration du secret/env `CONTACT_PHONE_NUMBER` (à définir avec Joëlle).
 
-Le `min-h-0` sur la zone `flex-1` est la clé — sans lui, `object-contain` ne peut jamais rétrécir sous la taille intrinsèque de l'image.
+## Besoin de ta part
 
-## Ce qui change pour toi
+Le numéro de téléphone/WhatsApp de Joëlle est nécessaire pour rendre le bouton fonctionnel. Peux-tu me le communiquer ? Il sera stocké côté serveur (pas visible en clair dans le code source public).
 
-- Toute photo (portrait, paysage, carrée) s'affiche entièrement à l'écran, centrée, sans coupe.
-- Moins de flou visible car cache mieux géré et image jamais étirée au-delà de son ratio.
-- Consigne simple : upload en haute résolution (≥ 2000 px) pour un rendu net sur grands écrans.
+Une fois le numéro fourni, je peux implémenter directement.
