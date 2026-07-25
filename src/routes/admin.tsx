@@ -417,6 +417,10 @@ function AdminPage() {
             <IcalSourcesPanel />
           </TabsContent>
 
+          <TabsContent value="ota" className="mt-6">
+            <OtaLinksPanel />
+          </TabsContent>
+
           <TabsContent value="photos" className="mt-6">
             <GalleryPanel />
           </TabsContent>
