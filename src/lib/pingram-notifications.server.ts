@@ -319,3 +319,122 @@ export async function sendGuestConfirmationEmail(lead: BookingNotificationLead) 
     return { ok: false as const, notificationId: notification?.id, error: message };
   }
 }
+
+function buildContactHtml(lead: ContactNotificationLead): string {
+  const created = new Date().toLocaleString("fr-FR", { timeZone: "Europe/Paris" });
+  return `
+    <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:16px;color:#222">
+      <h2 style="margin:0 0 12px">Nouveau message depuis le site</h2>
+      <p style="margin:0 0 16px;color:#555">Une personne a envoyé un message via le formulaire de contact du Nid d'Or.</p>
+      <table style="width:100%;border-collapse:collapse;font-size:14px">
+        <tbody>
+          <tr><td style="padding:6px 0;color:#666">Nom</td><td style="padding:6px 0"><strong>${esc(lead.name)}</strong></td></tr>
+          <tr><td style="padding:6px 0;color:#666">Email</td><td style="padding:6px 0"><a href="mailto:${esc(lead.email)}">${esc(lead.email)}</a></td></tr>
+          <tr><td style="padding:6px 0;color:#666">Téléphone</td><td style="padding:6px 0">${esc(lead.phone) || "—"}</td></tr>
+          <tr><td style="padding:6px 0;color:#666;vertical-align:top">Message</td><td style="padding:6px 0;white-space:pre-wrap">${esc(lead.message)}</td></tr>
+          <tr><td style="padding:6px 0;color:#666">Reçu le</td><td style="padding:6px 0">${esc(created)}</td></tr>
+        </tbody>
+      </table>
+      <p style="margin-top:20px;font-size:12px;color:#888">Répondez directement à cet email pour contacter ${esc(lead.name)}.</p>
+    </div>`;
+}
+
+export async function sendAdminContactNotification(lead: ContactNotificationLead) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const recipientEmail = (process.env.NOTIFY_ADMIN_EMAIL ?? fallbackAdminEmail).trim() || fallbackAdminEmail;
+
+  const { data: notification, error: notificationError } = await supabaseAdmin
+    .from("booking_notifications")
+    .insert({
+      provider: "pingram",
+      recipient_email: recipientEmail,
+      status: "pending",
+    })
+    .select("id")
+    .single();
+
+  if (notificationError) {
+    console.error("contact notification tracking insert failed", { error: notificationError });
+    await logAppEvent({
+      level: "error",
+      event: "contact_notification_tracking_insert_failed",
+      area: "notification",
+      message: "Création du suivi de notification contact impossible.",
+      details: errorDetails(notificationError, {}),
+    });
+  }
+
+  const apiKey = process.env.PINGRAM_API_KEY;
+  if (!apiKey) {
+    await updateNotification(notification?.id, {
+      status: "failed",
+      error_message: "PINGRAM_API_KEY not configured",
+    });
+    await logAppEvent({
+      level: "error",
+      event: "pingram_contact_api_key_missing",
+      area: "notification",
+      message: "PINGRAM_API_KEY n'est pas configuré pour le message de contact.",
+      details: { notificationId: notification?.id },
+    });
+    throw new Error("PINGRAM_API_KEY not configured");
+  }
+
+  try {
+    const res = await fetch("https://api.pingram.io/email", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        type: "new_lead",
+        to: recipientEmail,
+        subject: "Nouveau message depuis le site — Le Nid d'Or",
+        html: buildContactHtml(lead),
+      }),
+    });
+
+    const responseText = await res.text();
+    if (!res.ok) {
+      await updateNotification(notification?.id, {
+        status: "failed",
+        provider_status: res.status,
+        provider_response: responseText.slice(0, 2000),
+        error_message: "Pingram contact send failed",
+      });
+      console.error("Pingram contact send failed", { notificationId: notification?.id, status: res.status, body: responseText });
+      await logAppEvent({
+        level: "error",
+        event: "pingram_contact_send_failed",
+        area: "notification",
+        message: "Pingram a refusé l'envoi du message de contact admin.",
+        details: { notificationId: notification?.id, status: res.status, body: responseText },
+      });
+      throw new Error("Pingram send failed");
+    }
+
+    await updateNotification(notification?.id, {
+      status: "sent",
+      provider_status: res.status,
+      provider_response: responseText.slice(0, 2000),
+      sent_at: new Date().toISOString(),
+    });
+    return { ok: true as const, notificationId: notification?.id, status: res.status };
+  } catch (error) {
+    const message = String(error);
+    await updateNotification(notification?.id, {
+      status: "failed",
+      error_message: message,
+    });
+    console.error("Pingram contact send threw", { notificationId: notification?.id, error: message });
+    await logAppEvent({
+      level: "error",
+      event: "pingram_contact_send_threw",
+      area: "notification",
+      message: "Exception pendant l'envoi Pingram du message de contact.",
+      details: errorDetails(error, { notificationId: notification?.id }),
+    });
+    throw error;
+  }
+}
