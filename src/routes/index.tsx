@@ -586,7 +586,7 @@ function OtaPlatforms() {
   );
 }
 
-
+function BookingForm() {
   const [range, setRange] = useState<DateRange | undefined>();
   const [guests, setGuests] = useState(2);
   const [name, setName] = useState("");
