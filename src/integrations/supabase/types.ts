@@ -166,6 +166,36 @@ export type Database = {
         }
         Relationships: []
       }
+      ota_links: {
+        Row: {
+          created_at: string
+          enabled: boolean
+          id: string
+          label: string | null
+          position: number
+          updated_at: string
+          url: string
+        }
+        Insert: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          label?: string | null
+          position?: number
+          updated_at?: string
+          url: string
+        }
+        Update: {
+          created_at?: string
+          enabled?: boolean
+          id?: string
+          label?: string | null
+          position?: number
+          updated_at?: string
+          url?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
