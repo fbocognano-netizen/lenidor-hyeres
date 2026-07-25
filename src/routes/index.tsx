@@ -19,6 +19,7 @@ import { cn } from "@/lib/utils";
 import { getBlockedDates, createBooking } from "@/lib/bookings.functions";
 import { listGalleryPhotos, type GalleryPhoto } from "@/lib/gallery.functions";
 import { listPublicOtaLinks, type OtaLink } from "@/lib/ota-links.functions";
+import { sendContactMessage, getContactInfo } from "@/lib/contact.functions";
 import { Lightbox, useLightbox } from "@/components/lightbox";
 
 import photo1 from "@/assets/listing/photo-1.jpg";
