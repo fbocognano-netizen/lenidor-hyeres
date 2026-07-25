@@ -45,6 +45,14 @@ import {
   updateIcalSource,
 } from "@/lib/admin-bookings.functions";
 import { deleteGalleryPhoto, listGalleryPhotos, reorderGalleryPhotos } from "@/lib/gallery.functions";
+import {
+  createOtaLink,
+  deleteOtaLink,
+  listOtaLinksAdmin,
+  updateOtaLink,
+  deriveLabelFromUrl,
+  type OtaLink,
+} from "@/lib/ota-links.functions";
 import { cn } from "@/lib/utils";
 
 
@@ -368,6 +376,7 @@ function AdminPage() {
             <TabsTrigger value="calendar" className="rounded-full">Calendrier</TabsTrigger>
             <TabsTrigger value="list" className="rounded-full">Liste ({data.counts.total})</TabsTrigger>
             <TabsTrigger value="ical" className="rounded-full">Calendriers iCal</TabsTrigger>
+            <TabsTrigger value="ota" className="rounded-full">Plateformes</TabsTrigger>
             <TabsTrigger value="photos" className="rounded-full">Photos</TabsTrigger>
             <TabsTrigger value="logs" className="rounded-full">Logs</TabsTrigger>
           </TabsList>
@@ -406,6 +415,10 @@ function AdminPage() {
 
           <TabsContent value="ical" className="mt-6">
             <IcalSourcesPanel />
+          </TabsContent>
+
+          <TabsContent value="ota" className="mt-6">
+            <OtaLinksPanel />
           </TabsContent>
 
           <TabsContent value="photos" className="mt-6">
@@ -1280,6 +1293,176 @@ function GalleryPanel() {
           ))}
         </div>
       )}
+    </Card>
+  );
+}
+
+function OtaLinksPanel() {
+  const load = useServerFn(listOtaLinksAdmin);
+  const create = useServerFn(createOtaLink);
+  const update = useServerFn(updateOtaLink);
+  const remove = useServerFn(deleteOtaLink);
+  const queryClient = useQueryClient();
+
+  const query = useQuery({
+    queryKey: ["admin-ota-links"],
+    queryFn: () => load(),
+    retry: false,
+  });
+
+  const invalidate = () => {
+    queryClient.invalidateQueries({ queryKey: ["admin-ota-links"] });
+    queryClient.invalidateQueries({ queryKey: ["public-ota-links"] });
+  };
+
+  const createMutation = useMutation({
+    mutationFn: (input: { url: string; label?: string | null }) => create({ data: input }),
+    onSuccess: () => { toast.success("Plateforme ajoutée"); invalidate(); },
+    onError: (e: Error) => toast.error(e.message ?? "Ajout impossible"),
+  });
+  const updateMutation = useMutation({
+    mutationFn: (input: { id: string; url?: string; label?: string | null; enabled?: boolean }) => update({ data: input }),
+    onSuccess: () => { toast.success("Mis à jour"); invalidate(); },
+    onError: (e: Error) => toast.error(e.message ?? "Modification impossible"),
+  });
+  const deleteMutation = useMutation({
+    mutationFn: (input: { id: string }) => remove({ data: input }),
+    onSuccess: () => { toast.success("Supprimé"); invalidate(); },
+    onError: (e: Error) => toast.error(e.message ?? "Suppression impossible"),
+  });
+
+  const [newUrl, setNewUrl] = useState("");
+  const [newLabel, setNewLabel] = useState("");
+  const derivedPreview = newUrl.trim() ? deriveLabelFromUrl(newUrl.trim()) : "";
+
+  const links = (query.data?.authenticated ? query.data.links : []) as OtaLink[];
+
+  return (
+    <div className="space-y-6">
+      <Card className="rounded-3xl border-border/60 p-5 shadow-none sm:p-6">
+        <h3 className="font-display text-2xl">Boutons plateformes (OTA)</h3>
+        <p className="mt-2 text-sm text-muted-foreground">
+          Ces boutons apparaissent dans la section « Réserver » sur la page d'accueil. Le nom affiché est déduit
+          automatiquement de l'URL (ex. <span className="font-mono">airbnb.fr</span> → « Airbnb »). Tu peux le forcer
+          en saisissant un nom personnalisé.
+        </p>
+
+        <form
+          className="mt-5 grid gap-3 sm:grid-cols-[2fr,1fr,auto]"
+          onSubmit={(e) => {
+            e.preventDefault();
+            if (!newUrl.trim()) return;
+            createMutation.mutate(
+              { url: newUrl.trim(), label: newLabel.trim() || null },
+              { onSuccess: () => { setNewUrl(""); setNewLabel(""); } },
+            );
+          }}
+        >
+          <Input
+            placeholder="https://www.airbnb.fr/rooms/..."
+            value={newUrl}
+            onChange={(e) => setNewUrl(e.target.value)}
+            className="font-mono text-xs"
+          />
+          <Input
+            placeholder={derivedPreview ? `Nom (auto : ${derivedPreview})` : "Nom affiché (optionnel)"}
+            value={newLabel}
+            onChange={(e) => setNewLabel(e.target.value)}
+          />
+          <Button type="submit" disabled={createMutation.isPending} className="rounded-full">
+            {createMutation.isPending ? "Ajout…" : "Ajouter"}
+          </Button>
+        </form>
+      </Card>
+
+      <div className="space-y-3">
+        {query.isLoading && <p className="text-sm text-muted-foreground">Chargement…</p>}
+        {links.length === 0 && !query.isLoading && (
+          <Card className="rounded-2xl border-border/60 p-6 text-center text-sm text-muted-foreground shadow-none">
+            Aucune plateforme configurée. Ajoute-en une ci-dessus.
+          </Card>
+        )}
+        {links.map((link) => (
+          <OtaLinkRowItem
+            key={link.id}
+            link={link}
+            onSave={(patch) => updateMutation.mutate({ id: link.id, ...patch })}
+            onDelete={() => {
+              if (confirm(`Supprimer la plateforme "${link.label}" ?`)) deleteMutation.mutate({ id: link.id });
+            }}
+            savePending={updateMutation.isPending}
+            deletePending={deleteMutation.isPending}
+          />
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function OtaLinkRowItem({
+  link,
+  onSave,
+  onDelete,
+  savePending,
+  deletePending,
+}: {
+  link: OtaLink;
+  onSave: (patch: { url?: string; label?: string | null; enabled?: boolean }) => void;
+  onDelete: () => void;
+  savePending: boolean;
+  deletePending: boolean;
+}) {
+  const [url, setUrl] = useState(link.url);
+  const [label, setLabel] = useState(link.label);
+  const derived = url.trim() ? deriveLabelFromUrl(url.trim()) : "";
+  const labelIsDerived = label.trim() === derived;
+  const dirty = url !== link.url || label !== link.label;
+
+  return (
+    <Card className="rounded-2xl border-border/60 p-4 shadow-none">
+      <div className="grid gap-3 sm:grid-cols-[2fr,1fr,auto,auto,auto] sm:items-center">
+        <Input value={url} onChange={(e) => setUrl(e.target.value)} placeholder="URL" className="font-mono text-xs" />
+        <Input
+          value={label}
+          onChange={(e) => setLabel(e.target.value)}
+          placeholder={derived ? `Auto : ${derived}` : "Nom affiché"}
+        />
+        <Button
+          type="button"
+          variant={link.enabled ? "default" : "outline"}
+          size="sm"
+          className="rounded-full"
+          disabled={savePending}
+          onClick={() => onSave({ enabled: !link.enabled })}
+        >
+          {link.enabled ? "Actif" : "Désactivé"}
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          className="rounded-full"
+          disabled={!dirty || savePending || !url.trim()}
+          onClick={() =>
+            onSave({
+              url: url.trim(),
+              // Send null when the label matches the derived one to keep the auto-mode.
+              label: labelIsDerived ? null : label.trim() || null,
+            })
+          }
+        >
+          Enregistrer
+        </Button>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="rounded-full text-destructive hover:text-destructive"
+          disabled={deletePending}
+          onClick={onDelete}
+        >
+          Supprimer
+        </Button>
+      </div>
     </Card>
   );
 }
