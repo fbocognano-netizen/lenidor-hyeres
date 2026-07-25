@@ -161,7 +161,7 @@ export const updateOtaLink = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     if (!(await isAdminUnlocked())) return { authenticated: false as const, ok: false as const };
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
-    const patch: Record<string, unknown> = {};
+    const patch: { url?: string; label?: string | null; enabled?: boolean; position?: number } = {};
     if (data.url !== undefined) patch.url = data.url;
     if (data.label !== undefined) patch.label = data.label && data.label.trim() ? data.label.trim() : null;
     if (data.enabled !== undefined) patch.enabled = data.enabled;
