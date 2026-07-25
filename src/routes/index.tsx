@@ -549,7 +549,44 @@ function BookingSection() {
   );
 }
 
-function BookingForm() {
+const FALLBACK_OTA_LINKS: OtaLink[] = [
+  { id: "fallback-airbnb", url: "https://www.airbnb.fr/rooms/1526120631746320177", label: "Airbnb", position: 10, enabled: true },
+  { id: "fallback-leboncoin", url: "https://www.leboncoin.fr/ad/locations_saisonnieres/3216372939", label: "Leboncoin", position: 20, enabled: true },
+];
+
+function OtaPlatforms() {
+  const load = useServerFn(listPublicOtaLinks);
+  const query = useQuery({
+    queryKey: ["public-ota-links"],
+    queryFn: () => load(),
+    staleTime: 5 * 60 * 1000,
+  });
+  const links = (query.data?.links?.length ? query.data.links : FALLBACK_OTA_LINKS);
+  if (links.length === 0) return null;
+  return (
+    <div className="mt-6 pt-6 sm:mt-10 sm:pt-8 border-t border-primary-foreground/15">
+      <p className="text-xs uppercase tracking-[0.2em] text-primary-foreground/60">
+        Vous préférez une plateforme&nbsp;?
+      </p>
+      <p className="mt-2 sm:mt-3 text-sm text-primary-foreground/70">Réservez aussi via&nbsp;:</p>
+      <div className="mt-3 sm:mt-4 flex flex-wrap gap-3">
+        {links.map((link) => (
+          <a
+            key={link.id}
+            href={link.url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="inline-flex items-center gap-2 rounded-full bg-primary-foreground text-deep hover:bg-primary-foreground/90 transition px-7 h-12 text-sm sm:px-8 sm:text-base font-semibold shadow-lg"
+          >
+            {link.label} <span aria-hidden>↗</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+
   const [range, setRange] = useState<DateRange | undefined>();
   const [guests, setGuests] = useState(2);
   const [name, setName] = useState("");
