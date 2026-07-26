@@ -49,7 +49,19 @@ function rangesOverlap(aStart: Date, aEnd: Date, bStart: Date, bEnd: Date) {
 // Tarifs saisonniers + frais
 const CLEANING_FEE = 40;
 const DEPOSIT_CASH = 500; // caution espèces à l'arrivée (non incluse dans le total)
-const TOURIST_TAX_PER_PERSON_NIGHT = 1; // estimation à percevoir et reverser en direct
+// Taxe de séjour TPM (meublé non classé) :
+//   prix par personne et par nuit = total hébergement (hors ménage) / nuits / occupants
+//   taxe par personne et par nuit = MIN(prix pp/nuit x 5 %, 3,09 €) x 1,44
+//   taxe totale = taxe pp/nuit x nuits x personnes taxables
+const TOURIST_TAX_RATE = 0.05;
+const TOURIST_TAX_CAP = 3.09; // plafond 2026 avant taxes additionnelles
+const TOURIST_TAX_SURCHARGE = 1.44; // 1 + 10 % département + 34 % région
+function computeTouristTax(nightsTotal: number, nights: number, occupants: number): number {
+  if (nights <= 0 || occupants <= 0) return 0;
+  const perPersonNight = nightsTotal / nights / occupants;
+  const taxPerPersonNight = Math.min(perPersonNight * TOURIST_TAX_RATE, TOURIST_TAX_CAP) * TOURIST_TAX_SURCHARGE;
+  return Math.round(taxPerPersonNight * nights * occupants * 100) / 100;
+}
 function nightlyRateForDate(d: Date): number {
   const m = d.getUTCMonth() + 1;
   if (m === 7 || m === 8) return 130; // haute saison
