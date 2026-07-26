@@ -1036,14 +1036,6 @@ function Footer() {
               </Button>
             )}
 
-            {contact?.telUrl && (
-              <p className="mt-3 text-sm">
-                <a href={contact.telUrl} className="text-foreground hover:text-[var(--color-accent)] transition">
-                  {contact.phone}
-                </a>
-              </p>
-            )}
-
             {!contact?.phone && (
               <p className="mt-3 text-xs text-muted-foreground italic">Numéro de contact à configurer.</p>
             )}
