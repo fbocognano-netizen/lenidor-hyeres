@@ -819,8 +819,15 @@ function BookingForm() {
             séjour)
           </div>
           <div>
-            + <span className="text-foreground font-medium">~{TOURIST_TAX_PER_PERSON_NIGHT} €</span> de taxe de séjour /
-            personne / nuit (collectée à l'arrivée, reversée à la commune)
+            + taxe de séjour :{" "}
+            <span className="text-foreground font-medium">
+              5 % du prix de la nuit par personne
+            </span>{" "}
+            (hors ménage), majorée de 44 % (département + région), plafonnée à{" "}
+            <span className="text-foreground font-medium">
+              {TOURIST_TAX_CAP_WITH_SURCHARGE.toFixed(2).replace(".", ",")} €
+            </span>{" "}
+            / personne / nuit — collectée à l'arrivée, reversée à la commune
           </div>
           <div>
             Caution de <span className="text-foreground font-medium">{DEPOSIT_CASH} €</span> en espèces à régler à
