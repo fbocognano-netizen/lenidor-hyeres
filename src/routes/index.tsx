@@ -30,7 +30,22 @@ import photo5 from "@/assets/listing/photo-5.jpg";
 
 const CLEANING_FEE = 40;
 const DEPOSIT_CASH = 500;
-const TOURIST_TAX_PER_PERSON_NIGHT = 1; // approximatif, Hyères meublé non classé
+// Taxe de séjour TPM (meublé non classé) : 5 % du prix HT par personne et par nuit,
+// plafonné à 3,09 € (2026), majoré de 44 % (10 % département + 34 % région).
+const TOURIST_TAX_RATE = 0.05;
+const TOURIST_TAX_CAP = 3.09;
+const TOURIST_TAX_SURCHARGE = 1.44;
+function touristTaxPerPersonNight(nightsTotal: number, nights: number, occupants: number): number {
+  if (nights <= 0 || occupants <= 0) return 0;
+  // Les frais de ménage ne sont pas inclus dans le prix de l'hébergement.
+  const perPersonNight = nightsTotal / nights / occupants;
+  return Math.min(perPersonNight * TOURIST_TAX_RATE, TOURIST_TAX_CAP) * TOURIST_TAX_SURCHARGE;
+}
+function computeTouristTax(nightsTotal: number, nights: number, occupants: number): number {
+  const perPn = touristTaxPerPersonNight(nightsTotal, nights, occupants);
+  return Math.round(perPn * nights * occupants * 100) / 100;
+}
+const TOURIST_TAX_CAP_WITH_SURCHARGE = Math.round(TOURIST_TAX_CAP * TOURIST_TAX_SURCHARGE * 100) / 100;
 function nightlyRate(d: Date): number {
   const m = d.getMonth() + 1;
   if (m === 7 || m === 8) return 130;
