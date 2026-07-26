@@ -36,11 +36,14 @@ export const sendContactMessage = createServerFn({ method: "POST" })
   });
 
 export const getContactInfo = createServerFn({ method: "GET" }).handler(async () => {
-  const phone = process.env.CONTACT_PHONE_NUMBER?.trim();
-  const digitsOnly = phone ? phone.replace(/\D/g, "") : null;
+  const phone = process.env.CONTACT_PHONE_NUMBER?.trim() || "+33622644328";
+  const digitsOnly = phone.replace(/\D/g, "");
+  const message = "Bonjour, j'ai une question avant de réserver dans votre Nid d'Or à Hyères";
   return {
     phone: phone || null,
     telUrl: digitsOnly ? `tel:+${digitsOnly}` : null,
-    whatsappUrl: digitsOnly ? `https://wa.me/${digitsOnly}` : null,
+    whatsappUrl: digitsOnly
+      ? `https://wa.me/${digitsOnly}?text=${encodeURIComponent(message)}`
+      : null,
   };
 });
