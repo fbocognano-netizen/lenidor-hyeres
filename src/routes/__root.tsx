@@ -116,6 +116,10 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content: "B4L6zAp6HnvBopD0J7lOHzKKXQTLWk9moM-ifcl39_c",
       },
       {
+        name: "google-site-verification",
+        content: "S5Vi_m-dl005wzVEMw68xSb_9ch0Dztih5lcxVO4qfk",
+      },
+      {
         property: "og:title",
         content: "Le Nid d'Or à Hyères • Studio vue mer & piscine • Site officiel",
       },
