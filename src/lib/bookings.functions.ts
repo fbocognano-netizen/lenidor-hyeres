@@ -183,8 +183,8 @@ export const createBooking = createServerFn({ method: "POST" })
     }
 
     const { nightsTotal } = computeNightsTotal(checkIn, checkOut);
-    const touristTax = nights * data.guests * TOURIST_TAX_PER_PERSON_NIGHT;
-    const total = nightsTotal + CLEANING_FEE + touristTax;
+    const touristTax = computeTouristTax(nightsTotal, nights, data.guests);
+    const total = Math.round((nightsTotal + CLEANING_FEE + touristTax) * 100) / 100;
 
 
     const { data: insertedBooking, error } = await supabaseAdmin.from("bookings").insert({
