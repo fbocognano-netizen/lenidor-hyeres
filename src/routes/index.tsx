@@ -844,7 +844,7 @@ function BookingForm() {
             {nights > 0 && (
               <div className="text-xs text-muted-foreground mt-1">
                 {nights} nuit{nights > 1 ? "s" : ""} · {nightsTotal} € ({avgRate} €/nuit moy.) + {CLEANING_FEE} € ménage
-                + {touristTax} € taxe séjour
+                + {touristTax.toFixed(2).replace(".", ",")} € taxe séjour
               </div>
             )}
           </div>
