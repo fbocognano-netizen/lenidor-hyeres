@@ -30,7 +30,22 @@ import photo5 from "@/assets/listing/photo-5.jpg";
 
 const CLEANING_FEE = 40;
 const DEPOSIT_CASH = 500;
-const TOURIST_TAX_PER_PERSON_NIGHT = 1; // approximatif, Hyères meublé non classé
+// Taxe de séjour TPM (meublé non classé) : 5 % du prix HT par personne et par nuit,
+// plafonné à 3,09 € (2026), majoré de 44 % (10 % département + 34 % région).
+const TOURIST_TAX_RATE = 0.05;
+const TOURIST_TAX_CAP = 3.09;
+const TOURIST_TAX_SURCHARGE = 1.44;
+function touristTaxPerPersonNight(nightsTotal: number, nights: number, occupants: number): number {
+  if (nights <= 0 || occupants <= 0) return 0;
+  // Les frais de ménage ne sont pas inclus dans le prix de l'hébergement.
+  const perPersonNight = nightsTotal / nights / occupants;
+  return Math.min(perPersonNight * TOURIST_TAX_RATE, TOURIST_TAX_CAP) * TOURIST_TAX_SURCHARGE;
+}
+function computeTouristTax(nightsTotal: number, nights: number, occupants: number): number {
+  const perPn = touristTaxPerPersonNight(nightsTotal, nights, occupants);
+  return Math.round(perPn * nights * occupants * 100) / 100;
+}
+const TOURIST_TAX_CAP_WITH_SURCHARGE = Math.round(TOURIST_TAX_CAP * TOURIST_TAX_SURCHARGE * 100) / 100;
 function nightlyRate(d: Date): number {
   const m = d.getMonth() + 1;
   if (m === 7 || m === 8) return 130;
@@ -639,8 +654,8 @@ function BookingForm() {
 
   const nights = range?.from && range?.to ? differenceInCalendarDays(range.to, range.from) : 0;
   const { nightsTotal } = range?.from && range?.to ? computeStay(range.from, range.to) : { nightsTotal: 0 };
-  const touristTax = nights > 0 ? nights * guests * TOURIST_TAX_PER_PERSON_NIGHT : 0;
-  const total = nights > 0 ? nightsTotal + CLEANING_FEE + touristTax : 0;
+  const touristTax = nights > 0 ? computeTouristTax(nightsTotal, nights, guests) : 0;
+  const total = nights > 0 ? Math.round((nightsTotal + CLEANING_FEE + touristTax) * 100) / 100 : 0;
   const avgRate = nights > 0 ? Math.round(nightsTotal / nights) : 0;
 
   async function handleSubmit(e: React.FormEvent) {
@@ -804,8 +819,15 @@ function BookingForm() {
             séjour)
           </div>
           <div>
-            + <span className="text-foreground font-medium">~{TOURIST_TAX_PER_PERSON_NIGHT} €</span> de taxe de séjour /
-            personne / nuit (collectée à l'arrivée, reversée à la commune)
+            + taxe de séjour :{" "}
+            <span className="text-foreground font-medium">
+              5 % du prix de la nuit par personne
+            </span>{" "}
+            (hors ménage), majorée de 44 % (département + région), plafonnée à{" "}
+            <span className="text-foreground font-medium">
+              {TOURIST_TAX_CAP_WITH_SURCHARGE.toFixed(2).replace(".", ",")} €
+            </span>{" "}
+            / personne / nuit — collectée à l'arrivée, reversée à la commune
           </div>
           <div>
             Caution de <span className="text-foreground font-medium">{DEPOSIT_CASH} €</span> en espèces à régler à
@@ -822,7 +844,7 @@ function BookingForm() {
             {nights > 0 && (
               <div className="text-xs text-muted-foreground mt-1">
                 {nights} nuit{nights > 1 ? "s" : ""} · {nightsTotal} € ({avgRate} €/nuit moy.) + {CLEANING_FEE} € ménage
-                + {touristTax} € taxe séjour
+                + {touristTax.toFixed(2).replace(".", ",")} € taxe séjour
               </div>
             )}
           </div>
