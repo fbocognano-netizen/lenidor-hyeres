@@ -60,7 +60,7 @@ export function renderMarkdown(source: string): RenderResult {
 
       heading(token: Tokens.Heading) {
         const text = this.parser.parseInline(token.tokens);
-        const plain = text.replace(/<[^>]*>/g, "");
+        const plain = decodeEntities(text.replace(/<[^>]*>/g, ""));
         const level = Math.min(Math.max(token.depth, 2), 4);
 
         let id = slugifyHeading(plain) || "section";
