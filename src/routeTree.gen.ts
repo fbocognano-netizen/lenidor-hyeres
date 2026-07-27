@@ -10,7 +10,6 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
-import { Route as GuidePlagesHyeresRouteImport } from './routes/guide-plages-hyeres'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as SplatRouteImport } from './routes/$'
 import { Route as IndexRouteImport } from './routes/index'
@@ -23,11 +22,6 @@ import { Route as ApiAdminGalleryUploadRouteImport } from './routes/api/admin/ga
 const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
   id: '/sitemap.xml',
   path: '/sitemap.xml',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GuidePlagesHyeresRoute = GuidePlagesHyeresRouteImport.update({
-  id: '/guide-plages-hyeres',
-  path: '/guide-plages-hyeres',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminRoute = AdminRouteImport.update({
@@ -75,7 +69,6 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/admin': typeof AdminRoute
-  '/guide-plages-hyeres': typeof GuidePlagesHyeresRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/app-log': typeof ApiAppLogRoute
   '/api/admin/login': typeof ApiAdminLoginRoute
@@ -87,7 +80,6 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/admin': typeof AdminRoute
-  '/guide-plages-hyeres': typeof GuidePlagesHyeresRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/app-log': typeof ApiAppLogRoute
   '/api/admin/login': typeof ApiAdminLoginRoute
@@ -100,7 +92,6 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/admin': typeof AdminRoute
-  '/guide-plages-hyeres': typeof GuidePlagesHyeresRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/api/app-log': typeof ApiAppLogRoute
   '/api/admin/login': typeof ApiAdminLoginRoute
@@ -114,7 +105,6 @@ export interface FileRouteTypes {
     | '/'
     | '/$'
     | '/admin'
-    | '/guide-plages-hyeres'
     | '/sitemap.xml'
     | '/api/app-log'
     | '/api/admin/login'
@@ -126,7 +116,6 @@ export interface FileRouteTypes {
     | '/'
     | '/$'
     | '/admin'
-    | '/guide-plages-hyeres'
     | '/sitemap.xml'
     | '/api/app-log'
     | '/api/admin/login'
@@ -138,7 +127,6 @@ export interface FileRouteTypes {
     | '/'
     | '/$'
     | '/admin'
-    | '/guide-plages-hyeres'
     | '/sitemap.xml'
     | '/api/app-log'
     | '/api/admin/login'
@@ -151,7 +139,6 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SplatRoute: typeof SplatRoute
   AdminRoute: typeof AdminRoute
-  GuidePlagesHyeresRoute: typeof GuidePlagesHyeresRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
   ApiAppLogRoute: typeof ApiAppLogRoute
   ApiAdminLoginRoute: typeof ApiAdminLoginRoute
@@ -167,13 +154,6 @@ declare module '@tanstack/react-router' {
       path: '/sitemap.xml'
       fullPath: '/sitemap.xml'
       preLoaderRoute: typeof SitemapDotxmlRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/guide-plages-hyeres': {
-      id: '/guide-plages-hyeres'
-      path: '/guide-plages-hyeres'
-      fullPath: '/guide-plages-hyeres'
-      preLoaderRoute: typeof GuidePlagesHyeresRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin': {
@@ -239,7 +219,6 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SplatRoute: SplatRoute,
   AdminRoute: AdminRoute,
-  GuidePlagesHyeresRoute: GuidePlagesHyeresRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
   ApiAppLogRoute: ApiAppLogRoute,
   ApiAdminLoginRoute: ApiAdminLoginRoute,
