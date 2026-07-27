@@ -56,14 +56,15 @@ export const Route = createFileRoute("/$")({
           type: "application/ld+json",
           children: JSON.stringify({
             "@context": "https://schema.org",
-            "@type": "Article",
+            "@type": "BlogPosting",
             headline: post.title,
             description: post.description,
             ...(image ? { image } : {}),
             url,
+            inLanguage: "fr-FR",
             ...(post.date ? { datePublished: post.date } : {}),
             ...(post.updatedAt ? { dateModified: post.updatedAt } : {}),
-            author: { "@type": "Organization", name: "Le Nid d'Or" },
+            author: { "@type": "Person", name: post.author || "Joëlle" },
             publisher: {
               "@type": "Organization",
               name: "Le Nid d'Or",
@@ -72,7 +73,7 @@ export const Route = createFileRoute("/$")({
                 url: `${SITE_URL}/images/blog/guide-plages-hyeres.jpg`,
               },
             },
-            mainEntityOfPage: { "@type": "WebPage", "@id": url },
+            mainEntityOfPage: { "@type": "WebPage", "@id": canonical },
           }),
         },
         {
@@ -82,7 +83,13 @@ export const Route = createFileRoute("/$")({
             "@type": "BreadcrumbList",
             itemListElement: [
               { "@type": "ListItem", position: 1, name: "Accueil", item: `${SITE_URL}/` },
-              { "@type": "ListItem", position: 2, name: post.title, item: url },
+              {
+                "@type": "ListItem",
+                position: 2,
+                name: "Guides de Hyères",
+                item: `${SITE_URL}/guides-hyeres`,
+              },
+              { "@type": "ListItem", position: 3, name: post.title, item: canonical },
             ],
           }),
         },
