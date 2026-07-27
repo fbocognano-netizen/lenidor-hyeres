@@ -1,13 +1,21 @@
 # Blog — mode d'emploi
 
 Chaque article est un simple fichier Markdown de ce dossier. Aucune base de
-données, aucun outil externe : un `git push` sur GitHub suffit à publier.
+données, aucun outil externe.
+
+> **Important — mise en ligne.** Avec l'hébergement Lovable, un commit GitHub
+> synchronise le code mais ne garantit pas la mise en ligne immédiate. Après le
+> commit : vérifier que la synchronisation GitHub → Lovable est bien passée,
+> puis **republier le projet dans Lovable** (bouton Publish → Update). Cette
+> republication ne nécessite aucun prompt IA et ne consomme aucun crédit.
 
 ## Ajouter un article
 
 1. Déposer l'image principale dans `public/images/blog/mon-image.jpg`.
-2. Créer `src/content/blog/mon-article.md` en copiant le front matter ci-dessous.
+2. Copier `_template.md` en `src/content/blog/mon-article.md` et remplir le front
+   matter (les fichiers commençant par `_` ne sont jamais publiés).
 3. Commit + push → l'article est détecté automatiquement au build.
+4. Vérifier la synchronisation dans Lovable, puis republier le projet.
 
 ## Front matter
 
@@ -46,6 +54,10 @@ Paragraphes, `##` H2 et `###` H3, **gras**, *italique*, listes à puces et
 numérotées, tableaux, citations `>`, liens internes et externes, images avec
 légende (`![alt](/chemin.jpg "légende")`) et séparateurs `---`.
 
+Pour éviter les décalages de mise en page, préciser les dimensions connues d'une
+image : `![alt](/images/blog/photo.jpg#1200x800 "légende")` → génère
+`width="1200" height="800"`.
+
 Le HTML brut écrit dans un Markdown n'est **jamais exécuté** : il est affiché
 comme du texte.
 
@@ -58,4 +70,20 @@ de sitemap.
 ## Brouillons
 
 `draft: true` → l'article est visible en preview de développement mais renvoie
-une 404 en production et n'apparaît pas dans `sitemap.xml`.
+une 404 en production et n'apparaît ni dans `/guides-hyeres`, ni dans
+`sitemap.xml`, ni dans `rss.xml`. Idem pour `noindex: true` et pour un article
+dont la `date` est dans le futur (publication programmée).
+
+## Validation automatique
+
+`node scripts/validate-blog.mjs` s'exécute avant chaque build. Il vérifie
+`title`, `seoTitle`, `description`, l'unicité du `path`, la cohérence de la
+`canonical`, l'existence de l'image et de son `alt`, la validité des dates et
+les liens internes. Une erreur sur un article **publié** bloque le build ; sur
+un **brouillon**, elle ne produit qu'un avertissement.
+
+## Pages générées
+
+- `/guides-hyeres` — liste automatique des articles publiés
+- `/rss.xml` — flux RSS des articles publiés
+- `/sitemap.xml` — inclut l'accueil, `/guides-hyeres` et chaque article indexable

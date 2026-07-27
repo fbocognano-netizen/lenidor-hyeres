@@ -67,6 +67,12 @@ export function ArticleLayout({ post }: { post: BlogPost }) {
                 Accueil
               </Link>
             </li>
+            <li aria-hidden="true">/</li>
+            <li>
+              <Link to="/guides-hyeres" className="hover:text-foreground transition">
+                Tous les guides
+              </Link>
+            </li>
             {post.category ? (
               <>
                 <li aria-hidden="true">/</li>
@@ -235,6 +241,9 @@ export function ArticleLayout({ post }: { post: BlogPost }) {
           <div className="flex items-center gap-6">
             <Link to="/" className="hover:text-foreground transition">
               Accueil
+            </Link>
+            <Link to="/guides-hyeres" className="hover:text-foreground transition">
+              Tous les guides
             </Link>
             <Link to="/" hash="reserver" className="hover:text-foreground transition">
               Réserver
