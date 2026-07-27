@@ -20,7 +20,7 @@ export const Route = createFileRoute("/$")({
     }
 
     const url = `${SITE_URL}${post.path}`;
-    const canonical = post.canonical || url;
+    const canonical = post.canonical ? absoluteUrl(post.canonical) : url;
     const image = post.featuredImage ? absoluteUrl(post.featuredImage) : "";
 
     return {
