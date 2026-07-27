@@ -1,10 +1,10 @@
 ---
 title: "Les plus belles plages de Hyères"
 seoTitle: "Les plus belles plages de Hyères : Almanarre, Notre-Dame et plus | Le Nid d'Or"
-description: "Guide des plus belles plages de Hyères et des Îles d'Or. Plage de l'Almanarre à 10 min du studio, Porquerolles, Notre-Dame, Giens... Tout pour des vacances réussies au soleil du Var."
+description: "Guide des plus belles plages de Hyères et des Îles d'Or : plage de l'Almanarre à 10 min du studio, la Bergerie à Giens, Notre-Dame et la plage d'Argent à Porquerolles."
 slug: "guide-plages-hyeres"
 path: "/guide-plages-hyeres"
-excerpt: "Almanarre, Notre-Dame, Porquerolles… Découvrez les spots de rêve accessibles depuis le studio en quelques minutes."
+excerpt: "Almanarre, Giens, Porquerolles… Découvrez les plus belles plages accessibles depuis le studio."
 date: "2026-02-10"
 updatedAt: "2026-07-27"
 author: "Joëlle"
@@ -37,27 +37,27 @@ La plage de l'Almanarre est l'une des plus célèbres de Hyères. Longue bande d
 
 ## Plage Notre-Dame
 
-*15 min en voiture*
+*Sur l'île de Porquerolles — traversée maritime puis trajet sur l'île*
 
-Située sur la presqu'île de Giens, la plage Notre-Dame est une plage familiale au sable fin et aux eaux turquoise. Elle est idéale pour une journée détente, loin de l'agitation, avec une vue imprenable sur Porquerolles.
+Située sur l'île de Porquerolles, la plage Notre-Dame est une plage familiale au sable fin et aux eaux turquoise. On y accède par la navette depuis la presqu'île de Giens, puis à pied ou à vélo depuis le village. Elle est idéale pour une journée détente, loin de l'agitation.
 
 ## Plage de la Bergerie
 
-*20 min en voiture + traversée*
+*Sur la presqu'île de Giens*
 
-Sur l'île de Porquerolles, la plage de la Bergerie est un véritable écrin de nature. Eaux cristallines, sable blanc et pinède ombragée : c'est l'excursion parfaite pour une journée de rêve aux Îles d'Or.
+Sur la presqu'île de Giens, la plage de la Bergerie est un véritable écrin de nature. Eaux cristallines, galets et sable, pinède ombragée : une petite crique préservée, accessible en voiture puis à pied.
 
 ## Plage d'Argent
 
-*25 min en voiture + traversée*
+*Sur l'île de Porquerolles — accès en navette*
 
 La plage d'Argent, à Porquerolles, est souvent citée parmi les plus belles de France. Son eau transparente et son sable fin en font un lieu magique, accessible en navette depuis le port de Hyères.
 
 ## Informations pratiques
 
-| Plage | Distance du studio | Idéale pour |
+| Plage | Situation | Idéale pour |
 | --- | --- | --- |
-| Almanarre | 10 min en voiture | Kitesurf, planche à voile, couchers de soleil |
-| Notre-Dame | 15 min en voiture | Familles, eaux calmes |
-| La Bergerie | 20 min + traversée | Nature, snorkeling |
-| Plage d'Argent | 25 min + traversée | Baignade, sable fin |
+| Almanarre | Hyères, 10 min en voiture du studio | Kitesurf, planche à voile, couchers de soleil |
+| Notre-Dame | Île de Porquerolles (traversée + trajet sur l'île) | Familles, eaux calmes |
+| La Bergerie | Presqu'île de Giens | Nature, snorkeling |
+| Plage d'Argent | Île de Porquerolles (traversée) | Baignade, sable fin |
