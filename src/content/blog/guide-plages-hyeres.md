@@ -19,7 +19,7 @@ draft: false
 noindex: false
 relatedPosts: []
 ctaTitle: "Envie de rejoindre les Îles d'Or ?"
-ctaText: "Depuis le port de Hyères, les bateaux pour Porquerolles partent régulièrement. En 15 minutes de traversée, vous débarquez dans un monde de calme, de sentiers de pinède et de plages aux eaux turquoise. C'est l'excursion incontournable de vos hyères vacances."
+ctaText: "Depuis la Tour Fondue, les bateaux pour Porquerolles partent régulièrement. En 15 minutes de traversée, vous débarquez dans un monde de calme, de sentiers de pinède et de plages aux eaux turquoise. C'est l'excursion incontournable de vos hyères vacances."
 ctaLabel: "Vérifier les disponibilités"
 ctaUrl: "https://www.google.com/maps/search/?api=1&query=plage+de+l'almanarre+hyeres"
 ctaUrlLabel: "Voir la plage de l'Almanarre sur Maps"
@@ -51,7 +51,7 @@ Sur la presqu’île de Giens, la plage de la Bergerie est une longue plage de s
 
 *Sur l'île de Porquerolles — accès en navette*
 
-La plage d'Argent, à Porquerolles, est souvent citée parmi les plus belles de France. Son eau transparente et son sable fin en font un lieu magique, accessible en navette depuis le port de Hyères.
+La plage d'Argent, à Porquerolles, est souvent citée parmi les plus belles de France. Son eau transparente et son sable fin en font un lieu magique. Après la traversée vers Porquerolles, la plage d’Argent est accessible à pied ou à vélo depuis le village en quelques minutes.
 
 ## Informations pratiques
 
