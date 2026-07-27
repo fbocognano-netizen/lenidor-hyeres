@@ -27,6 +27,18 @@ function escapeHtml(value: string): string {
     .replace(/'/g, "&#39;");
 }
 
+/** Turn escaped entities back into plain text (for TOC labels and slugs). */
+function decodeEntities(value: string): string {
+  return value
+    .replace(/&#39;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&#x27;/g, "'")
+    .replace(/&amp;/g, "&");
+}
+
+
 /** Only allow safe URL shapes — blocks javascript:, data:, vbscript: etc. */
 function safeUrl(href: string | null | undefined): string | null {
   if (!href) return null;
