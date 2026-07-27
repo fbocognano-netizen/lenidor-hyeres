@@ -18,6 +18,7 @@ export const Route = createFileRoute("/sitemap.xml")({
       GET: async () => {
         const entries: SitemapEntry[] = [
           { path: "/", changefreq: "weekly", priority: "1.0" },
+          { path: "/guides-hyeres", changefreq: "weekly", priority: "0.7" },
           ...getIndexablePosts().map((post) => ({
             path: post.path,
             lastmod: post.updatedAt || post.date || undefined,

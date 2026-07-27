@@ -1072,6 +1072,10 @@ function Footer() {
       </div>
       <div className="border-t border-border/60 py-5 text-center text-xs text-muted-foreground">
         © {new Date().getFullYear()} Le Nid d'Or — Tous droits réservés
+        <span className="mx-2" aria-hidden="true">·</span>
+        <Link to="/guides-hyeres" className="hover:text-foreground transition">
+          Guides de Hyères
+        </Link>
       </div>
     </footer>
   );
