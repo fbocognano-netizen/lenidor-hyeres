@@ -97,15 +97,20 @@ export function renderMarkdown(source: string): RenderResult {
       },
 
       image(token: Tokens.Image) {
-        const href = safeUrl(token.href);
-        if (!href) return escapeHtml(token.text ?? "");
+        const raw = safeUrl(token.href);
+        if (!raw) return escapeHtml(token.text ?? "");
+        // Optional intrinsic size: ![alt](/image.jpg#1200x800 "légende")
+        const size = /#(\d{1,5})x(\d{1,5})$/.exec(raw);
+        const href = size ? raw.slice(0, size.index) : raw;
+        const dims = size ? ` width="${size[1]}" height="${size[2]}"` : "";
         const alt = escapeHtml(token.text ?? "");
-        const img = `<img src="${escapeHtml(href)}" alt="${alt}" loading="lazy" decoding="async" />`;
+        const img = `<img src="${escapeHtml(href)}" alt="${alt}"${dims} loading="lazy" decoding="async" />`;
         if (token.title) {
           return `<figure>${img}<figcaption>${escapeHtml(token.title)}</figcaption></figure>`;
         }
         return `<figure>${img}${alt ? `<figcaption>${alt}</figcaption>` : ""}</figure>`;
       },
+
 
       table(token: Tokens.Table) {
         const header = token.header
