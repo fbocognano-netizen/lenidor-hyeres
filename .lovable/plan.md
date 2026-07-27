@@ -1,73 +1,77 @@
 ## Objectif
 
-Enrichir le footer du site avec une vraie section Contact : un accès rapide à Joëlle par WhatsApp/téléphone, plus un mini-formulaire de message. Les messages envoyés depuis le formulaire arrivent par email admin via le canal Pingram déjà en place.
+Transformer `/guide-plages-hyeres` en moteur de blog alimenté par des fichiers Markdown versionnés dans le dépôt GitHub. Aucune base de données, aucune authentification, aucune API externe, aucun coût récurrent : les articles sont lus **au moment du build** par Vite et rendus en SSR.
 
-## Préconisations pour ce type d'établissement
+## Contraintes respectées
 
-Pour une location saisonnière de particulier à particulier, la section Contact doit rassurer et rester simple :
+- Articles : `src/content/blog/*.md`
+- Images : `public/images/blog/`
+- `/guide-plages-hyeres` conserve **exactement** son URL, sans doublon sous une seconde adresse
+- Identité graphique strictement identique (hero, label GUIDE HYÈRES, titre, chapô, retour, sections, CTA, bloc Nid d'Or, header/footer, responsive)
 
-- **WhatsApp en premier** : c'est le canal le plus naturel pour les voyageurs (questions rapides, photos, voix).
-- **Numéro de téléphone cliquable** (`tel:`) en complément pour ceux qui préfèrent appeler.
-- **Formulaire de message court** pour les visiteurs qui ne veulent pas sortir du site.
-- **Horaires de réponse** affichées : « Joëlle répond sous 2 h ».
-- **Pas d'email en clair** : on évite le spam en passant par le formulaire.
+---
 
-## Implémentation proposée
+## Étape 1 — Moteur de contenu
 
-### 1. Footer enrichi (`src/routes/index.tsx`)
+**`src/lib/blog.ts`** (nouveau)
+- Chargement des articles via `import.meta.glob("../content/blog/*.md", { query: "?raw", eager: true })` → détection automatique au build, compatible Worker Cloudflare (aucun accès disque à l'exécution).
+- Parseur de front matter maison (~40 lignes, pas de dépendance Node) gérant chaînes, booléens, dates et listes `[]` / `- item`.
+- Champs supportés : `title, seoTitle, description, slug, path, excerpt, date, updatedAt, author, category, tags[], featuredImage, featuredImageAlt, featuredImageCaption, canonical, focusKeyword, draft, noindex, relatedPosts[], ctaTitle, ctaText, ctaLabel, ctaUrl`.
+- Valeurs par défaut sûres : `path` déduit du `slug`, `slug` déduit du nom de fichier, `draft: false`, `author: "Joëlle"`.
+- Exclusion des `draft: true` en production (`import.meta.env.PROD`) — visibles uniquement en preview de développement.
+- Exports : `getAllPosts()`, `getPostByPath()`, `getRelatedPosts()`, `formatFrenchDate()`, `readingTime()` (200 mots/min).
 
-Transformer le bloc « Contact » existant du footer en une section plus actionnable :
+**`src/lib/markdown.ts`** (nouveau)
+- `marked` configuré en GFM : paragraphes, H2/H3, gras, italique, listes, tableaux, citations, liens internes/externes, images, légendes, séparateurs.
+- **Sécurité** : le HTML brut du Markdown est neutralisé (renderers `html` bloc et inline désactivés) → aucun `<script>`, `onerror`, `javascript:` exécutable. Les URLs de liens et images sont validées (`http`, `https`, `/`, `#` uniquement).
+- Identifiants automatiques sur H2/H3 (slugs accentués normalisés, dédoublonnés), extraction du sommaire, `target="_blank" rel="noopener"` sur les liens externes, images enveloppées dans `<figure>` + `<figcaption>` quand un titre est fourni.
 
-- Titre : « Une question ? Parlez à Joëlle ».
-- Bouton WhatsApp doré (`variant="cta"`) avec icône, ouvrant `https://wa/33XXXXXXXXX`.
-- Lien d'appel téléphonique secondaire.
-- Mention « Réponse sous 2 h ».
-- Mini-formulaire intégré : nom, email, téléphone (optionnel), message.
+## Étape 2 — Template d'article
 
-Le design reste dans l'identité « Sable & Mer » du site (Fraunces + Inter, couleurs dorées et profondes).
+**`src/components/blog/article-layout.tsx`** (nouveau) — reprise **au pixel** du JSX actuel de `guide-plages-hyeres.tsx` : header sticky (logo + bouton Réserver doré), hero image plein écran avec dégradé et pastille label, H1 `font-display`, chapô, lien « Retour au studio », corps de l'article, CTA `bg-deep`, bloc final, footer. Ajouts intégrés dans le même style : fil d'Ariane, date française + date de mise à jour, temps de lecture, sommaire cliquable, articles associés.
 
-### 2. Envoi du formulaire de contact
+**`src/styles.css`** (modifié) — ajout d'une classe `.prose-nid` utilisant les tokens existants (Fraunces pour les titres, `text-muted-foreground`, bordures dorées sur les citations, tableaux responsives). Aucun token nouveau, aucune couleur en dur.
 
-Créer une server function `sendContactMessage` dans `src/lib/contact.functions.ts` :
+## Étape 3 — Routage
 
-- Valider les champs avec Zod (nom, email valide, message non vide, longueurs limitées).
-- Envoyer un email à l'admin via Pingram avec le même pattern que `createAndSendBookingNotification`.
-- Sujet : « Nouveau message depuis le site — Le Nid d'Or ».
-- Contenu : nom, email, téléphone, message, date/heure.
-- Retourner un statut `ok` au client pour afficher un toast de confirmation.
-- Logger les erreurs dans `app_logs` comme pour les réservations.
+- **`src/routes/$.tsx`** (nouveau) — route splat racine qui résout le `path` du front matter. Permet `/guide-porquerolles`, `/que-faire-hyeres`, `/visiter-hyeres-3-jours` sans créer un fichier de route par article. Les routes existantes (`/`, `/admin`, `/sitemap.xml`, `/api/*`) restent prioritaires ; si aucun article ne correspond, `notFound()` → page 404 actuelle inchangée.
+- **`src/routes/guide-plages-hyeres.tsx`** (supprimé) — son contenu part dans le Markdown ; l'URL est reprise par le splat, donc **identique, sans redirection ni duplication**.
+- `head()` généré depuis le front matter : `seoTitle` (ou `title`), description, og:title/description/type=article/url, og:image et twitter:image en **URL absolue** (correction du bug actuel où le chemin était relatif), canonical auto-référencé (ou `canonical` du front matter), `noindex` si demandé ou si brouillon, JSON-LD `Article` + `BreadcrumbList`.
 
-### 3. Stockage du numéro WhatsApp/téléphone
+## Étape 4 — Contenu
 
-Le numéro n'est pas une donnée sensible, mais il est préférable de le rendre configurable sans rebuild. Deux options :
+- **`src/content/blog/guide-plages-hyeres.md`** (nouveau) — contenu actuel repris **mot pour mot** (chapô, 4 plages avec distances et mots-clés, CTA, bloc « Pourquoi choisir Le Nid d'Or »).
+- **`public/images/blog/guide-plages-hyeres.jpg`** (nouveau) — copie de l'image hero actuelle, servie depuis `public/`.
+- **`src/content/blog/exemple-article-test.md`** (nouveau) — article de démonstration en `draft: true`, servant aussi de modèle de front matter commenté.
+- **`src/content/blog/README.md`** (nouveau) — mode d'emploi : créer un `.md`, déposer l'image dans `public/images/blog/`, commit GitHub → publication automatique au build.
 
-- **Option A (recommandée)** : le stocker dans une variable d'environnement côté serveur, par exemple `CONTACT_PHONE_NUMBER`, lue dans la server function et exposée au client via une server function publique `getContactInfo`.
-- **Option B** : le laisser en dur dans le code si Joëlle ne souhaite pas le changer régulièrement.
+## Étape 5 — Sitemap
 
-Je préconise l'**Option A** pour garder la flexibilité.
+**`src/routes/sitemap[.]xml.ts`** (modifié) — `/` en statique puis boucle sur `getAllPosts()` (brouillons et `noindex` exclus), avec `lastmod` uniquement quand `updatedAt` ou `date` est renseigné dans le front matter. `public/robots.txt` inchangé.
 
-### 4. Validation et sécurité
+## Dépendances
 
-- Validation Zod côté client et serveur.
-- Longueur maximale sur les champs (nom 100 caractères, email 255, message 1000).
-- Pas de HTML dans le message (échappement côté email).
-- Limiter le débit côté serveur si possible (pas de rate-limit complexe, juste une vérification basique).
+- `marked` — pur JavaScript, compatible Worker, ~35 ko. Seule dépendance ajoutée.
+- Pas de `gray-matter` (dépend de Buffer/js-yaml, mal adapté au runtime Worker) → parseur maison.
 
-### 5. UX mobile
+## Prérendu
 
-- Le formulaire reste en une seule colonne sur mobile.
-- Le bouton WhatsApp reste bien visible et suffisamment grand pour le pouce.
-- Pas de champ obligatoire superflu.
+Aucun prérendu statique à activer : l'application est déjà en SSR sur Worker, chaque article est servi en HTML complet et indexable. Les Markdown étant inlinés au build, la latence reste négligeable. Activer le prérendu de TanStack Start générerait un sitemap statique masquant la route serveur existante.
 
-## Fichiers modifiés ou créés
+## Risques et mitigations
 
-- `src/routes/index.tsx` : footer enrichi + formulaire de contact.
-- `src/lib/contact.functions.ts` : nouvelle server function d'envoi de message.
-- `src/lib/pingram-notifications.server.ts` : ajout d'une fonction utilitaire `sendAdminContactNotification` (ou réutilisation du pattern existant).
-- Configuration du secret/env `CONTACT_PHONE_NUMBER` (à définir avec Joëlle).
+| Risque | Mitigation |
+|---|---|
+| Régression visuelle sur `/guide-plages-hyeres` | Captures Playwright avant/après en desktop et mobile |
+| Perte de texte à la conversion | Reprise mot pour mot + relecture du diff |
+| Front matter mal formé cassant le build | Parsing tolérant + valeurs par défaut, article ignoré avec avertissement plutôt que crash |
+| Route splat interceptant une URL légitime | Les routes déclarées sont prioritaires ; `notFound()` sinon |
+| HTML injecté dans un Markdown | HTML brut neutralisé, protocoles d'URL validés |
 
-## Besoin de ta part
+## Vérifications avant livraison
 
-Le numéro de téléphone/WhatsApp de Joëlle est nécessaire pour rendre le bouton fonctionnel. Peux-tu me le communiquer ? Il sera stocké côté serveur (pas visible en clair dans le code source public).
-
-Une fois le numéro fourni, je peux implémenter directement.
+1. `/guide-plages-hyeres` rendu identique à l'actuel (desktop + mobile).
+2. L'article de test en `draft: true` renvoie 404 en production et est absent du sitemap.
+3. `/`, `/admin`, `/sitemap.xml`, `/api/*` et la page 404 fonctionnent toujours.
+4. Build de production sans erreur.
+5. Liste finale des fichiers créés et modifiés.
