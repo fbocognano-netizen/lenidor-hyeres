@@ -45,7 +45,7 @@ Située sur l'île de Porquerolles, la plage Notre-Dame est une plage familiale 
 
 *Sur la presqu'île de Giens*
 
-Sur la presqu'île de Giens, la plage de la Bergerie est un véritable écrin de nature. Eaux cristallines, galets et sable, pinède ombragée : une petite crique préservée, accessible en voiture puis à pied.
+Sur la presqu’île de Giens, la plage de la Bergerie est une longue plage de sable aux eaux peu profondes, particulièrement appréciée des familles. Facilement accessible en voiture, elle offre un cadre agréable et une belle vue sur la baie de Hyères.
 
 ## Plage d'Argent
 
