@@ -22,6 +22,7 @@ ctaTitle: "Envie de rejoindre les Îles d'Or ?"
 ctaText: "Depuis le port de Hyères, les bateaux pour Porquerolles partent régulièrement. En 15 minutes de traversée, vous débarquez dans un monde de calme, de sentiers de pinède et de plages aux eaux turquoise. C'est l'excursion incontournable de vos hyères vacances."
 ctaLabel: "Vérifier les disponibilités"
 ctaUrl: "https://www.google.com/maps/search/?api=1&query=plage+de+l'almanarre+hyeres"
+ctaUrlLabel: "Voir la plage de l'Almanarre sur Maps"
 ---
 
 Vous préparez vos **vacances à Hyères** et cherchez les meilleures plages ? Vous êtes au bon endroit. Depuis le studio **Le Nid d'Or**, chaque spot de baignade est à portée de main — de la célèbre **plage de l'Almanarre** aux criques sauvages de **Porquerolles**.

@@ -26,6 +26,7 @@ export interface BlogFrontMatter {
   ctaText: string;
   ctaLabel: string;
   ctaUrl: string;
+  ctaUrlLabel: string;
 }
 
 export interface BlogPost extends BlogFrontMatter {
@@ -165,6 +166,7 @@ function buildPost(filePath: string, raw: string): BlogPost | null {
       ctaText: asString(data.ctaText),
       ctaLabel: asString(data.ctaLabel),
       ctaUrl: asString(data.ctaUrl),
+      ctaUrlLabel: asString(data.ctaUrlLabel, "En savoir plus"),
       html,
       toc,
       readingMinutes: Math.max(1, Math.round(wordCount / 200)),

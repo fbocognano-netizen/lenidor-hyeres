@@ -36,6 +36,7 @@ ctaTitle: "Titre du bloc de réservation"
 ctaText: "Texte du bloc."
 ctaLabel: "Vérifier les disponibilités"
 ctaUrl: ""                    # lien secondaire optionnel
+ctaUrlLabel: "En savoir plus" # libellé du lien secondaire
 ---
 ```
 

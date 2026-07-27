@@ -165,7 +165,7 @@ export function ArticleLayout({ post }: { post: BlogPost }) {
                   className="rounded-full bg-background/10 border-background/50 text-primary-foreground hover:bg-background/25 hover:text-primary-foreground hover:border-background/70 h-14 px-6 text-base w-full sm:w-auto sm:h-16 sm:px-8 sm:text-lg"
                 >
                   <a href={post.ctaUrl} target="_blank" rel="noopener noreferrer">
-                    En savoir plus
+                    {post.ctaUrlLabel}
                   </a>
                 </Button>
               ) : null}
