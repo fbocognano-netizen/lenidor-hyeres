@@ -193,10 +193,23 @@ export function getAllPosts(includeDrafts = false): BlogPost[] {
   return ALL_POSTS.filter((post) => !post.draft || DRAFTS_VISIBLE);
 }
 
-/** Posts eligible for indexing (sitemap). Drafts and noindex are excluded. */
-export function getIndexablePosts(): BlogPost[] {
-  return ALL_POSTS.filter((post) => !post.draft && !post.noindex);
+/** An article dated in the future is scheduled: never listed, never indexed. */
+export function isScheduled(post: BlogPost, now = new Date()): boolean {
+  if (!/^\d{4}-\d{2}-\d{2}/.test(post.date)) return false;
+  const today = now.toISOString().slice(0, 10);
+  return post.date.slice(0, 10) > today;
 }
+
+/** Posts listed publicly (/guides-hyeres, RSS). No drafts, noindex or scheduled. */
+export function getPublishedPosts(): BlogPost[] {
+  return ALL_POSTS.filter((post) => !post.draft && !post.noindex && !isScheduled(post));
+}
+
+/** Posts eligible for indexing (sitemap). Drafts, noindex and scheduled excluded. */
+export function getIndexablePosts(): BlogPost[] {
+  return getPublishedPosts();
+}
+
 
 export function getPostByPath(pathname: string): BlogPost | undefined {
   const normalized = `/${pathname.replace(/^\/+/, "").replace(/\/+$/, "")}`;
