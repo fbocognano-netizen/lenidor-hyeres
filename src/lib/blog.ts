@@ -176,7 +176,10 @@ function buildPost(filePath: string, raw: string): BlogPost | null {
 }
 
 const ALL_POSTS: BlogPost[] = Object.entries(modules)
+  // README.md documents the folder — it is not an article.
+  .filter(([filePath]) => !/\/(README|_[^/]*)\.md$/i.test(filePath))
   .map(([filePath, raw]) => buildPost(filePath, raw))
+
   .filter((post): post is BlogPost => post !== null)
   .sort((a, b) => (b.date || "").localeCompare(a.date || ""));
 
