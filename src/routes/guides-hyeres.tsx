@@ -11,8 +11,21 @@ const PAGE_TITLE = "Guides de Hyères : plages, Porquerolles et bonnes adresses 
 const PAGE_DESCRIPTION =
   "Tous nos guides pour préparer vos vacances à Hyères : plages, Îles d'Or, presqu'île de Giens et bonnes adresses, écrits par Joëlle, votre hôte sur place.";
 
+interface GuideCard {
+  slug: string;
+  path: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  date: string;
+  dateLabel: string;
+  readingMinutes: number;
+  featuredImage: string;
+  featuredImageAlt: string;
+}
+
 export const Route = createFileRoute("/guides-hyeres")({
-  loader: () => ({
+  loader: (): { posts: GuideCard[] } => ({
     posts: getPublishedPosts().map((post) => ({
       slug: post.slug,
       path: post.path,
