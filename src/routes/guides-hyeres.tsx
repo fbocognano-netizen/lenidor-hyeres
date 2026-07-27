@@ -87,7 +87,7 @@ export const Route = createFileRoute("/guides-hyeres")({
 });
 
 function GuidesPage() {
-  const { posts } = Route.useLoaderData();
+  const { posts } = Route.useLoaderData() as { posts: GuideCard[] };
 
   return (
     <div className="min-h-screen bg-background text-foreground">
