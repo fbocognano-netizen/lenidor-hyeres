@@ -1131,7 +1131,16 @@ function Footer() {
               Studio vue mer panoramique à Hyères, avec piscine et terrasse plein sud. Votre hôte Joëlle vous reçoit en
               personne.
             </p>
+            <nav aria-label="Liens du site" className="mt-4 flex flex-col gap-2 text-[15px]">
+              <Link to="/guides-hyeres" className="text-muted-foreground hover:text-foreground transition">
+                Guides de Hyères
+              </Link>
+              <Link to="/guide-plages-hyeres" className="text-muted-foreground hover:text-foreground transition">
+                Guide des plages de Hyères
+              </Link>
+            </nav>
           </div>
+
 
           <div className="md:col-span-3">
             <div className="text-xs uppercase tracking-wider text-muted-foreground">Joëlle, votre hôte</div>
