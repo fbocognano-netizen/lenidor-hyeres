@@ -400,47 +400,73 @@ function Testimonials() {
   );
 }
 
-function BeachesGuide() {
+function GuidesTeaser() {
+  const { guides } = Route.useLoaderData();
+
+  if (!guides.length) return null;
+
   return (
-    <section className="mx-auto max-w-6xl px-5 py-14 sm:py-20 md:py-24">
-      <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-        <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Guide</p>
+    <section id="guides" className="mx-auto max-w-6xl px-5 py-14 sm:py-20 md:py-24">
+      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="max-w-2xl">
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Guides</p>
           <h2 className="mt-3 font-display text-[1.75rem] sm:text-4xl md:text-5xl leading-[1.15]">
-            Les plus belles plages de Hyères
+            Nos guides de Hyères
           </h2>
-          <p className="mt-5 sm:mt-6 text-muted-foreground text-[15px] leading-relaxed">
-            De la célèbre <strong>plage de l'Almanarre</strong> à 10 minutes, aux criques de Porquerolles accessibles en bateau, découvrez les spots de rêve pour vos <strong>vacances à Hyères</strong>.
+          <p className="mt-5 text-muted-foreground text-[15px] leading-relaxed">
+            Plages, Îles d'Or, presqu'île de Giens et bonnes adresses : les conseils de Joëlle pour
+            profiter de votre séjour, écrits depuis le studio.
           </p>
-          <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3">
-            <Button
-              asChild
-              variant="cta"
-              className="rounded-full h-12 px-6 text-sm sm:h-14 sm:px-8 sm:text-base"
-            >
-              <Link to="/guide-plages-hyeres">Lire le guide des plages</Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="rounded-full h-12 px-6 text-sm sm:h-14 sm:px-8 sm:text-base"
-            >
-              <a href="#reserver">Réserver le studio</a>
-            </Button>
-          </div>
         </div>
-        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
-          <img
-            src={photo2}
-            alt="Vue mer depuis la terrasse du Nid d'Or, proche des plages de Hyères"
-            className="absolute inset-0 h-full w-full object-cover"
-            loading="lazy"
-          />
-        </div>
+        <Button
+          asChild
+          variant="outline"
+          className="rounded-full h-12 px-6 text-sm shrink-0 self-start md:self-auto"
+        >
+          <Link to="/guides-hyeres">Voir tous les guides</Link>
+        </Button>
+      </div>
+
+      <div className="mt-8 sm:mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {guides.map((post) => (
+          <Card key={post.slug} className="overflow-hidden border border-border/60 bg-card p-0">
+            <a href={post.path} className="group flex h-full flex-col">
+              {post.featuredImage ? (
+                <div className="relative aspect-[16/10] overflow-hidden">
+                  <img
+                    src={post.featuredImage}
+                    alt={post.featuredImageAlt}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                  />
+                </div>
+              ) : null}
+              <div className="flex flex-1 flex-col p-5 sm:p-6">
+                {post.category ? (
+                  <p className="text-[10px] sm:text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                    {post.category}
+                  </p>
+                ) : null}
+                <h3 className="mt-2 font-display text-xl sm:text-2xl leading-snug group-hover:text-primary transition">
+                  {post.title}
+                </h3>
+                <p className="mt-3 text-sm text-muted-foreground leading-relaxed line-clamp-3">
+                  {post.excerpt}
+                </p>
+                <span className="mt-5 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Clock className="h-3.5 w-3.5" /> {post.readingMinutes} min de lecture
+                </span>
+                <span className="mt-3 inline-flex text-sm font-medium text-primary">Lire le guide →</span>
+              </div>
+            </a>
+          </Card>
+        ))}
       </div>
     </section>
   );
 }
+
 
 function Gallery() {
   const { data } = useSuspenseQuery(galleryQueryOptions);
