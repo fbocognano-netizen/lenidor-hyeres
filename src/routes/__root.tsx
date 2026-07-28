@@ -154,6 +154,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "stylesheet",
         href: appCss,
       },
+      {
+        rel: "alternate",
+        type: "application/rss+xml",
+        title: "Guides de Hyères — Le Nid d'Or",
+        href: "https://lenidor-hyeres.fr/rss.xml",
+      },
     ],
   }),
 
