@@ -6,7 +6,7 @@ slug: "ou-dormir-hyeres-porquerolles"
 path: "/ou-dormir-hyeres-porquerolles"
 excerpt: "Être près du bateau, c’est pratique. Retrouver le calme et une vue sur les îles le soir, c’est encore mieux. Comparons les secteurs sans tricher."
 date: "2026-07-27"
-updatedAt: "2026-07-27"
+updatedAt: "2026-07-29"
 author: "Joëlle"
 category: "PRÉPARER SON SÉJOUR"
 tags: ["où dormir à Hyères", "hébergement Porquerolles", "studio Hyères", "couple"]
@@ -101,6 +101,8 @@ Les hauteurs offrent un compromis différent : environnement plus calme, vues ou
 - retour à anticiper après un dîner.
 
 Le Nid d’Or appartient à cette catégorie. Il s’adresse surtout aux couples qui préfèrent retrouver le soir une terrasse, une piscine et un environnement paisible plutôt que rester au cœur de l’animation.
+
+Depuis Le Nid d’Or, comptez environ 15 minutes pour rejoindre le port de Hyères, environ 15 minutes pour Giens et plutôt 15 à 20 minutes pour la Tour Fondue selon la circulation. C’est assez proche pour organiser une journée à Porquerolles, tout en gardant le calme des hauteurs au retour.
 
 ## Faut-il dormir directement à Porquerolles ?
 

@@ -6,7 +6,7 @@ slug: "randonnees-hyeres"
 path: "/randonnees-hyeres"
 excerpt: "Sentiers côtiers, pinèdes et panoramas sur les îles : choisissez une randonnée adaptée à votre niveau et gardez de l’énergie pour l’apéritif."
 date: "2026-07-27"
-updatedAt: "2026-07-27"
+updatedAt: "2026-07-29"
 author: "Joëlle"
 category: "BALADES & NATURE"
 tags: ["randonnée Hyères", "balade Hyères", "sentier littoral Giens", "nature"]
@@ -39,7 +39,7 @@ Le choix ne doit pas se faire uniquement sur la beauté d’une photo. En Médit
 | Port-Cros | Relief, forêt et circuits sauvages | Randonneurs réguliers |
 | Hauteurs de Hyères | Collines et vues sur le littoral | Selon l’itinéraire |
 
-Les niveaux exacts, distances et accès doivent être vérifiés sur les topoguides officiels avant chaque sortie.
+Depuis Le Nid d’Or, comptez environ 15 minutes pour rejoindre le port, environ 15 minutes pour Giens et plutôt 15 à 20 minutes pour la Tour Fondue selon la circulation. En saison, ajoutez toujours une marge.
 
 ## Le sentier du littoral de Giens
 
@@ -48,6 +48,8 @@ C’est l’une des promenades emblématiques du secteur. Le paysage alterne mer
 Le parcours ne doit pas être abordé en tongs. Prenez de bonnes chaussures, de l’eau et une protection solaire. Adaptez la portion à votre niveau plutôt que de viser automatiquement une grande boucle.
 
 Notre guide détaillé du [sentier du littoral de Giens](/sentier-littoral-giens) rassemble les précautions et les choix de parcours.
+
+Deux départs fonctionnent bien selon l’envie du jour : partir de la plage de la Badine pour une marche côté Giens, ou rejoindre le secteur après la plage de la Madrague pour une portion plus sauvage du tour de la presqu’île. Dans les deux cas, gardez une trace fiable, de l’eau et un vrai point de demi-tour.
 
 ## Les Salins pour une balade plus douce
 
@@ -72,6 +74,10 @@ Port-Cros possède une ambiance plus sauvage et plus escarpée. L’île se visi
 Prévoyez votre eau, vérifiez les services disponibles et ne surestimez pas votre vitesse. Le [site Destination Port-Cros Porquerolles](https://destination.portcros-parcnational.fr/) fournit des itinéraires et recommandations officiels.
 
 Pour une première visite, un circuit plus court vaut mieux qu’un tour ambitieux terminé dans l’angoisse du bateau retour.
+
+## Vers l’Argentière et Brégançon
+
+Une autre belle idée consiste à partir du secteur de l’Argentière, à La Londe-les-Maures, puis à suivre le sentier du littoral vers la Madrague et, pour les marcheurs motivés, vers Brégançon. Le décor est superbe, mais cette sortie demande de vérifier la distance, les accès et les possibilités de retour avant de partir.
 
 ## Marcher en couple sans gâcher la journée
 

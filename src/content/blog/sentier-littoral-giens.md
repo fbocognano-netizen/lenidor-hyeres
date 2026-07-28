@@ -6,7 +6,7 @@ slug: "sentier-littoral-giens"
 path: "/sentier-littoral-giens"
 excerpt: "Un décor spectaculaire, des passages rocheux et très peu de distributeurs de mojitos : préparez votre randonnée avant de suivre la côte."
 date: "2026-07-27"
-updatedAt: "2026-07-27"
+updatedAt: "2026-07-29"
 author: "Joëlle"
 category: "BALADES & NATURE"
 tags: ["sentier littoral Giens", "randonnée Giens", "presqu’île de Giens", "balade couple"]
@@ -53,6 +53,8 @@ Répondre « pas vraiment » n’est pas un échec. Giens offre d’autres faço
 La meilleure option dépend du temps, de la météo et de votre niveau. Une petite portion aller-retour peut offrir un panorama magnifique sans engager une longue boucle.
 
 Pour une première fois en couple, choisissez un parcours permettant de faire demi-tour facilement. Cela évite de poursuivre uniquement parce que la voiture se trouve de l’autre côté.
+
+Deux départs sont particulièrement utiles à garder en tête. Depuis la plage de la Badine, vous pouvez partir marcher côté Giens en choisissant une portion adaptée à votre niveau. Depuis le secteur après la plage de la Madrague de Giens, l’ambiance devient plus sauvage et permet d’aborder le tour de la presqu’île par un côté plus spectaculaire.
 
 Consultez le [topoguide officiel du sentier du littoral](https://metropoletpm.fr/sites/default/files/2025-06/topoguide_sentier_du_littoral_2022-ok.pdf), puis vérifiez les éventuelles fermetures récentes.
 

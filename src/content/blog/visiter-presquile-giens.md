@@ -6,7 +6,7 @@ slug: "visiter-presquile-giens"
 path: "/visiter-presquile-giens"
 excerpt: "Giens mérite mieux qu’un passage vers le bateau : une journée entre village, petits ports, sentiers et pauses face à la Méditerranée."
 date: "2026-07-27"
-updatedAt: "2026-07-28"
+updatedAt: "2026-07-29"
 author: "Joëlle"
 category: "VISITER HYÈRES"
 tags: ["visiter Giens", "presqu’île de Giens", "que faire à Giens", "couple"]
@@ -28,6 +28,8 @@ ctaUrlLabel: "Découvrir Giens officiellement"
 La presqu’île de Giens est souvent traversée avec un seul objectif : arriver à la Tour Fondue et embarquer pour Porquerolles. C’est dommage. Entre ses deux tombolos, ses ports, ses criques et ses sentiers, Giens mérite une vraie journée.
 
 Cet itinéraire reste volontairement souple. Adaptez-le à la météo, au vent, à la saison et à votre envie de marcher.
+
+Depuis Le Nid d’Or, comptez environ 15 minutes pour rejoindre Giens lorsque la circulation est fluide, un peu plus en plein été ou aux heures de départ vers la Tour Fondue.
 
 ## Matin : découvrir le village de Giens
 
@@ -66,6 +68,8 @@ Cette option convient particulièrement après une journée active à Porqueroll
 ## Après-midi sportive : sentier du littoral
 
 Le sentier côtier offre des paysages remarquables, mais certaines portions sont rocheuses, exposées et exigeantes.
+
+Pour marcher, deux options sont faciles à comprendre : partir de la plage de la Badine pour une sortie côté Giens, ou rejoindre le secteur après la plage de la Madrague pour une portion plus sauvage du tour de la presqu’île. La seconde option est plus spectaculaire, mais demande davantage d’anticipation.
 
 Avant de partir :
 

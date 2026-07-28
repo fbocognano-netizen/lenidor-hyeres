@@ -6,7 +6,7 @@ slug: "aller-porquerolles-depuis-hyeres"
 path: "/aller-porquerolles-depuis-hyeres"
 excerpt: "Bateau, bus, parking et horaires : tout ce qu’il faut préparer pour que l’escapade commence avant même de poser le pied sur l’île."
 date: "2026-07-27"
-updatedAt: "2026-07-27"
+updatedAt: "2026-07-29"
 author: "Joëlle"
 category: "PORQUEROLLES"
 tags: ["aller à Porquerolles", "bateau Porquerolles", "Tour Fondue", "parking Porquerolles"]
@@ -28,6 +28,8 @@ ctaUrlLabel: "Vérifier les traversées officielles"
 Le moyen le plus courant pour aller à Porquerolles depuis Hyères consiste à rejoindre l’embarcadère de la Tour Fondue, à l’extrémité de la presqu’île de Giens, puis à prendre la navette maritime.
 
 Le trajet paraît simple — et il l’est — mais le stationnement et la fréquentation estivale peuvent transformer un départ improvisé en petit test de couple. Voici comment éviter de commencer la journée par « je te l’avais dit ».
+
+Depuis Le Nid d’Or ou le centre de Hyères, prévoyez environ 15 à 20 minutes de voiture jusqu’à la Tour Fondue lorsque la circulation est fluide, et davantage en saison. Pour une journée sereine, partez tôt : idéalement entre 8 h et 9 h, et évitez de partir après 10 h.
 
 ## D’où part le bateau pour Porquerolles ?
 
@@ -61,10 +63,10 @@ Le parking métropolitain de la Tour Fondue est ouvert en continu, mais sa capac
 ### Nos conseils en voiture
 
 1. Préparez votre itinéraire avant de partir.
-2. Ne visez pas une arrivée cinq minutes avant l’embarquement.
+2. Partez le matin tôt, entre 8 h et 9 h si possible.
 3. Gardez les billets accessibles sur votre téléphone.
 4. Prévoyez une batterie suffisamment chargée.
-5. Vérifiez les solutions de repli et parkings relais en saison.
+5. Ne partez pas après 10 h en haute saison : circulation, parking et foule rendent l’excursion beaucoup moins agréable.
 
 ## Aller à la Tour Fondue en bus
 
@@ -77,6 +79,8 @@ Consultez les horaires actualisés du [réseau Mistral](https://www.reseaumistra
 ## Peut-on aller à Porquerolles avec sa voiture ?
 
 Non, le séjour touristique sur l’île ne se fait pas avec votre voiture personnelle. Une fois débarqué, les déplacements s’effectuent principalement à pied ou à vélo.
+
+Concrètement, on gare la voiture côté Tour Fondue, puis on traverse en bateau. C’est pour cela que l’anticipation du parking compte presque autant que l’horaire de la navette.
 
 Le village se découvre facilement à pied. Pour aller plus loin, choisissez un itinéraire réaliste et tenez compte du terrain, de la chaleur et de votre condition physique.
 

@@ -6,7 +6,7 @@ slug: "porquerolles-en-une-journee"
 path: "/porquerolles-en-une-journee"
 excerpt: "Un itinéraire pour voir, sentir et goûter Porquerolles — pas pour établir un record personnel entre deux bateaux."
 date: "2026-07-27"
-updatedAt: "2026-07-28"
+updatedAt: "2026-07-29"
 author: "Joëlle"
 category: "PORQUEROLLES"
 tags: ["Porquerolles en une journée", "visiter Porquerolles", "Porquerolles à vélo", "couple"]
@@ -32,6 +32,8 @@ Pour une première visite à deux, choisissez un secteur, une activité principa
 ## Avant l’arrivée : préparer la partie la moins glamour
 
 Réservez votre traversée lorsque c’est nécessaire, anticipez le parking ou le bus et vérifiez les horaires de retour. Notre guide [aller à Porquerolles depuis Hyères](/aller-porquerolles-depuis-hyeres) reprend toutes les options.
+
+Depuis le centre de Hyères ou Le Nid d’Or, comptez environ 15 à 20 minutes pour rejoindre la Tour Fondue quand tout circule bien. En saison, partez tôt : entre 8 h et 9 h au maximum. Après 10 h, le trajet, le stationnement et l’embarquement deviennent beaucoup moins confortables.
 
 Emportez :
 
