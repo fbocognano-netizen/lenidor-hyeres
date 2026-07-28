@@ -183,7 +183,7 @@ function Index() {
       <Hero />
       <Intro />
       <Testimonials />
-      <BeachesGuide />
+      <GuidesTeaser />
       <Gallery />
       <Amenities />
       <BookingSection />
