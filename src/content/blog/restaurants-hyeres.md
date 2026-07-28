@@ -6,7 +6,7 @@ slug: "restaurants-hyeres"
 path: "/restaurants-hyeres"
 excerpt: "Vieille ville animée, dîner au port ou soirée près de Giens : trouvez d’abord l’ambiance qui vous ressemble, puis l’adresse qui tient ses promesses."
 date: "2026-07-27"
-updatedAt: "2026-07-27"
+updatedAt: "2026-07-28"
 author: "Joëlle"
 category: "SAVEURS & ADRESSES"
 tags: ["restaurant Hyères", "où manger à Hyères", "restaurant Giens", "couple"]
@@ -29,7 +29,7 @@ Pour savoir où manger à Hyères, commencez par une question plus utile que « 
 
 Un dîner dans les ruelles de la vieille ville, un repas au port et une table près de Giens ne racontent pas la même histoire. Le bon choix dépend aussi de votre programme, de la saison, du besoin de réserver et de votre envie — ou non — de reprendre la voiture.
 
-Ce guide ne publie pas de classement artificiel basé sur des notes récupérées en ligne. Les adresses précises seront ajoutées après vérification et visite, avec une date de mise à jour.
+Ce guide ne cherche pas à produire un classement figé. Il mélange les repères de quartier et quelques adresses à considérer selon l’ambiance recherchée : centre-ville vivant, port facile, presqu’île de Giens ou table avec vue. Vérifiez toujours les horaires et réservez lorsque la soirée compte.
 
 ## Manger dans la vieille ville
 
@@ -44,11 +44,9 @@ Le quartier fonctionne bien pour une première soirée. Arrivez un peu avant le 
 
 Vérifiez toutefois le stationnement et les jours d’ouverture. Hors saison, certaines adresses réduisent leurs services.
 
-**Sélection personnelle à intégrer après vérification :**
+**Adresse à considérer :**
 
-- [ADRESSE TESTÉE — cuisine et raison du choix]
-- [ADRESSE TESTÉE — ambiance et budget]
-- [ADRESSE TESTÉE — option plus décontractée]
+- **Casa Latina**, avenue Gambetta : une option centre-ville conviviale, tournée vers les saveurs latines, les tapas, les viandes et les assiettes généreuses. À choisir pour une soirée vivante et chaleureuse plutôt que pour une ambiance très feutrée.
 
 ## Dîner au port d’Hyères
 
@@ -58,11 +56,9 @@ Il faut distinguer la vue de l’assiette. Une terrasse bien placée ne garantit
 
 Le port peut être très animé en saison. Réservez si vous souhaitez une table précise ou un horaire de coucher de soleil.
 
-**Sélection personnelle à intégrer après vérification :**
+**Adresse à considérer :**
 
-- [ADRESSE TESTÉE — poissons ou cuisine méditerranéenne]
-- [ADRESSE TESTÉE — dîner simple]
-- [ADRESSE TESTÉE — verre et petite restauration]
+- **Ô Cap Couleurs**, sur le port de Hyères : une table traditionnelle avec terrasse, pratique pour dîner après une promenade au port ou une journée côté mer. L’adresse est connue pour une cuisine maison et un bon rapport qualité-prix, mais le secteur peut être animé en saison.
 
 ## Manger sur la presqu’île de Giens
 
@@ -77,6 +73,12 @@ Avant de réserver, vérifiez :
 - l’ouverture hors saison.
 
 Après une journée au soleil, choisissez une table facilement accessible. Le dîner romantique perd rapidement de son charme lorsque l’un des deux tourne depuis vingt minutes avec la jauge d’essence allumée.
+
+**Adresses à considérer :**
+
+- **Le Grand Baie**, à Giens : une adresse avec vue panoramique sur l’Almanarre, le double tombolo et les salins. À privilégier pour une soirée plus posée, avec une carte tournée vers le poisson et une ambiance maritime.
+- **Welcome Café**, côté Bergerie / Pousset : une option plus simple et détendue sur la presqu’île, adaptée à un déjeuner, un apéritif ou un dîner sans trop s’éloigner.
+- **Le Pradeau Plage**, vers la Tour Fondue : une adresse de bord de mer près du départ pour Porquerolles, intéressante pour le cadre et l’ambiance plage. Réservez et vérifiez l’accès avant d’y aller.
 
 Consultez aussi notre guide [visiter la presqu’île de Giens](/visiter-presquile-giens).
 

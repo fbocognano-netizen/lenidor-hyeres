@@ -6,7 +6,7 @@ slug: "visiter-presquile-giens"
 path: "/visiter-presquile-giens"
 excerpt: "Giens mérite mieux qu’un passage vers le bateau : une journée entre village, petits ports, sentiers et pauses face à la Méditerranée."
 date: "2026-07-27"
-updatedAt: "2026-07-27"
+updatedAt: "2026-07-28"
 author: "Joëlle"
 category: "VISITER HYÈRES"
 tags: ["visiter Giens", "presqu’île de Giens", "que faire à Giens", "couple"]
@@ -53,7 +53,7 @@ Trois options :
 
 En haute saison, réservez les tables importantes. Pour le pique-nique, utilisez les espaces autorisés et remportez tous vos déchets.
 
-Notre guide [où manger à Hyères](/restaurants-hyeres) sera complété avec des adresses réellement vérifiées.
+Pour choisir une table selon votre secteur, consultez notre guide [où manger à Hyères](/restaurants-hyeres), avec des pistes en centre-ville, au port et sur la presqu’île de Giens.
 
 ## Après-midi douce : plage et promenade
 

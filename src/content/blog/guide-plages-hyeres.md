@@ -6,7 +6,7 @@ slug: "guide-plages-hyeres"
 path: "/guide-plages-hyeres"
 excerpt: "Almanarre, Giens, Porquerolles… Découvrez les plus belles plages accessibles depuis le studio."
 date: "2026-02-10"
-updatedAt: "2026-07-27"
+updatedAt: "2026-07-28"
 author: "Joëlle"
 category: "GUIDE HYÈRES"
 tags: ["plage de l'almanarre", "hyeres vacances", "porquerolles", "presqu'ile de giens"]
@@ -25,7 +25,7 @@ ctaUrl: "https://www.google.com/maps/search/?api=1&query=plage+de+l'almanarre+hy
 ctaUrlLabel: "Voir la plage de l'Almanarre sur Maps"
 ---
 
-Vous préparez vos **vacances à Hyères** et cherchez dd les meilleures plages ? Vous êtes au bon endroit. Depuis le studio **Le Nid d'Or**, chaque spot de baignade est à portée de main — de la célèbre **plage de l'Almanarre** aux criques sauvages de **Porquerolles**.
+Vous préparez vos **vacances à Hyères** et cherchez les meilleures plages ? Vous êtes au bon endroit. Depuis le studio **Le Nid d'Or**, chaque spot de baignade est à portée de main — de la célèbre **plage de l'Almanarre** aux criques sauvages de **Porquerolles**.
 
 Que vous soyez amateur de kitesurf, de farniente ou d'excursions en bateau, ce guide vous aide à choisir la plage qui correspond à votre envie du moment.
 

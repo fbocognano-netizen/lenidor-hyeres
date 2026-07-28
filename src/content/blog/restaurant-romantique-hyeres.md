@@ -6,7 +6,7 @@ slug: "restaurant-romantique-hyeres"
 path: "/restaurant-romantique-hyeres"
 excerpt: "La vue compte, l’assiette aussi, mais le véritable luxe reste de pouvoir s’entendre parler. Nos critères pour une soirée à deux réussie."
 date: "2026-07-27"
-updatedAt: "2026-07-27"
+updatedAt: "2026-07-28"
 author: "Joëlle"
 category: "SAVEURS & ADRESSES"
 tags: ["restaurant romantique Hyères", "dîner amoureux Hyères", "couple Hyères", "vue mer"]
@@ -97,15 +97,15 @@ Anticipez le stationnement, le conducteur et la distance. Une soirée sereine co
 
 En cas de vent ou de météo incertaine, vérifiez que le restaurant dispose d’une salle agréable.
 
-## Nos adresses réellement testées
+## Trois adresses à regarder pour une soirée à deux
 
-Cette section sera complétée uniquement avec des restaurants visités récemment. Pour chaque adresse, nous indiquerons la date de visite, le budget, l’ambiance et ce que nous avons réellement goûté.
+Pour une soirée en amoureux, privilégiez une adresse qui correspond à l’ambiance recherchée plutôt qu’un simple classement. Les horaires, les cartes et les jours d’ouverture évoluent : appelez toujours avant de réserver, surtout hors saison.
 
-- [ADRESSE À TESTER — vieille ville]
-- [ADRESSE À TESTER — port]
-- [ADRESSE À TESTER — Giens ou vue mer]
+- **Le Grand Baie, à Giens** : l’option la plus évidente pour une soirée avec vue. Le restaurant est situé sur la presqu’île, avec une vue panoramique vers l’Almanarre, le double tombolo et les salins. À choisir pour un dîner plus posé, autour du poisson et d’une ambiance maritime. Budget plutôt supérieur aux tables simples du port.
+- **Welcome Café, côté Bergerie / Pousset** : une adresse plus décontractée sur la presqu’île, intéressante pour un apéritif, des tapas, une assiette de poisson ou un dîner moins cérémonieux. Bon choix si vous voulez rester près de Giens sans transformer la soirée en grande sortie.
+- **Le Pradeau Plage, vers la Tour Fondue** : une adresse très “presqu’île”, au-dessus de la plage du Pradeau et proche du départ pour Porquerolles. À réserver pour le cadre, la mer et l’impression d’être déjà un peu ailleurs. Anticipez l’accès et le stationnement.
 
-Cette transparence évite de transformer une compilation d’avis publics en fausse recommandation personnelle.
+Pour une ambiance plus animée que romantique, gardez plutôt Casa Latina en centre-ville ou Ô Cap Couleurs sur le port : deux options utiles, mais moins intimistes que Giens ou la Tour Fondue.
 
 ## L’alternative : dîner à deux sur la terrasse
 

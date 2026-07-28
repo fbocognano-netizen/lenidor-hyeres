@@ -6,7 +6,7 @@ slug: "que-faire-hyeres"
 path: "/que-faire-hyeres"
 excerpt: "Des ruelles de la vieille ville aux sentiers face aux Îles d’Or, voici comment découvrir Hyères sans transformer vos vacances en marathon."
 date: "2026-07-27"
-updatedAt: "2026-07-27"
+updatedAt: "2026-07-28"
 author: "Joëlle"
 category: "VISITER HYÈRES"
 tags: ["que faire à Hyères", "visiter Hyères", "séjour en couple", "Îles d'Or"]
@@ -88,7 +88,7 @@ La côte hyéroise permet de changer d’ambiance : longues étendues exposées 
 
 Le vent compte autant que le soleil. Une plage parfaite un jour peut être beaucoup moins agréable le lendemain. Avant de partir, consultez les conditions et choisissez votre côté de la presqu’île en conséquence.
 
-Nous avons regroupé les différents secteurs dans notre [guide des plages de Hyères](/guide-plages-hyeres). Cette page sera mise à jour avec les accès et informations vérifiées.
+Nous avons regroupé les différents secteurs dans notre [guide des plages de Hyères](/guide-plages-hyeres), pour comparer les ambiances selon la météo, le vent et le temps disponible.
 
 ## Prévoir une journée plus calme
 

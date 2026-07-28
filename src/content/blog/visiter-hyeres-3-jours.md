@@ -6,7 +6,7 @@ slug: "visiter-hyeres-3-jours"
 path: "/visiter-hyeres-3-jours"
 excerpt: "Trois jours, trois ambiances : le charme du centre ancien, l’évasion à Porquerolles et la nature de Giens, avec du temps pour souffler."
 date: "2026-07-27"
-updatedAt: "2026-07-27"
+updatedAt: "2026-07-28"
 author: "Joëlle"
 category: "VISITER HYÈRES"
 tags: ["visiter Hyères en 3 jours", "week-end Hyères", "séjour couple", "itinéraire Hyères"]
@@ -43,7 +43,7 @@ Vérifiez les horaires avant de partir. Certains sites culturels ferment un jour
 
 Le premier déjeuner n’a pas besoin d’être une expédition gastronomique. Choisissez une terrasse dans le centre, observez l’ambiance et gardez le dîner romantique pour un moment plus posé.
 
-Notre futur guide [où manger à Hyères](/restaurants-hyeres) vous aidera à choisir le bon quartier plutôt qu’une adresse sélectionnée uniquement pour sa note.
+Notre guide [où manger à Hyères](/restaurants-hyeres) vous aide à choisir le bon quartier plutôt qu’une adresse sélectionnée uniquement pour sa note.
 
 ### Après-midi : pause assumée
 

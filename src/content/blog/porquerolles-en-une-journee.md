@@ -6,7 +6,7 @@ slug: "porquerolles-en-une-journee"
 path: "/porquerolles-en-une-journee"
 excerpt: "Un itinéraire pour voir, sentir et goûter Porquerolles — pas pour établir un record personnel entre deux bateaux."
 date: "2026-07-27"
-updatedAt: "2026-07-27"
+updatedAt: "2026-07-28"
 author: "Joëlle"
 category: "PORQUEROLLES"
 tags: ["Porquerolles en une journée", "visiter Porquerolles", "Porquerolles à vélo", "couple"]
@@ -82,7 +82,7 @@ Demandez conseil au loueur et prenez une carte. Un itinéraire court bien choisi
 
 ## Où placer la baignade ?
 
-Pour les plages et secteurs de baignade, consultez notre [guide des plages de Hyères et des Îles d’Or](/guide-plages-hyeres). Il sera corrigé et enrichi avec les localisations exactes.
+Pour les plages et secteurs de baignade, consultez notre [guide des plages de Hyères et des Îles d’Or](/guide-plages-hyeres). Il vous aide à choisir entre baignade facile, crique plus sauvage et pause après une balade.
 
 Sur place :
 
