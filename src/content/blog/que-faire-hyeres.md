@@ -15,7 +15,7 @@ featuredImageAlt: "Ruelle méditerranéenne aux façades ocre et bougainvilliers
 featuredImageCaption: "Une illustration éditoriale de l’atmosphère méditerranéenne qui accompagne une escapade à Hyères."
 canonical: ""
 focusKeyword: "que faire à Hyères"
-draft: true
+draft: false
 noindex: false
 relatedPosts: ["visiter-hyeres-3-jours", "randonnees-hyeres", "guide-plages-hyeres"]
 ctaTitle: "Et si le vrai luxe était de ne plus courir ?"

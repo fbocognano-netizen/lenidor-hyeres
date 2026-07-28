@@ -15,7 +15,7 @@ featuredImageAlt: "Sentier côtier de la presqu’île dominant une mer calme"
 featuredImageCaption: ""
 canonical: ""
 focusKeyword: "visiter la presqu’île de Giens"
-draft: true
+draft: false
 noindex: false
 relatedPosts: ["sentier-littoral-giens", "guide-plages-hyeres", "visiter-hyeres-3-jours"]
 ctaTitle: "Giens devant vous, le calme derrière vous"

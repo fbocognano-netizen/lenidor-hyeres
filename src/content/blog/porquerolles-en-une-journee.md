@@ -15,7 +15,7 @@ featuredImageAlt: "Sentier ombragé dominant une crique aux eaux turquoise"
 featuredImageCaption: ""
 canonical: ""
 focusKeyword: "Porquerolles en une journée"
-draft: true
+draft: false
 noindex: false
 relatedPosts: ["aller-porquerolles-depuis-hyeres", "guide-plages-hyeres", "visiter-hyeres-3-jours"]
 ctaTitle: "Une île la journée, les Îles d’Or le soir"

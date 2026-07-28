@@ -15,7 +15,7 @@ featuredImageAlt: "Crique méditerranéenne bordée de pins et d’eucalyptus su
 featuredImageCaption: "Illustration éditoriale de l’ambiance naturelle recherchée à Porquerolles."
 canonical: ""
 focusKeyword: "aller à Porquerolles depuis Hyères"
-draft: true
+draft: false
 noindex: false
 relatedPosts: ["porquerolles-en-une-journee", "ou-dormir-hyeres-porquerolles", "visiter-hyeres-3-jours"]
 ctaTitle: "Dormir près du départ, sans dormir dans l’agitation"

@@ -15,7 +15,7 @@ featuredImageAlt: "Sentier côtier rocheux dominant la Méditerranée au soleil 
 featuredImageCaption: "Illustration éditoriale d’un sentier méditerranéen de la presqu’île."
 canonical: ""
 focusKeyword: "randonnée Hyères"
-draft: true
+draft: false
 noindex: false
 relatedPosts: ["sentier-littoral-giens", "visiter-presquile-giens", "que-faire-hyeres"]
 ctaTitle: "Après le sentier, le grand plongeon"

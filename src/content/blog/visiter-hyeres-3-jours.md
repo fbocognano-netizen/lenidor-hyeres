@@ -15,7 +15,7 @@ featuredImageAlt: "Ruelle méditerranéenne calme baignée par la lumière doré
 featuredImageCaption: ""
 canonical: ""
 focusKeyword: "visiter Hyères en 3 jours"
-draft: true
+draft: false
 noindex: false
 relatedPosts: ["que-faire-hyeres", "porquerolles-en-une-journee", "visiter-presquile-giens"]
 ctaTitle: "Votre camp de base, version vue mer"

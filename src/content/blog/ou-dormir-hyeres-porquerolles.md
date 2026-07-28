@@ -15,7 +15,7 @@ featuredImageAlt: "Crique méditerranéenne vue depuis un sentier ombragé"
 featuredImageCaption: ""
 canonical: ""
 focusKeyword: "où dormir à Hyères pour visiter Porquerolles"
-draft: true
+draft: false
 noindex: false
 relatedPosts: ["aller-porquerolles-depuis-hyeres", "porquerolles-en-une-journee", "visiter-hyeres-3-jours"]
 ctaTitle: "Voir les îles avant même d’avoir pris le bateau"

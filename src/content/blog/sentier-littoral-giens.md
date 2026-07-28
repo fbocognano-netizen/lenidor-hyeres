@@ -15,7 +15,7 @@ featuredImageAlt: "Chemin rocheux longeant une côte méditerranéenne bordée d
 featuredImageCaption: ""
 canonical: ""
 focusKeyword: "sentier du littoral de Giens"
-draft: true
+draft: false
 noindex: false
 relatedPosts: ["randonnees-hyeres", "visiter-presquile-giens", "guide-plages-hyeres"]
 ctaTitle: "Le meilleur moment ? Quand on retire enfin les chaussures"

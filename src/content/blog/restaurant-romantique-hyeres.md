@@ -15,7 +15,7 @@ featuredImageAlt: "Dîner aux chandelles pour deux sur une terrasse avec vue sur
 featuredImageCaption: ""
 canonical: ""
 focusKeyword: "restaurant romantique Hyères"
-draft: true
+draft: false
 noindex: false
 relatedPosts: ["restaurants-hyeres", "visiter-hyeres-3-jours", "ou-dormir-hyeres-porquerolles"]
 ctaTitle: "Votre table la plus tranquille est peut-être déjà réservée"

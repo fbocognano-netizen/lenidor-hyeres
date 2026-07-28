@@ -15,7 +15,7 @@ featuredImageAlt: "Table dressée pour deux sur une terrasse méditerranéenne f
 featuredImageCaption: "Illustration éditoriale d’un dîner méditerranéen à deux."
 canonical: ""
 focusKeyword: "où manger à Hyères"
-draft: true
+draft: false
 noindex: false
 relatedPosts: ["restaurant-romantique-hyeres", "visiter-hyeres-3-jours", "que-faire-hyeres"]
 ctaTitle: "Et si vous gardiez aussi une soirée pour la terrasse ?"
