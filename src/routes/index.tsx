@@ -143,8 +143,22 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
-  loader: ({ context }) => {
+  loader: ({ context }): { guides: GuideTeaser[] } => {
     context.queryClient.ensureQueryData(galleryQueryOptions);
+    return {
+      guides: getPublishedPosts()
+        .slice(0, 3)
+        .map((post) => ({
+          slug: post.slug,
+          path: post.path,
+          title: post.title,
+          excerpt: post.excerpt,
+          category: post.category,
+          readingMinutes: post.readingMinutes,
+          featuredImage: post.featuredImage,
+          featuredImageAlt: post.featuredImageAlt,
+        })),
+    };
   },
   component: Index,
 });
