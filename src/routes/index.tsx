@@ -21,6 +21,18 @@ import { listGalleryPhotos, type GalleryPhoto } from "@/lib/gallery.functions";
 import { listPublicOtaLinks, type OtaLink } from "@/lib/ota-links.functions";
 import { sendContactMessage, getContactInfo } from "@/lib/contact.functions";
 import { Lightbox, useLightbox } from "@/components/lightbox";
+import { getPublishedPosts } from "@/lib/blog";
+
+interface GuideTeaser {
+  slug: string;
+  path: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  readingMinutes: number;
+  featuredImage: string;
+  featuredImageAlt: string;
+}
 
 import photo1 from "@/assets/listing/photo-1.jpg";
 import photo2 from "@/assets/listing/photo-2.jpg";
