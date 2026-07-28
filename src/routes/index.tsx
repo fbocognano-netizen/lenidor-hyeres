@@ -427,7 +427,7 @@ function Testimonials() {
 }
 
 function GuidesTeaser() {
-  const { guides } = Route.useLoaderData();
+  const { guides } = Route.useLoaderData() as { guides: GuideTeaser[] };
 
   if (!guides.length) return null;
 
