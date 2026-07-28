@@ -167,7 +167,16 @@ function Index() {
   );
 }
 
+const NAV_ANCHORS = [
+  { href: "#sejour", label: "Le studio" },
+  { href: "#galerie", label: "Photos" },
+  { href: "#equipements", label: "Équipements" },
+  { href: "#lieu", label: "Le lieu" },
+] as const;
+
 function Nav() {
+  const [open, setOpen] = useState(false);
+
   return (
     <header className="sticky top-0 z-40 backdrop-blur-md bg-background/75 border-b border-border/60">
       <div className="mx-auto max-w-6xl px-5 h-14 sm:h-16 flex items-center justify-between gap-3">
@@ -175,29 +184,61 @@ function Nav() {
           Le Nid d'Or à Hyères
         </a>
         <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
-          <a href="#sejour" className="hover:text-foreground transition">
-            Le studio
-          </a>
-          <a href="#galerie" className="hover:text-foreground transition">
-            Photos
-          </a>
-          <a href="#equipements" className="hover:text-foreground transition">
-            Équipements
-          </a>
-          <a href="#lieu" className="hover:text-foreground transition">
-            Le lieu
-          </a>
+          {NAV_ANCHORS.map((item) => (
+            <a key={item.href} href={item.href} className="hover:text-foreground transition">
+              {item.label}
+            </a>
+          ))}
           <Link
-            to="/guide-plages-hyeres"
+            to="/guides-hyeres"
             className="hover:text-foreground transition"
+            activeProps={{ className: "text-foreground font-medium" }}
           >
-            Plages
+            Guides
           </Link>
         </nav>
-        <Button asChild variant="cta" className="rounded-full h-11 px-5 text-sm sm:h-12 sm:px-6 sm:text-base shadow-lg">
-          <a href="#reserver">Réserver</a>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button asChild variant="cta" className="rounded-full h-11 px-5 text-sm sm:h-12 sm:px-6 sm:text-base shadow-lg">
+            <a href="#reserver">Réserver</a>
+          </Button>
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
+            aria-expanded={open}
+            className="md:hidden inline-flex h-11 w-11 items-center justify-center rounded-full border border-border/70 text-foreground"
+          >
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
+
+      {open ? (
+        <nav className="md:hidden border-t border-border/60 bg-background/95 backdrop-blur-md">
+          <ul className="mx-auto max-w-6xl px-5 py-3 flex flex-col">
+            {NAV_ANCHORS.map((item) => (
+              <li key={item.href}>
+                <a
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  className="block py-3 text-[15px] border-b border-border/40"
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))}
+            <li>
+              <Link
+                to="/guides-hyeres"
+                onClick={() => setOpen(false)}
+                className="block py-3 text-[15px]"
+              >
+                Guides de Hyères
+              </Link>
+            </li>
+          </ul>
+        </nav>
+      ) : null}
     </header>
   );
 }
