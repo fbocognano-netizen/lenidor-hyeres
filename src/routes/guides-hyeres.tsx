@@ -198,6 +198,10 @@ function GuidesPage() {
             <Link to="/" hash="reserver" className="hover:text-foreground transition">
               Réserver
             </Link>
+            <a href="/rss.xml" className="hover:text-foreground transition">
+              Flux RSS
+            </a>
+
           </div>
         </div>
       </footer>

@@ -5,7 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { format, differenceInCalendarDays } from "date-fns";
 import { fr } from "date-fns/locale";
 import type { DateRange } from "react-day-picker";
-import { CalendarIcon, Waves, Sun, Bed, Bath, Users, MapPin, Wifi, Wind, ChefHat, Car, Star, Expand } from "lucide-react";
+import { CalendarIcon, Waves, Sun, Bed, Bath, Users, MapPin, Wifi, Wind, ChefHat, Car, Star, Expand, Menu, X, Clock } from "lucide-react";
 import { toast, Toaster } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -21,6 +21,18 @@ import { listGalleryPhotos, type GalleryPhoto } from "@/lib/gallery.functions";
 import { listPublicOtaLinks, type OtaLink } from "@/lib/ota-links.functions";
 import { sendContactMessage, getContactInfo } from "@/lib/contact.functions";
 import { Lightbox, useLightbox } from "@/components/lightbox";
+import { getPublishedPosts } from "@/lib/blog";
+
+interface GuideTeaser {
+  slug: string;
+  path: string;
+  title: string;
+  excerpt: string;
+  category: string;
+  readingMinutes: number;
+  featuredImage: string;
+  featuredImageAlt: string;
+}
 
 import photo1 from "@/assets/listing/photo-1.jpg";
 import photo2 from "@/assets/listing/photo-2.jpg";
@@ -143,8 +155,22 @@ export const Route = createFileRoute("/")({
       },
     ],
   }),
-  loader: ({ context }) => {
+  loader: ({ context }): { guides: GuideTeaser[] } => {
     context.queryClient.ensureQueryData(galleryQueryOptions);
+    return {
+      guides: getPublishedPosts()
+        .slice(0, 3)
+        .map((post) => ({
+          slug: post.slug,
+          path: post.path,
+          title: post.title,
+          excerpt: post.excerpt,
+          category: post.category,
+          readingMinutes: post.readingMinutes,
+          featuredImage: post.featuredImage,
+          featuredImageAlt: post.featuredImageAlt,
+        })),
+    };
   },
   component: Index,
 });
@@ -157,7 +183,7 @@ function Index() {
       <Hero />
       <Intro />
       <Testimonials />
-      <BeachesGuide />
+      <GuidesTeaser />
       <Gallery />
       <Amenities />
       <BookingSection />
@@ -167,7 +193,16 @@ function Index() {
   );
 }
 
+const NAV_ANCHORS = [
+  { href: "#sejour", label: "Le studio" },
+  { href: "#galerie", label: "Photos" },
+  { href: "#equipements", label: "Équipements" },
+  { href: "#lieu", label: "Le lieu" },
+] as const;
+
 function Nav() {
+  const [open, setOpen] = useState(false);
+
   return (
     <header className="sticky top-0 z-40 backdrop-blur-md bg-background/75 border-b border-border/60">
       <div className="mx-auto max-w-6xl px-5 h-14 sm:h-16 flex items-center justify-between gap-3">
@@ -175,29 +210,61 @@ function Nav() {
           Le Nid d'Or à Hyères
         </a>
         <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
-          <a href="#sejour" className="hover:text-foreground transition">
-            Le studio
-          </a>
-          <a href="#galerie" className="hover:text-foreground transition">
-            Photos
-          </a>
-          <a href="#equipements" className="hover:text-foreground transition">
-            Équipements
-          </a>
-          <a href="#lieu" className="hover:text-foreground transition">
-            Le lieu
-          </a>
+          {NAV_ANCHORS.map((item) => (
+            <a key={item.href} href={item.href} className="hover:text-foreground transition">
+              {item.label}
+            </a>
+          ))}
           <Link
-            to="/guide-plages-hyeres"
+            to="/guides-hyeres"
             className="hover:text-foreground transition"
+            activeProps={{ className: "text-foreground font-medium" }}
           >
-            Plages
+            Guides
           </Link>
         </nav>
-        <Button asChild variant="cta" className="rounded-full h-11 px-5 text-sm sm:h-12 sm:px-6 sm:text-base shadow-lg">
-          <a href="#reserver">Réserver</a>
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button asChild variant="cta" className="rounded-full h-11 px-5 text-sm sm:h-12 sm:px-6 sm:text-base shadow-lg">
+            <a href="#reserver">Réserver</a>
+          </Button>
+          <button
+            type="button"
+            onClick={() => setOpen((v) => !v)}
+            aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
+            aria-expanded={open}
+            className="md:hidden inline-flex h-11 w-11 items-center justify-center rounded-full border border-border/70 text-foreground"
+          >
+            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </div>
       </div>
+
+      {open ? (
+        <nav className="md:hidden border-t border-border/60 bg-background/95 backdrop-blur-md">
+          <ul className="mx-auto max-w-6xl px-5 py-3 flex flex-col">
+            {NAV_ANCHORS.map((item) => (
+              <li key={item.href}>
+                <a
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  className="block py-3 text-[15px] border-b border-border/40"
+                >
+                  {item.label}
+                </a>
+              </li>
+            ))}
+            <li>
+              <Link
+                to="/guides-hyeres"
+                onClick={() => setOpen(false)}
+                className="block py-3 text-[15px]"
+              >
+                Guides de Hyères
+              </Link>
+            </li>
+          </ul>
+        </nav>
+      ) : null}
     </header>
   );
 }
@@ -359,47 +426,73 @@ function Testimonials() {
   );
 }
 
-function BeachesGuide() {
+function GuidesTeaser() {
+  const { guides } = Route.useLoaderData() as { guides: GuideTeaser[] };
+
+  if (!guides.length) return null;
+
   return (
-    <section className="mx-auto max-w-6xl px-5 py-14 sm:py-20 md:py-24">
-      <div className="grid md:grid-cols-2 gap-8 md:gap-12 items-center">
-        <div>
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Guide</p>
+    <section id="guides" className="mx-auto max-w-6xl px-5 py-14 sm:py-20 md:py-24">
+      <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
+        <div className="max-w-2xl">
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Guides</p>
           <h2 className="mt-3 font-display text-[1.75rem] sm:text-4xl md:text-5xl leading-[1.15]">
-            Les plus belles plages de Hyères
+            Nos guides de Hyères
           </h2>
-          <p className="mt-5 sm:mt-6 text-muted-foreground text-[15px] leading-relaxed">
-            De la célèbre <strong>plage de l'Almanarre</strong> à 10 minutes, aux criques de Porquerolles accessibles en bateau, découvrez les spots de rêve pour vos <strong>vacances à Hyères</strong>.
+          <p className="mt-5 text-muted-foreground text-[15px] leading-relaxed">
+            Plages, Îles d'Or, presqu'île de Giens et bonnes adresses : les conseils de Joëlle pour
+            profiter de votre séjour, écrits depuis le studio.
           </p>
-          <div className="mt-6 sm:mt-8 flex flex-col sm:flex-row gap-3">
-            <Button
-              asChild
-              variant="cta"
-              className="rounded-full h-12 px-6 text-sm sm:h-14 sm:px-8 sm:text-base"
-            >
-              <Link to="/guide-plages-hyeres">Lire le guide des plages</Link>
-            </Button>
-            <Button
-              asChild
-              variant="outline"
-              className="rounded-full h-12 px-6 text-sm sm:h-14 sm:px-8 sm:text-base"
-            >
-              <a href="#reserver">Réserver le studio</a>
-            </Button>
-          </div>
         </div>
-        <div className="relative aspect-[4/3] overflow-hidden rounded-2xl">
-          <img
-            src={photo2}
-            alt="Vue mer depuis la terrasse du Nid d'Or, proche des plages de Hyères"
-            className="absolute inset-0 h-full w-full object-cover"
-            loading="lazy"
-          />
-        </div>
+        <Button
+          asChild
+          variant="outline"
+          className="rounded-full h-12 px-6 text-sm shrink-0 self-start md:self-auto"
+        >
+          <Link to="/guides-hyeres">Voir tous les guides</Link>
+        </Button>
+      </div>
+
+      <div className="mt-8 sm:mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {guides.map((post) => (
+          <Card key={post.slug} className="overflow-hidden border border-border/60 bg-card p-0">
+            <a href={post.path} className="group flex h-full flex-col">
+              {post.featuredImage ? (
+                <div className="relative aspect-[16/10] overflow-hidden">
+                  <img
+                    src={post.featuredImage}
+                    alt={post.featuredImageAlt}
+                    loading="lazy"
+                    decoding="async"
+                    className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                  />
+                </div>
+              ) : null}
+              <div className="flex flex-1 flex-col p-5 sm:p-6">
+                {post.category ? (
+                  <p className="text-[10px] sm:text-xs uppercase tracking-[0.18em] text-muted-foreground">
+                    {post.category}
+                  </p>
+                ) : null}
+                <h3 className="mt-2 font-display text-xl sm:text-2xl leading-snug group-hover:text-primary transition">
+                  {post.title}
+                </h3>
+                <p className="mt-3 text-sm text-muted-foreground leading-relaxed line-clamp-3">
+                  {post.excerpt}
+                </p>
+                <span className="mt-5 inline-flex items-center gap-1.5 text-xs text-muted-foreground">
+                  <Clock className="h-3.5 w-3.5" /> {post.readingMinutes} min de lecture
+                </span>
+                <span className="mt-3 inline-flex text-sm font-medium text-primary">Lire le guide →</span>
+              </div>
+            </a>
+          </Card>
+        ))}
       </div>
     </section>
   );
 }
+
 
 function Gallery() {
   const { data } = useSuspenseQuery(galleryQueryOptions);
@@ -1038,7 +1131,16 @@ function Footer() {
               Studio vue mer panoramique à Hyères, avec piscine et terrasse plein sud. Votre hôte Joëlle vous reçoit en
               personne.
             </p>
+            <nav aria-label="Liens du site" className="mt-4 flex flex-col gap-2 text-[15px]">
+              <Link to="/guides-hyeres" className="text-muted-foreground hover:text-foreground transition">
+                Guides de Hyères
+              </Link>
+              <Link to="/guide-plages-hyeres" className="text-muted-foreground hover:text-foreground transition">
+                Guide des plages de Hyères
+              </Link>
+            </nav>
           </div>
+
 
           <div className="md:col-span-3">
             <div className="text-xs uppercase tracking-wider text-muted-foreground">Joëlle, votre hôte</div>
