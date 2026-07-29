@@ -151,7 +151,13 @@ function AdminPage() {
         queryClient.invalidateQueries({ queryKey: ["admin-bookings"] });
         return;
       }
-      toast.success("Statut mis à jour");
+      if (result.emailSent === false) {
+        toast.warning("Statut mis à jour, mais l'email au client n'a pas pu être envoyé");
+      } else if (result.emailSent === true) {
+        toast.success("Statut mis à jour — client informé par email");
+      } else {
+        toast.success("Statut mis à jour");
+      }
       queryClient.invalidateQueries({ queryKey: ["admin-bookings"] });
     },
     onError: () => toast.error("Impossible de modifier le statut"),
