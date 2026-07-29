@@ -43,6 +43,8 @@ L’Office de tourisme rassemble les [informations sur les traversées vers Porq
 
 En période fréquentée, oui : réserver à l’avance évite de construire toute une journée autour d’un départ qui n’est plus disponible. Les consignes peuvent évoluer, notamment lorsque la fréquentation de l’île est régulée.
 
+Vous pouvez [réserver directement votre traversée en ligne sur le site officiel TLV-TVM](https://tlv-tvm.resactivite.com/accueil-2/). Sélectionnez bien **Tour Fondue → Porquerolles** : après l’achat, vous recevez un e-billet avec un QR code à présenter à l’embarquement.
+
 Avant de payer, vérifiez :
 
 - le port de départ ;
@@ -52,7 +54,7 @@ Avant de payer, vérifiez :
 - les règles concernant les animaux ;
 - l’horaire du dernier retour.
 
-Ne copiez pas un horaire trouvé dans un ancien article. Utilisez le site de la compagnie ou de l’Office de tourisme le jour de votre réservation.
+Les horaires évoluent selon la saison : vérifiez toujours les départs sur le site de la compagnie ou de l’Office de tourisme au moment de réserver.
 
 ## Aller à la Tour Fondue en voiture
 
