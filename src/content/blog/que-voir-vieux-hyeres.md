@@ -50,11 +50,19 @@ Le cœur du vieux Hyères garde une vraie atmosphère médiévale. Les rues sont
 
 Prévoyez de bonnes chaussures. Le vieux Hyères reste une balade urbaine, mais ce n’est pas une promenade plate de front de mer.
 
-## Voir la Tour des Templiers et le patrimoine religieux
+## Voir la Tour des Templiers
 
-Autour du centre ancien, plusieurs repères patrimoniaux aident à comprendre l’histoire de Hyères. La Tour des Templiers, l’église Saint-Louis et la collégiale Saint-Paul font partie des noms qui reviennent dans les parcours de découverte officiels.
+La Tour des Templiers, sur la place Massillon, est l’un des repères les plus visibles du centre ancien. Sa présence rappelle que la vieille ville ne se résume pas à ses façades colorées : elle conserve les traces d’une histoire médiévale encore lisible dans ses monuments et son plan urbain.
 
-La bonne approche, surtout pour une première visite, consiste à les intégrer naturellement à la balade plutôt que de courir d’un édifice à l’autre. Le charme du vieux Hyères tient autant à la continuité des rues qu’aux monuments eux-mêmes.
+Selon la programmation, la tour peut accueillir des expositions. Vérifiez les conditions d’accès auprès de la Ville ou de l’Office de tourisme si vous souhaitez entrer plutôt que simplement l’observer depuis la place.
+
+## Entrer dans la collégiale Saint-Paul
+
+En poursuivant vers la haute ville, faites une vraie étape à la [collégiale Saint-Paul](https://hyeres.fr/la-collegiale-saint-paul/). L’édifice réunit deux époques : une partie romane provençale remontant au XIIe siècle et une extension gothique construite à la fin du XVIe siècle. Ce contraste architectural donne au lieu une silhouette et un intérieur très particuliers.
+
+La collégiale conserve surtout **430 ex-voto**, l’une des collections les plus importantes de Provence. Ces peintures et objets offerts en remerciement racontent des naufrages, des maladies, des accidents et des moments de vie. Même sans connaissances religieuses, ils forment un témoignage très concret sur l’histoire des habitants et leur rapport à la mer.
+
+La place Saint-Paul et les ruelles voisines méritent également une pause. Consultez les horaires officiels avant votre visite : l’accès peut évoluer en fonction des offices, des manifestations culturelles ou des opérations patrimoniales.
 
 Si vous aimez les visites commentées, regardez les propositions de l’Office de tourisme ou de la Ville avant votre séjour. Les programmes peuvent varier selon la saison, les expositions et les événements patrimoniaux.
 
@@ -74,6 +82,14 @@ Par temps chaud, gardez cette partie pour le matin ou la fin d’après-midi. Le
 
 La récompense vaut l’effort : depuis les hauteurs, Hyères change d’échelle. On comprend mieux la relation entre la vieille ville, les collines, la plaine, le littoral et les Îles d’Or.
 
+## Monter jusqu’aux vestiges du château d’Hyères
+
+Si vous avez encore de l’énergie, poursuivez jusqu’aux [vestiges du château sur la colline du Castéou](https://hyeres.fr/monuments-et-sites/), à environ 200 mètres d’altitude. Il ne s’agit pas d’un château meublé à visiter, mais des vestiges d’une ancienne forteresse dominant la ville.
+
+Une première fortification aurait été construite par les seigneurs de Fos autour du Xe siècle. Au XIIIe siècle, le château devient l’une des places fortes importantes de Provence sous l’autorité de Charles d’Anjou. Son démantèlement ordonné sous Louis XIII en 1620 explique l’état actuel des murs et des fragments encore visibles.
+
+L’intérêt de la montée tient autant au site qu’au panorama. Depuis les hauteurs, le regard embrasse Hyères, la plaine et, lorsque la visibilité le permet, le littoral et les îles. Prévoyez de bonnes chaussures, de l’eau et évitez les heures les plus chaudes. Vérifiez également l’ouverture du site auprès de la Ville avant de partir, car l’accès peut être modifié lors d’événements ou d’opérations archéologiques.
+
 ## Découvrir la Villa Noailles
 
 La Villa Noailles apporte un contraste superbe avec le centre ancien. Après les ruelles médiévales, on arrive dans un lieu associé à l’architecture moderne, à la création, au design, à la photographie et à l’avant-garde artistique.
@@ -90,14 +106,15 @@ Pour choisir l’ambiance du repas, notre guide [où manger à Hyères](/restaur
 
 ## Combien de temps prévoir ?
 
-Pour une découverte simple du vieux Hyères, comptez environ 1 h 30 à 2 h si vous marchez tranquillement sans visite intérieure longue. Avec les jardins, la Villa Noailles, une exposition ou une vraie pause en terrasse, prévoyez plutôt une demi-journée.
+Pour une découverte simple du vieux Hyères, comptez environ 1 h 30 à 2 h si vous marchez tranquillement sans visite intérieure longue. Avec la collégiale Saint-Paul, les jardins ou la Villa Noailles, prévoyez plutôt une demi-journée. Pour ajouter la montée jusqu’au château sans courir, gardez au moins 3 à 4 heures et adaptez le parcours à la chaleur.
 
 | Temps disponible | Programme conseillé |
 | --- | --- |
 | 45 minutes | Place Massillon et premières ruelles |
-| 1 h 30 | Centre ancien, Tour des Templiers et montée douce |
-| 2 h à 3 h | Ruelles, jardins et points de vue |
-| Demi-journée | Vieux Hyères, Villa Noailles et pause en terrasse |
+| 1 h 30 | Centre ancien, Tour des Templiers et collégiale Saint-Paul |
+| 2 h à 3 h | Ruelles, collégiale, jardins et points de vue |
+| 3 h à 4 h | Haute ville et montée jusqu’aux vestiges du château |
+| Demi-journée | Vieux Hyères, château ou Villa Noailles, puis pause en terrasse |
 
 Le vieux Hyères peut aussi devenir le premier chapitre d’un séjour plus large. Pour organiser le reste sans surcharger vos journées, consultez [que faire à Hyères](/que-faire-hyeres) ou notre itinéraire [visiter Hyères en 3 jours](/visiter-hyeres-3-jours).
 
@@ -113,11 +130,12 @@ Voici un parcours facile à adapter :
 
 1. commencer place Massillon ;
 2. remonter les ruelles du centre ancien ;
-3. passer par la Tour des Templiers et les repères patrimoniaux proches ;
-4. suivre une partie du Parcours des Arts ;
-5. monter vers les jardins Saint-Bernard ou Sainte-Claire ;
-6. rejoindre les abords de la Villa Noailles ;
-7. redescendre pour une pause en terrasse.
+3. observer la Tour des Templiers ;
+4. rejoindre la collégiale Saint-Paul et sa collection d’ex-voto ;
+5. suivre une partie du Parcours des Arts ;
+6. monter vers les jardins Saint-Bernard ou Sainte-Claire ;
+7. choisir entre la Villa Noailles et la montée jusqu’aux vestiges du château selon le temps et votre énergie ;
+8. redescendre pour une pause en terrasse.
 
 Ce programme laisse de la place à l’imprévu, ce qui est probablement la meilleure façon de visiter le vieux Hyères. Une porte entrouverte, une boutique, une vue entre deux façades ou une place ombragée peuvent valoir autant qu’un point coché sur une carte.
 
@@ -131,6 +149,6 @@ Pour un séjour équilibré, combinez le vieux Hyères avec une journée à [Por
 
 ## Ce qu’il faut retenir
 
-Le vieux Hyères vaut le détour pour ses ruelles, ses places, son patrimoine médiéval, ses jardins perchés et la Villa Noailles. Mais sa vraie qualité tient à son rythme : on y monte doucement, on s’arrête souvent, on redescend sans se presser.
+Le vieux Hyères vaut le détour pour ses ruelles, ses places, la collégiale Saint-Paul, les vestiges du château, ses jardins perchés et la Villa Noailles. Mais sa vraie qualité tient à son rythme : on y monte doucement, on s’arrête souvent, on redescend sans se presser.
 
 Si vous aimez les villes qui se découvrent à pied, les pauses en terrasse et les points de vue après quelques marches, gardez-lui une vraie place dans votre séjour. Hyères ne se résume pas à ses plages et à ses îles : son centre ancien donne à la destination une profondeur plus intime, parfaite pour commencer ou terminer une journée à deux.
