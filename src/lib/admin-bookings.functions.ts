@@ -281,6 +281,13 @@ export const updateBookingStatus = createServerFn({ method: "POST" })
     if (!(await isAdminUnlocked())) return { authenticated: false as const, ok: false as const };
 
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: existing } = await supabaseAdmin
+      .from("bookings")
+      .select("id, guest_name, email, phone, message, check_in, check_out, guests, total_price, status")
+      .eq("id", data.id)
+      .single();
+
     const { error } = await supabaseAdmin
       .from("bookings")
       .update({ status: data.status })
@@ -298,8 +305,34 @@ export const updateBookingStatus = createServerFn({ method: "POST" })
       throw new Error("Impossible de modifier le statut de la réservation.");
     }
 
-    return { authenticated: true as const, ok: true as const };
+    let emailSent: boolean | null = null;
+    const shouldNotify =
+      (data.status === "confirmed" || data.status === "cancelled") &&
+      existing != null &&
+      existing.status !== data.status;
+
+    if (shouldNotify && existing) {
+      const { sendGuestStatusEmail } = await import("./pingram-notifications.server");
+      const result = await sendGuestStatusEmail(
+        {
+          booking_id: existing.id,
+          guest_name: existing.guest_name,
+          email: existing.email,
+          phone: existing.phone,
+          message: existing.message,
+          check_in: existing.check_in,
+          check_out: existing.check_out,
+          guests: existing.guests,
+          total_price: existing.total_price === null ? null : Number(existing.total_price),
+        },
+        data.status as "confirmed" | "cancelled",
+      );
+      emailSent = result.ok;
+    }
+
+    return { authenticated: true as const, ok: true as const, emailSent };
   });
+
 
 export const resendBookingNotification = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => z.object({ id: z.string().uuid() }).parse(data))
