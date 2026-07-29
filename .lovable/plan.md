@@ -1,38 +1,36 @@
-# Rendre le blog visible (UX) et bien maillé (SEO)
+## Où se trouve la logique actuelle
 
-Aujourd'hui `/guides-hyeres` n'est atteignable que par une petite ligne dans le bas de page ; la barre de navigation ne pointe que vers l'article « Plages », et sur mobile la navigation disparaît complètement (`hidden md:flex`) — donc aucun accès au blog depuis un téléphone.
+- `src/lib/pingram-notifications.server.ts` : tous les emails (HTML en dur, envoyés via l'API Pingram).
+  - `buildGuestHtml` / `sendGuestConfirmationEmail` : accusé de réception au client.
+  - `buildHtml` / `createAndSendBookingNotification` : alerte à l'hôte.
+  - `buildContactHtml` / `sendAdminContactNotification` : formulaire de contact.
+- Déclenchement à la création : `src/lib/bookings.functions.ts` (lignes 219 et 243).
+- Changement de statut : `updateBookingStatus` dans `src/lib/admin-bookings.functions.ts` — il fait uniquement un `update({ status })` en base. Aucun email n'existe pour les statuts : c'est pour cela que le client n'est jamais informé d'une annulation.
 
-## 1. Navigation (le plus gros gain UX)
+## Ce qui va être ajouté
 
-- Remplacer le lien « Plages » de la barre par **« Guides »** → `/guides-hyeres` (la page plages reste accessible depuis le listing et depuis la section dédiée de l'accueil).
-- Ajouter un **menu mobile** (bouton hamburger + panneau plein écran) reprenant les mêmes entrées : Le studio, Photos, Équipements, Le lieu, Guides, puis le bouton Réserver. Actuellement rien n'est cliquable sur mobile hors du bouton Réserver.
-- Marquer le lien actif (`activeProps`) pour que l'utilisateur sache où il est.
+### 1. Deux nouveaux templates dans `pingram-notifications.server.ts`
 
-## 2. Bloc « Guides » sur l'accueil
+- `buildGuestConfirmedHtml` : « Votre séjour est confirmé — Le Nid d'Or ». Rappel des dates, voyageurs, total estimé, ménage/caution, mention que Joëlle enverra les instructions d'arrivée, contact WhatsApp.
+- `buildGuestCancelledHtml` : « Votre demande n'a pas pu être retenue — Le Nid d'Or ». Ton chaleureux, rappel des dates concernées, invitation à proposer d'autres dates.
 
-La section actuelle « guide des plages » sur l'accueil ne renvoie que vers un article. La transformer en petit aperçu du blog :
+Même style visuel que l'email existant (fond `#faf7f2`, signature Joëlle).
 
-- Titre : *Nos guides de Hyères*, chapô en une phrase.
-- 3 cartes (les 3 articles les plus récents, via `getPublishedPosts()`) avec image, catégorie, titre, temps de lecture.
-- Bouton secondaire « Voir tous les guides » → `/guides-hyeres`.
+### 2. Une fonction d'envoi générique
 
-Cela envoie du jus de lien depuis la page la plus forte du site vers le blog, et donne une raison de rester sur le site aux visiteurs qui ne réservent pas tout de suite.
+`sendGuestStatusEmail(lead, status)` réutilisant exactement la mécanique existante : insertion d'une ligne `booking_notifications` en `pending`, appel Pingram, puis mise à jour `sent`/`failed` avec journalisation dans `app_logs`.
 
-## 3. Retour vers la conversion depuis le blog
+### 3. Branchement dans l'admin
 
-- Sur `/guides-hyeres` et sur chaque article, garder un lien clair « Le studio » / « Réserver » vers l'accueil (le CTA existe déjà dans l'article ; on l'ajoute en tête du listing).
-- Ajouter le lien « Guides de Hyères » dans le bloc principal du footer, pas seulement dans la ligne de copyright.
+Dans `updateBookingStatus` :
+- récupérer la réservation (nom, email, dates, voyageurs, total) et son statut actuel avant la mise à jour ;
+- après un update réussi, si le nouveau statut est `confirmed` ou `cancelled` **et** qu'il diffère de l'ancien, envoyer l'email correspondant ;
+- l'envoi ne bloque pas la réponse : en cas d'échec Pingram, le statut reste modifié et l'erreur est loguée (comme aujourd'hui pour les autres emails). La réponse renverra `emailSent: true/false` pour affichage.
 
-## 4. SEO
+### 4. Retour visuel dans `/admin`
 
-- Fil d'Ariane déjà en place sur les articles → l'ajouter aussi sur `/guides-hyeres` (visuellement, le JSON-LD existe déjà).
-- Vérifier que `/guides-hyeres` et chaque article figurent bien au sitemap (le listing y est ; contrôler que tous les articles publiés sont générés dynamiquement).
-- Conserver les URLs actuelles des articles (`/guide-plages-hyeres`, etc.) : les déplacer sous `/guides-hyeres/...` casserait l'indexation déjà acquise pour un gain marginal.
-- Ajouter le lien RSS (`/rss.xml`) dans le `<head>` de `__root.tsx` (`rel="alternate"`) et un lien discret en bas du listing.
+Le toast après changement de statut indiquera si l'email client est bien parti ou s'il a échoué. Les envois restent visibles dans l'historique des notifications déjà affiché par réservation.
 
-## Détails techniques
+## Notes techniques
 
-- `src/routes/index.tsx` : composant `Nav` (menu mobile + lien Guides), section `BeachesGuide` remplacée par un `GuidesTeaser` alimenté par `getPublishedPosts()` dans le loader de la route, `Footer` (lien guides).
-- `src/routes/guides-hyeres.tsx` : fil d'Ariane visible, CTA retour studio, lien RSS.
-- `src/routes/__root.tsx` : `<link rel="alternate" type="application/rss+xml">`.
-- Aucun changement de données ni de backend.
+Aucune migration de base : `booking_notifications` accepte déjà ces lignes. Aucune nouvelle dépendance, aucun nouveau secret — on reste sur Pingram et `PINGRAM_API_KEY`.

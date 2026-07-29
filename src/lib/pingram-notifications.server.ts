@@ -320,6 +320,149 @@ export async function sendGuestConfirmationEmail(lead: BookingNotificationLead) 
   }
 }
 
+function buildGuestConfirmedHtml(lead: BookingNotificationLead): string {
+  return `
+    <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:16px;color:#222">
+      <h2 style="margin:0 0 12px">Votre séjour est confirmé ✨</h2>
+      <p style="margin:0 0 16px;color:#555">Bonjour ${esc(lead.guest_name)}, très bonne nouvelle : votre séjour au <strong>Nid d'Or</strong> à Hyères est confirmé. Nous avons hâte de vous accueillir.</p>
+      <table style="width:100%;border-collapse:collapse;font-size:14px;background:#faf7f2;border-radius:8px;padding:8px">
+        <tbody>
+          <tr><td style="padding:6px 12px;color:#666">Arrivée</td><td style="padding:6px 12px"><strong>${esc(lead.check_in)}</strong></td></tr>
+          <tr><td style="padding:6px 12px;color:#666">Départ</td><td style="padding:6px 12px"><strong>${esc(lead.check_out)}</strong></td></tr>
+          <tr><td style="padding:6px 12px;color:#666">Voyageurs</td><td style="padding:6px 12px">${esc(lead.guests)}</td></tr>
+          <tr><td style="padding:6px 12px;color:#666">Total estimé</td><td style="padding:6px 12px">${lead.total_price != null ? esc(lead.total_price) + " €" : "—"}</td></tr>
+        </tbody>
+      </table>
+      <p style="margin:20px 0 8px;color:#555">Le total inclut le forfait ménage (40 €). Une caution de 500 € est demandée à l'arrivée et restituée après le départ.</p>
+      <p style="margin:8px 0;color:#555">Joëlle vous enverra les instructions d'arrivée (adresse exacte, remise des clés, accès à la piscine) quelques jours avant votre venue.</p>
+      <p style="margin:16px 0 0;color:#555">À très bientôt sur les hauteurs d'Hyères,<br/>Joëlle — Le Nid d'Or</p>
+      <p style="margin-top:24px;font-size:12px;color:#888">Une question ? Répondez directement à cet email.</p>
+    </div>`;
+}
+
+function buildGuestCancelledHtml(lead: BookingNotificationLead): string {
+  return `
+    <div style="font-family:Arial,sans-serif;max-width:560px;margin:0 auto;padding:16px;color:#222">
+      <h2 style="margin:0 0 12px">Votre demande n'a pas pu être retenue</h2>
+      <p style="margin:0 0 16px;color:#555">Bonjour ${esc(lead.guest_name)}, nous sommes sincèrement désolés : votre demande de séjour au <strong>Nid d'Or</strong> ne peut finalement pas être honorée sur ces dates.</p>
+      <table style="width:100%;border-collapse:collapse;font-size:14px;background:#faf7f2;border-radius:8px;padding:8px">
+        <tbody>
+          <tr><td style="padding:6px 12px;color:#666">Arrivée</td><td style="padding:6px 12px">${esc(lead.check_in)}</td></tr>
+          <tr><td style="padding:6px 12px;color:#666">Départ</td><td style="padding:6px 12px">${esc(lead.check_out)}</td></tr>
+          <tr><td style="padding:6px 12px;color:#666">Voyageurs</td><td style="padding:6px 12px">${esc(lead.guests)}</td></tr>
+        </tbody>
+      </table>
+      <p style="margin:20px 0 8px;color:#555">Aucun montant ne vous sera demandé. Si vos dates sont flexibles, répondez simplement à cet email : Joëlle regardera avec plaisir d'autres possibilités pour vous accueillir.</p>
+      <p style="margin:16px 0 0;color:#555">Bien à vous,<br/>Joëlle — Le Nid d'Or</p>
+    </div>`;
+}
+
+export async function sendGuestStatusEmail(
+  lead: BookingNotificationLead,
+  status: "confirmed" | "cancelled",
+) {
+  const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+  const recipientEmail = lead.email.trim();
+  const subject =
+    status === "confirmed"
+      ? "Votre séjour est confirmé — Le Nid d'Or à Hyères"
+      : "Votre demande de réservation — Le Nid d'Or à Hyères";
+  const html = status === "confirmed" ? buildGuestConfirmedHtml(lead) : buildGuestCancelledHtml(lead);
+
+  const { data: notification, error: notificationError } = await supabaseAdmin
+    .from("booking_notifications")
+    .insert({
+      booking_id: lead.booking_id,
+      provider: "pingram",
+      recipient_email: recipientEmail,
+      status: "pending",
+    })
+    .select("id")
+    .single();
+
+  if (notificationError) {
+    await logAppEvent({
+      level: "error",
+      event: "guest_status_notification_tracking_insert_failed",
+      area: "notification",
+      message: "Création du suivi de notification de statut impossible.",
+      details: errorDetails(notificationError, { bookingId: lead.booking_id, status }),
+    });
+  }
+
+  const apiKey = process.env.PINGRAM_API_KEY;
+  if (!apiKey) {
+    await updateNotification(notification?.id, {
+      status: "failed",
+      error_message: "PINGRAM_API_KEY not configured",
+    });
+    await logAppEvent({
+      level: "error",
+      event: "pingram_status_api_key_missing",
+      area: "notification",
+      message: "PINGRAM_API_KEY n'est pas configuré pour l'email de statut.",
+      details: { bookingId: lead.booking_id, notificationId: notification?.id, status },
+    });
+    return { ok: false as const, notificationId: notification?.id, error: "PINGRAM_API_KEY not configured" };
+  }
+
+  try {
+    const res = await fetch("https://api.pingram.io/email", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${apiKey}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        type: "booking_confirmation",
+        to: recipientEmail,
+        subject,
+        html,
+      }),
+    });
+
+    const responseText = await res.text();
+    if (!res.ok) {
+      await updateNotification(notification?.id, {
+        status: "failed",
+        provider_status: res.status,
+        provider_response: responseText.slice(0, 2000),
+        error_message: "Pingram status send failed",
+      });
+      await logAppEvent({
+        level: "error",
+        event: "pingram_status_send_failed",
+        area: "notification",
+        message: "Pingram a refusé l'envoi de l'email de statut client.",
+        details: { bookingId: lead.booking_id, notificationId: notification?.id, status, providerStatus: res.status, body: responseText },
+      });
+      return { ok: false as const, notificationId: notification?.id, status: res.status, error: responseText };
+    }
+
+    await updateNotification(notification?.id, {
+      status: "sent",
+      provider_status: res.status,
+      provider_response: responseText.slice(0, 2000),
+      sent_at: new Date().toISOString(),
+    });
+    return { ok: true as const, notificationId: notification?.id, status: res.status };
+  } catch (error) {
+    const message = String(error);
+    await updateNotification(notification?.id, {
+      status: "failed",
+      error_message: message,
+    });
+    await logAppEvent({
+      level: "error",
+      event: "pingram_status_send_threw",
+      area: "notification",
+      message: "Exception pendant l'envoi de l'email de statut client.",
+      details: errorDetails(error, { bookingId: lead.booking_id, notificationId: notification?.id, status }),
+    });
+    return { ok: false as const, notificationId: notification?.id, error: message };
+  }
+}
+
 function buildContactHtml(lead: ContactNotificationLead): string {
   const created = new Date().toLocaleString("fr-FR", { timeZone: "Europe/Paris" });
   return `
