@@ -61,7 +61,7 @@ export function ArticleLayout({ post }: { post: BlogPost }) {
             <li aria-hidden="true">/</li>
             <li>
               <Link to="/guides-hyeres" className="hover:text-foreground transition">
-                Tous les guides
+                Découvrir Hyères
               </Link>
             </li>
             {post.category ? (
@@ -234,7 +234,7 @@ export function ArticleLayout({ post }: { post: BlogPost }) {
               Accueil
             </Link>
             <Link to="/guides-hyeres" className="hover:text-foreground transition">
-              Tous les guides
+              Découvrir Hyères
             </Link>
             <Link to="/" hash="reserver" className="hover:text-foreground transition">
               Réserver
