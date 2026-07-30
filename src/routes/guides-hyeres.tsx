@@ -18,7 +18,7 @@ const PAGE_INTRO =
 /** Groupes affichés sur la page (l'ordre définit l'affichage). */
 const GROUPS = [
   { id: "preparer", label: "Préparer son séjour", heading: "Préparer son séjour" },
-  { id: "hyeres", label: "Hyères", heading: "Découvrir Hyères" },
+  { id: "hyeres", label: "Hyères", heading: "Découvrir Hyères et les alentours" },
   { id: "iles", label: "Îles d'Or", heading: "Porquerolles et les Îles d'Or" },
   { id: "nature", label: "Nature et plages", heading: "Plages, balades et randonnées" },
   { id: "restaurants", label: "Restaurants", heading: "Restaurants et moments à deux" },
