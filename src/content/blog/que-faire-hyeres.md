@@ -1,5 +1,6 @@
 ---
 title: "Que faire à Hyères ? Le guide pour vraiment décrocher"
+cardTitle: "Que faire à Hyères ?"
 seoTitle: "Que faire à Hyères ? Visites, nature et escapades à deux"
 description: "Que faire à Hyères en couple ? Vieille ville, Giens, Porquerolles, balades et bonnes idées pour un séjour reposant au bord de la Méditerranée."
 slug: "que-faire-hyeres"

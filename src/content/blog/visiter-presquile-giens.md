@@ -1,5 +1,6 @@
 ---
 title: "Visiter la presqu’île de Giens en une journée"
+cardTitle: "La presqu’île de Giens en une journée"
 seoTitle: "Visiter la presqu’île de Giens : itinéraire d’une journée"
 description: "Visiter la presqu’île de Giens en une journée : village, ports, balade, nature et pauses. Un itinéraire souple pour couples, sans courir."
 slug: "visiter-presquile-giens"

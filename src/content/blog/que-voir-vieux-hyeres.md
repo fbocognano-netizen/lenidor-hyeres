@@ -1,5 +1,6 @@
 ---
 title: "Que voir dans le vieux Hyères ?"
+cardTitle: "Le vieux Hyères à pied"
 seoTitle: "Que voir dans le vieux Hyères ? Itinéraire dans le centre ancien"
 description: "Que voir dans le vieux Hyères : ruelles médiévales, place Massillon, Tour des Templiers, jardins, Villa Noailles et conseils pour une balade à deux."
 slug: "que-voir-vieux-hyeres"

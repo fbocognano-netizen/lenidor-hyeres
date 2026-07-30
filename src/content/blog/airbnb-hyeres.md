@@ -1,5 +1,6 @@
 ---
 title: "Airbnb à Hyères : où loger et comment bien choisir ?"
+cardTitle: "Bien choisir son Airbnb à Hyères"
 seoTitle: "Airbnb Hyères : quartiers, conseils et studio pour deux"
 description: "Vous cherchez un Airbnb à Hyères ? Comparez centre, port, Giens et hauteurs, puis découvrez les critères utiles pour réserver un séjour à deux."
 slug: "airbnb-hyeres"

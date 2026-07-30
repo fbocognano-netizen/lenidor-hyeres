@@ -1,5 +1,6 @@
 ---
 title: "Comment aller à Porquerolles depuis Hyères ?"
+cardTitle: "Aller à Porquerolles depuis Hyères"
 seoTitle: "Aller à Porquerolles depuis Hyères : bateau, bus et parking"
 description: "Comment rejoindre Porquerolles depuis Hyères : départ de la Tour Fondue, bateau, bus, parking et conseils pratiques pour éviter le stress en saison."
 slug: "aller-porquerolles-depuis-hyeres"

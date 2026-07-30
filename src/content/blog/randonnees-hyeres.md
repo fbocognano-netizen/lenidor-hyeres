@@ -1,5 +1,6 @@
 ---
 title: "Randonnées à Hyères : marcher pour la vue, pas pour souffrir"
+cardTitle: "Les plus belles randonnées à Hyères"
 seoTitle: "Randonnées à Hyères : balades, Giens, îles et conseils"
 description: "Les randonnées à Hyères pour couples et amoureux de nature : Giens, Salins, Porquerolles et Port-Cros, avec conseils de sécurité et niveaux."
 slug: "randonnees-hyeres"

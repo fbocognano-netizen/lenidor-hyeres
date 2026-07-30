@@ -1,5 +1,6 @@
 ---
 title: "Dîner en amoureux à Hyères : choisir une soirée, pas seulement un restaurant"
+cardTitle: "Dîner en amoureux à Hyères"
 seoTitle: "Restaurant romantique à Hyères : où dîner en amoureux ?"
 description: "Comment choisir un restaurant romantique à Hyères : vieille ville, port, Giens, vue mer, ambiance et conseils pour une vraie soirée en amoureux."
 slug: "restaurant-romantique-hyeres"

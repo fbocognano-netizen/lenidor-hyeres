@@ -1,5 +1,6 @@
 ---
 title: "Location de vacances à Hyères avec piscine : comment bien choisir ?"
+cardTitle: "Une location avec piscine à Hyères"
 seoTitle: "Location vacances Hyères avec piscine : guide et studio"
 description: "Vous cherchez une location de vacances à Hyères avec piscine ? Comparez emplacement, accès, calme et vue, puis découvrez un studio conçu pour deux."
 slug: "location-vacances-hyeres-avec-piscine"

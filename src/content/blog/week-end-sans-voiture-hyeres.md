@@ -1,5 +1,6 @@
 ---
 title: "Un week-end sans voiture à Hyères : itinéraire pratique à deux"
+cardTitle: "Un week-end sans voiture à Hyères"
 seoTitle: "Week-end sans voiture à Hyères : itinéraire pratique à deux"
 description: "Organisez un week-end sans voiture à Hyères : arrivée en train, centre ancien, bus pour Giens et Porquerolles, itinéraire et conseils pratiques."
 slug: "week-end-sans-voiture-hyeres"

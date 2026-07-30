@@ -1,5 +1,6 @@
 ---
 title: "Sentier du littoral de Giens : le beau, le sauvage et les bonnes chaussures"
+cardTitle: "Le sentier du littoral de Giens"
 seoTitle: "Sentier du littoral de Giens : parcours et conseils"
 description: "Préparer le sentier du littoral de Giens : difficulté, équipement, météo, accès et conseils pour profiter des criques et panoramas en sécurité."
 slug: "sentier-littoral-giens"

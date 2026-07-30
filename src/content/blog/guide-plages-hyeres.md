@@ -1,5 +1,6 @@
 ---
 title: "Les plus belles plages de Hyères"
+cardTitle: "Les plus belles plages de Hyères"
 seoTitle: "Les plus belles plages de Hyères : Almanarre, Notre-Dame et plus | Le Nid d'Or"
 description: "Guide des plus belles plages de Hyères et des Îles d'Or : plage de l'Almanarre à 10 min du studio, la Bergerie à Giens, Notre-Dame et la plage d'Argent à Porquerolles."
 slug: "guide-plages-hyeres"

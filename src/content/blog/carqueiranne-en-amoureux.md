@@ -1,5 +1,6 @@
 ---
 title: "Que faire à Carqueiranne en amoureux ? Une journée douce entre port et criques"
+cardTitle: "Carqueiranne en amoureux"
 seoTitle: "Que faire à Carqueiranne en amoureux ? Guide d’une journée"
 description: "Que faire à Carqueiranne en amoureux ? Port des Salettes, plage de Péno, Pins Penchés et balade au bord de l’eau : un programme doux depuis Hyères."
 slug: "carqueiranne-en-amoureux"

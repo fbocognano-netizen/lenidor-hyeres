@@ -4,6 +4,8 @@ export const SITE_URL = "https://lenidor-hyeres.fr";
 
 export interface BlogFrontMatter {
   title: string;
+  /** Titre court affiché sur les cartes (SEO title inchangé). */
+  cardTitle: string;
   seoTitle: string;
   description: string;
   slug: string;
@@ -144,6 +146,7 @@ function buildPost(filePath: string, raw: string): BlogPost | null {
     return {
       fileName,
       title,
+      cardTitle: asString(data.cardTitle) || title,
       seoTitle: asString(data.seoTitle) || title,
       description: asString(data.description),
       slug,
