@@ -12,7 +12,7 @@ author: "Joëlle"
 category: "PRÉPARER SON SÉJOUR"
 tags: ["Hyères sans voiture", "week-end Hyères", "train Hyères", "séjour en couple"]
 featuredImage: "/images/blog/week-end-sans-voiture.jpg"
-featuredImageAlt: "Ruelle méditerranéenne calme dans le centre ancien de Hyères"
+featuredImageAlt: "Balade à vélo sur le front de mer de Hyères bordé de palmiers"
 featuredImageCaption: "Le centre ancien de Hyères se prête particulièrement bien à une découverte à pied."
 canonical: ""
 focusKeyword: "week-end sans voiture à Hyères"

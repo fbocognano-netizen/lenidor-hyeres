@@ -12,7 +12,7 @@ author: "Joëlle"
 category: "PORQUEROLLES"
 tags: ["Porquerolles en une journée", "visiter Porquerolles", "Porquerolles à vélo", "couple"]
 featuredImage: "/images/blog/porquerolles-village.jpg"
-featuredImageAlt: "Sentier ombragé dominant une crique aux eaux turquoise"
+featuredImageAlt: "Place du village de Porquerolles et ses vélos sous les pins"
 featuredImageCaption: ""
 canonical: ""
 focusKeyword: "Porquerolles en une journée"

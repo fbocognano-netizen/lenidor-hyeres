@@ -12,7 +12,7 @@ author: "Joëlle"
 category: "PORQUEROLLES"
 tags: ["aller à Porquerolles", "bateau Porquerolles", "Tour Fondue", "parking Porquerolles"]
 featuredImage: "/images/blog/bateau-porquerolles.jpg"
-featuredImageAlt: "Crique méditerranéenne bordée de pins et d’eucalyptus sur une île"
+featuredImageAlt: "Bateau navette reliant la Tour Fondue à Porquerolles"
 featuredImageCaption: "Illustration éditoriale de l’ambiance naturelle recherchée à Porquerolles."
 canonical: ""
 focusKeyword: "aller à Porquerolles depuis Hyères"

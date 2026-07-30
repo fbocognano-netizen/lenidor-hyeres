@@ -12,7 +12,7 @@ author: "Joëlle"
 category: "VISITER HYÈRES"
 tags: ["visiter Giens", "presqu’île de Giens", "que faire à Giens", "couple"]
 featuredImage: "/images/blog/presquile-giens.jpg"
-featuredImageAlt: "Sentier côtier de la presqu’île dominant une mer calme"
+featuredImageAlt: "Vue aérienne de la presqu'île de Giens et de ses salins"
 featuredImageCaption: ""
 canonical: ""
 focusKeyword: "visiter la presqu’île de Giens"
