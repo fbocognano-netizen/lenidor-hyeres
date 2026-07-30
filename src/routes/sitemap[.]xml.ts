@@ -4,6 +4,7 @@ import type {} from "@tanstack/react-start";
 import { getIndexablePosts } from "@/lib/blog";
 
 const BASE_URL = "https://lenidor-hyeres.fr";
+const SITEMAP_CHANGEFREQ = "daily";
 
 interface SitemapEntry {
   path: string;
@@ -17,12 +18,12 @@ export const Route = createFileRoute("/sitemap.xml")({
     handlers: {
       GET: async () => {
         const entries: SitemapEntry[] = [
-          { path: "/", changefreq: "daily", priority: "1.0" },
-          { path: "/guides-hyeres", changefreq: "daily", priority: "0.7" },
+          { path: "/", changefreq: SITEMAP_CHANGEFREQ, priority: "1.0" },
+          { path: "/guides-hyeres", changefreq: SITEMAP_CHANGEFREQ, priority: "0.7" },
           ...getIndexablePosts().map((post) => ({
             path: post.path,
             lastmod: post.updatedAt || post.date || undefined,
-            changefreq: "daily" as const,
+            changefreq: SITEMAP_CHANGEFREQ,
             priority: "0.8",
           })),
         ];

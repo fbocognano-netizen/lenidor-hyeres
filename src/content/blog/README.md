@@ -86,4 +86,5 @@ un **brouillon**, elle ne produit qu'un avertissement.
 
 - `/guides-hyeres` — liste automatique des articles publiés
 - `/rss.xml` — flux RSS des articles publiés
-- `/sitemap.xml` — inclut l'accueil, `/guides-hyeres` et chaque article indexable
+- `/sitemap.xml` — inclut l'accueil, `/guides-hyeres` et chaque article indexable.
+  Toutes les entrées déclarent `changefreq: daily` pour demander une mise à jour quotidienne.
