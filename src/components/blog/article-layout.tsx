@@ -184,8 +184,9 @@ export function ArticleLayout({ post }: { post: BlogPost }) {
                       {item.category}
                     </p>
                     <h3 className="mt-2 font-display text-lg sm:text-xl group-hover:text-primary transition">
-                      {item.title}
+                      {item.cardTitle || item.title}
                     </h3>
+
                     <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
                       {item.excerpt}
                     </p>
