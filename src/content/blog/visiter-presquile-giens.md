@@ -1,5 +1,6 @@
 ---
 title: "Visiter la presqu’île de Giens en une journée"
+cardTitle: "La presqu’île de Giens en une journée"
 seoTitle: "Visiter la presqu’île de Giens : itinéraire d’une journée"
 description: "Visiter la presqu’île de Giens en une journée : village, ports, balade, nature et pauses. Un itinéraire souple pour couples, sans courir."
 slug: "visiter-presquile-giens"
@@ -10,8 +11,8 @@ updatedAt: "2026-07-29"
 author: "Joëlle"
 category: "VISITER HYÈRES"
 tags: ["visiter Giens", "presqu’île de Giens", "que faire à Giens", "couple"]
-featuredImage: "/images/blog/randonnees-hyeres.webp"
-featuredImageAlt: "Sentier côtier de la presqu’île dominant une mer calme"
+featuredImage: "/images/blog/presquile-giens.jpg"
+featuredImageAlt: "Vue aérienne de la presqu'île de Giens et de ses salins"
 featuredImageCaption: ""
 canonical: ""
 focusKeyword: "visiter la presqu’île de Giens"

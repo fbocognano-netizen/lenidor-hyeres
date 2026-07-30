@@ -21,6 +21,7 @@ import { listGalleryPhotos, type GalleryPhoto } from "@/lib/gallery.functions";
 import { listPublicOtaLinks, type OtaLink } from "@/lib/ota-links.functions";
 import { sendContactMessage, getContactInfo } from "@/lib/contact.functions";
 import { Lightbox, useLightbox } from "@/components/lightbox";
+import { SiteNav } from "@/components/site-nav";
 import { getPublishedPosts } from "@/lib/blog";
 
 interface GuideTeaser {
@@ -193,81 +194,10 @@ function Index() {
   );
 }
 
-const NAV_ANCHORS = [
-  { href: "#sejour", label: "Le studio" },
-  { href: "#galerie", label: "Photos" },
-  { href: "#equipements", label: "Équipements" },
-  { href: "#lieu", label: "Le lieu" },
-] as const;
-
 function Nav() {
-  const [open, setOpen] = useState(false);
-
-  return (
-    <header className="sticky top-0 z-40 backdrop-blur-md bg-background/75 border-b border-border/60">
-      <div className="mx-auto max-w-6xl px-5 h-14 sm:h-16 flex items-center justify-between gap-3">
-        <a href="#top" className="font-display text-base sm:text-xl tracking-tight truncate">
-          Le Nid d'Or à Hyères
-        </a>
-        <nav className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
-          {NAV_ANCHORS.map((item) => (
-            <a key={item.href} href={item.href} className="hover:text-foreground transition">
-              {item.label}
-            </a>
-          ))}
-          <Link
-            to="/guides-hyeres"
-            className="hover:text-foreground transition"
-            activeProps={{ className: "text-foreground font-medium" }}
-          >
-            Guides
-          </Link>
-        </nav>
-        <div className="flex items-center gap-2">
-          <Button asChild variant="cta" className="rounded-full h-11 px-5 text-sm sm:h-12 sm:px-6 sm:text-base shadow-lg">
-            <a href="#reserver">Réserver</a>
-          </Button>
-          <button
-            type="button"
-            onClick={() => setOpen((v) => !v)}
-            aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
-            aria-expanded={open}
-            className="md:hidden inline-flex h-11 w-11 items-center justify-center rounded-full border border-border/70 text-foreground"
-          >
-            {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
-          </button>
-        </div>
-      </div>
-
-      {open ? (
-        <nav className="md:hidden border-t border-border/60 bg-background/95 backdrop-blur-md">
-          <ul className="mx-auto max-w-6xl px-5 py-3 flex flex-col">
-            {NAV_ANCHORS.map((item) => (
-              <li key={item.href}>
-                <a
-                  href={item.href}
-                  onClick={() => setOpen(false)}
-                  className="block py-3 text-[15px] border-b border-border/40"
-                >
-                  {item.label}
-                </a>
-              </li>
-            ))}
-            <li>
-              <Link
-                to="/guides-hyeres"
-                onClick={() => setOpen(false)}
-                className="block py-3 text-[15px]"
-              >
-                Guides de Hyères
-              </Link>
-            </li>
-          </ul>
-        </nav>
-      ) : null}
-    </header>
-  );
+  return <SiteNav home />;
 }
+
 
 function Hero() {
   return (
@@ -289,8 +219,9 @@ function Hero() {
               Le silence du sud,
               <br className="hidden sm:inline" /> face aux Îles d'Or
             </h1>
-            <p className="mt-3 sm:mt-5 max-w-xl text-sm sm:text-lg text-primary-foreground/90 whitespace-pre-line">
-              18m de piscine vue mer. Une terrasse plein sud. Les îles juste là, devant vous. Pour deux ❤️
+            <p className="mt-3 sm:mt-5 max-w-xl text-sm sm:text-lg text-primary-foreground/90">
+              Un studio pour deux avec terrasse plein sud, vue sur les Îles d'Or et accès à une
+              piscine de 18 mètres.
             </p>
             <div className="mt-5 sm:mt-8 flex flex-col sm:flex-row gap-3">
               <Button
@@ -322,7 +253,7 @@ function Intro() {
         <div className="md:col-span-7">
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Le séjour</p>
           <h2 className="mt-3 font-display text-[1.75rem] sm:text-4xl md:text-5xl leading-[1.15]">
-            Le Nid d'Or — Une vue qui s'étire jusqu'à Porquerolles.
+            Votre refuge à deux, avec Porquerolles à l'horizon.
           </h2>
           <div className="mt-5 sm:mt-6 space-y-4 text-muted-foreground text-[15px] leading-relaxed whitespace-pre-line">
             <p>
@@ -388,7 +319,7 @@ function Testimonials() {
           <div className="min-w-0">
             <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Ils ont séjourné ici</p>
             <h2 className="mt-2 sm:mt-3 font-display text-[1.75rem] sm:text-4xl md:text-5xl leading-[1.15]">
-              Note 5,0 sur Airbnb
+              Noté 5/5 par nos voyageurs Airbnb
             </h2>
           </div>
           <div className="flex items-center gap-1 text-[var(--color-accent)]" aria-label="Note 5 sur 5">
@@ -435,13 +366,13 @@ function GuidesTeaser() {
     <section id="guides" className="mx-auto max-w-6xl px-5 py-14 sm:py-20 md:py-24">
       <div className="flex flex-col gap-4 md:flex-row md:items-end md:justify-between">
         <div className="max-w-2xl">
-          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Guides</p>
+          <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Découvrir Hyères</p>
           <h2 className="mt-3 font-display text-[1.75rem] sm:text-4xl md:text-5xl leading-[1.15]">
-            Nos guides de Hyères
+            Découvrez Hyères comme si vous y viviez
           </h2>
           <p className="mt-5 text-muted-foreground text-[15px] leading-relaxed">
-            Plages, Îles d'Or, presqu'île de Giens et bonnes adresses : les conseils de Joëlle pour
-            profiter de votre séjour, écrits depuis le studio.
+            Plages, balades, restaurants et escapades vers les Îles d'Or : retrouvez nos
+            recommandations pour organiser votre séjour.
           </p>
         </div>
         <Button
@@ -449,7 +380,7 @@ function GuidesTeaser() {
           variant="outline"
           className="rounded-full h-12 px-6 text-sm shrink-0 self-start md:self-auto"
         >
-          <Link to="/guides-hyeres">Voir tous les guides</Link>
+          <Link to="/guides-hyeres">Découvrir Hyères</Link>
         </Button>
       </div>
 
@@ -609,7 +540,7 @@ function Amenities() {
     <section id="equipements" className="mx-auto max-w-6xl px-5 py-14 sm:py-20 md:py-24">
       <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Équipements</p>
       <h2 className="mt-2 sm:mt-3 font-display text-[1.75rem] sm:text-4xl md:text-5xl max-w-2xl">
-        Tout ce qu'il faut, rien de superflu.
+        Tout le confort pour profiter pleinement du séjour.
       </h2>
       <div className="mt-8 sm:mt-12 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-x-8 gap-y-2 sm:gap-y-6">
         {items.map((it) => (
@@ -630,7 +561,7 @@ function BookingSection() {
         <div className="lg:col-span-5">
           <p className="text-xs uppercase tracking-[0.2em] text-primary-foreground/60">Réservation directe</p>
           <h2 className="mt-2 sm:mt-3 font-display text-[1.75rem] sm:text-4xl md:text-5xl">
-            Réservez sans commission.
+            Réservez en direct, sans frais de plateforme.
           </h2>
           <p className="mt-4 sm:mt-5 text-primary-foreground/75 leading-relaxed text-[15px]">
             Calendrier synchronisé avec Airbnb en temps réel. Choisissez vos dates, envoyez votre demande, je confirme
@@ -962,7 +893,7 @@ function Location() {
         <div>
           <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Le lieu</p>
           <h2 className="mt-2 sm:mt-3 font-display text-[1.75rem] sm:text-4xl md:text-5xl">
-            Hyères, porte des Îles d'Or.
+            Au calme sur les hauteurs de Hyères.
           </h2>
           <p className="mt-4 sm:mt-5 text-muted-foreground leading-relaxed text-[15px]">
             À 10 minutes en voiture des plages de l'Almanarre, à 15 minutes du port pour Porquerolles, à 15 minutes du
@@ -993,7 +924,7 @@ function Location() {
       </div>
       <div className="mt-10 sm:mt-16">
         <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Sur la carte</p>
-        <h3 className="mt-2 sm:mt-3 font-display text-2xl sm:text-3xl md:text-4xl">L'emplacement du studio</h3>
+        <h3 className="mt-2 sm:mt-3 font-display text-2xl sm:text-3xl md:text-4xl">Le Nid d'Or et ses alentours</h3>
         <p className="mt-2 sm:mt-3 text-muted-foreground max-w-2xl text-[15px]">
           Quartier du Mont des Oiseaux, sur les hauteurs de Hyères — à quelques minutes des plages et du port pour
           Porquerolles.
@@ -1133,7 +1064,7 @@ function Footer() {
             </p>
             <nav aria-label="Liens du site" className="mt-4 flex flex-col gap-2 text-[15px]">
               <Link to="/guides-hyeres" className="text-muted-foreground hover:text-foreground transition">
-                Guides de Hyères
+                Découvrir Hyères
               </Link>
               <Link to="/guide-plages-hyeres" className="text-muted-foreground hover:text-foreground transition">
                 Guide des plages de Hyères
@@ -1176,7 +1107,7 @@ function Footer() {
         © {new Date().getFullYear()} Le Nid d'Or — Tous droits réservés
         <span className="mx-2" aria-hidden="true">·</span>
         <Link to="/guides-hyeres" className="hover:text-foreground transition">
-          Guides de Hyères
+          Découvrir Hyères
         </Link>
       </div>
     </footer>

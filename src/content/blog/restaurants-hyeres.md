@@ -1,5 +1,6 @@
 ---
 title: "Où manger à Hyères ? Choisir le bon quartier avant la bonne table"
+cardTitle: "Où manger à Hyères ?"
 seoTitle: "Où manger à Hyères ? Restaurants par quartier et ambiance"
 description: "Où manger à Hyères selon votre soirée : vieille ville, port, Giens ou bord de mer. Un guide honnête pour choisir l’ambiance et éviter les listes périmées."
 slug: "restaurants-hyeres"

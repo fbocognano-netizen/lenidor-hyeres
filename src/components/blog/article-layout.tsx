@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { ArrowLeft, CalendarDays, Clock, MapPin, RefreshCw } from "lucide-react";
 
+import { SiteNav } from "@/components/site-nav";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { formatFrenchDate, getRelatedPosts, type BlogPost } from "@/lib/blog";
@@ -12,18 +13,8 @@ export function ArticleLayout({ post }: { post: BlogPost }) {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-40 backdrop-blur-md bg-background/75 border-b border-border/60">
-        <div className="mx-auto max-w-6xl px-5 h-14 sm:h-16 flex items-center justify-between gap-3">
-          <Link to="/" className="font-display text-base sm:text-xl tracking-tight truncate">
-            Le Nid d'Or à Hyères
-          </Link>
-          <Button asChild variant="cta" className="rounded-full h-10 px-4 text-sm sm:h-11 sm:px-5">
-            <Link to="/" hash="reserver">
-              Réserver
-            </Link>
-          </Button>
-        </div>
-      </header>
+      <SiteNav />
+
 
       <section className="relative">
         <div className="relative h-[55vh] min-h-[360px] sm:h-[50vh] sm:min-h-[420px] w-full overflow-hidden">
@@ -70,7 +61,7 @@ export function ArticleLayout({ post }: { post: BlogPost }) {
             <li aria-hidden="true">/</li>
             <li>
               <Link to="/guides-hyeres" className="hover:text-foreground transition">
-                Tous les guides
+                Découvrir Hyères
               </Link>
             </li>
             {post.category ? (
@@ -193,8 +184,9 @@ export function ArticleLayout({ post }: { post: BlogPost }) {
                       {item.category}
                     </p>
                     <h3 className="mt-2 font-display text-lg sm:text-xl group-hover:text-primary transition">
-                      {item.title}
+                      {item.cardTitle || item.title}
                     </h3>
+
                     <p className="mt-2 text-sm text-muted-foreground leading-relaxed">
                       {item.excerpt}
                     </p>
@@ -243,7 +235,7 @@ export function ArticleLayout({ post }: { post: BlogPost }) {
               Accueil
             </Link>
             <Link to="/guides-hyeres" className="hover:text-foreground transition">
-              Tous les guides
+              Découvrir Hyères
             </Link>
             <Link to="/" hash="reserver" className="hover:text-foreground transition">
               Réserver

@@ -1,5 +1,6 @@
 ---
 title: "Visiter Hyères en 3 jours : l’itinéraire sans course contre la montre"
+cardTitle: "Hyères en 3 jours"
 seoTitle: "Visiter Hyères en 3 jours : itinéraire pour un séjour à deux"
 description: "Un itinéraire de 3 jours à Hyères pour les couples : vieille ville, Porquerolles, Giens, plages et pauses, sans transformer le séjour en marathon."
 slug: "visiter-hyeres-3-jours"
@@ -10,8 +11,8 @@ updatedAt: "2026-07-28"
 author: "Joëlle"
 category: "VISITER HYÈRES"
 tags: ["visiter Hyères en 3 jours", "week-end Hyères", "séjour couple", "itinéraire Hyères"]
-featuredImage: "/images/blog/visiter-hyeres.webp"
-featuredImageAlt: "Ruelle méditerranéenne calme baignée par la lumière dorée"
+featuredImage: "/images/blog/hyeres-3-jours.jpg"
+featuredImageAlt: "Panorama sur Hyères et les Îles d'Or depuis les hauteurs"
 featuredImageCaption: ""
 canonical: ""
 focusKeyword: "visiter Hyères en 3 jours"

@@ -1,5 +1,6 @@
 ---
 title: "Airbnb à Hyères : où loger et comment bien choisir ?"
+cardTitle: "Bien choisir son Airbnb à Hyères"
 seoTitle: "Airbnb Hyères : quartiers, conseils et studio pour deux"
 description: "Vous cherchez un Airbnb à Hyères ? Comparez centre, port, Giens et hauteurs, puis découvrez les critères utiles pour réserver un séjour à deux."
 slug: "airbnb-hyeres"
@@ -10,8 +11,8 @@ updatedAt: "2026-07-29"
 author: "Joëlle"
 category: "PRÉPARER SON SÉJOUR"
 tags: ["Airbnb Hyères", "location Hyères", "studio Hyères", "séjour couple"]
-featuredImage: "/images/blog/guide-plages-hyeres.jpg"
-featuredImageAlt: "Vue sur les Îles d’Or depuis la terrasse du Nid d’Or à Hyères"
+featuredImage: "/images/blog/airbnb-hyeres.jpg"
+featuredImageAlt: "Studio lumineux à Hyères avec terrasse et vue sur la mer"
 featuredImageCaption: "À Hyères, la vue, le calme et l’emplacement comptent autant que les équipements affichés dans l’annonce."
 canonical: ""
 focusKeyword: "Airbnb Hyères"

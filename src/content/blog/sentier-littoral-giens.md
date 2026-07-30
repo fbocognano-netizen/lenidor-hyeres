@@ -1,5 +1,6 @@
 ---
 title: "Sentier du littoral de Giens : le beau, le sauvage et les bonnes chaussures"
+cardTitle: "Le sentier du littoral de Giens"
 seoTitle: "Sentier du littoral de Giens : parcours et conseils"
 description: "Préparer le sentier du littoral de Giens : difficulté, équipement, météo, accès et conseils pour profiter des criques et panoramas en sécurité."
 slug: "sentier-littoral-giens"
@@ -10,8 +11,8 @@ updatedAt: "2026-07-29"
 author: "Joëlle"
 category: "BALADES & NATURE"
 tags: ["sentier littoral Giens", "randonnée Giens", "presqu’île de Giens", "balade couple"]
-featuredImage: "/images/blog/randonnees-hyeres.webp"
-featuredImageAlt: "Chemin rocheux longeant une côte méditerranéenne bordée de pins"
+featuredImage: "/images/blog/sentier-littoral-giens.jpg"
+featuredImageAlt: "Sentier du littoral de Giens surplombant une eau turquoise"
 featuredImageCaption: ""
 canonical: ""
 focusKeyword: "sentier du littoral de Giens"

@@ -1,5 +1,6 @@
 ---
 title: "Que faire à Carqueiranne en amoureux ? Une journée douce entre port et criques"
+cardTitle: "Carqueiranne en amoureux"
 seoTitle: "Que faire à Carqueiranne en amoureux ? Guide d’une journée"
 description: "Que faire à Carqueiranne en amoureux ? Port des Salettes, plage de Péno, Pins Penchés et balade au bord de l’eau : un programme doux depuis Hyères."
 slug: "carqueiranne-en-amoureux"
@@ -10,8 +11,8 @@ updatedAt: "2026-07-30"
 author: "Joëlle"
 category: "AUTOUR D’HYÈRES"
 tags: ["Carqueiranne", "Carqueiranne en amoureux", "séjour en couple", "plages du Var"]
-featuredImage: "/images/blog/guide-plages-hyeres.jpg"
-featuredImageAlt: "Terrasse du Nid d’Or au coucher du soleil, avec deux verres face à la mer"
+featuredImage: "/images/blog/carqueiranne.jpg"
+featuredImageAlt: "Petit port et criques de Carqueiranne au soleil"
 featuredImageCaption: "Le Nid d’Or : un point de départ calme pour alterner escapades et retour sur la terrasse."
 canonical: ""
 focusKeyword: "que faire à Carqueiranne en amoureux"

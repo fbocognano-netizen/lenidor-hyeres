@@ -1,5 +1,6 @@
 ---
 title: "Dîner en amoureux à Hyères : choisir une soirée, pas seulement un restaurant"
+cardTitle: "Dîner en amoureux à Hyères"
 seoTitle: "Restaurant romantique à Hyères : où dîner en amoureux ?"
 description: "Comment choisir un restaurant romantique à Hyères : vieille ville, port, Giens, vue mer, ambiance et conseils pour une vraie soirée en amoureux."
 slug: "restaurant-romantique-hyeres"
@@ -10,7 +11,7 @@ updatedAt: "2026-07-29"
 author: "Joëlle"
 category: "SAVEURS & ADRESSES"
 tags: ["restaurant romantique Hyères", "dîner amoureux Hyères", "couple Hyères", "vue mer"]
-featuredImage: "/images/blog/restaurants-hyeres.webp"
+featuredImage: "/images/blog/diner-amoureux.jpg"
 featuredImageAlt: "Dîner aux chandelles pour deux sur une terrasse avec vue sur la Méditerranée"
 featuredImageCaption: ""
 canonical: ""

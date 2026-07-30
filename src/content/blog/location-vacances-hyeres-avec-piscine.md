@@ -1,5 +1,6 @@
 ---
 title: "Location de vacances à Hyères avec piscine : comment bien choisir ?"
+cardTitle: "Une location avec piscine à Hyères"
 seoTitle: "Location vacances Hyères avec piscine : guide et studio"
 description: "Vous cherchez une location de vacances à Hyères avec piscine ? Comparez emplacement, accès, calme et vue, puis découvrez un studio conçu pour deux."
 slug: "location-vacances-hyeres-avec-piscine"
@@ -10,8 +11,8 @@ updatedAt: "2026-07-29"
 author: "Joëlle"
 category: "PRÉPARER SON SÉJOUR"
 tags: ["location vacances Hyères avec piscine", "studio Hyères piscine", "location Hyères couple", "vacances Hyères"]
-featuredImage: "/images/blog/guide-plages-hyeres.jpg"
-featuredImageAlt: "Vue sur les Îles d’Or depuis la terrasse du Nid d’Or à Hyères"
+featuredImage: "/images/blog/location-piscine.jpg"
+featuredImageAlt: "Piscine d'une résidence à Hyères entourée de végétation méditerranéenne"
 featuredImageCaption: "Au Nid d’Or, la piscine complète un séjour tourné vers la vue, le calme et la découverte de Hyères."
 canonical: ""
 focusKeyword: "location vacances Hyères avec piscine"

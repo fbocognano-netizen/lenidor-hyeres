@@ -1,5 +1,6 @@
 ---
 title: "Visiter Porquerolles en une journée sans passer son temps à pédaler"
+cardTitle: "Porquerolles en une journée"
 seoTitle: "Porquerolles en une journée : itinéraire à pied ou à vélo"
 description: "Visiter Porquerolles en une journée : itinéraire souple à pied ou à vélo, conseils pratiques, pauses et erreurs à éviter pour profiter de l’île."
 slug: "porquerolles-en-une-journee"
@@ -10,8 +11,8 @@ updatedAt: "2026-07-29"
 author: "Joëlle"
 category: "PORQUEROLLES"
 tags: ["Porquerolles en une journée", "visiter Porquerolles", "Porquerolles à vélo", "couple"]
-featuredImage: "/images/blog/porquerolles.webp"
-featuredImageAlt: "Sentier ombragé dominant une crique aux eaux turquoise"
+featuredImage: "/images/blog/porquerolles-village.jpg"
+featuredImageAlt: "Place du village de Porquerolles et ses vélos sous les pins"
 featuredImageCaption: ""
 canonical: ""
 focusKeyword: "Porquerolles en une journée"

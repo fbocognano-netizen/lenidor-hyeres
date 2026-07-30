@@ -1,5 +1,6 @@
 ---
 title: "Un week-end sans voiture à Hyères : itinéraire pratique à deux"
+cardTitle: "Un week-end sans voiture à Hyères"
 seoTitle: "Week-end sans voiture à Hyères : itinéraire pratique à deux"
 description: "Organisez un week-end sans voiture à Hyères : arrivée en train, centre ancien, bus pour Giens et Porquerolles, itinéraire et conseils pratiques."
 slug: "week-end-sans-voiture-hyeres"
@@ -10,8 +11,8 @@ updatedAt: "2026-07-29"
 author: "Joëlle"
 category: "PRÉPARER SON SÉJOUR"
 tags: ["Hyères sans voiture", "week-end Hyères", "train Hyères", "séjour en couple"]
-featuredImage: "/images/blog/visiter-hyeres.webp"
-featuredImageAlt: "Ruelle méditerranéenne calme dans le centre ancien de Hyères"
+featuredImage: "/images/blog/week-end-sans-voiture.jpg"
+featuredImageAlt: "Balade à vélo sur le front de mer de Hyères bordé de palmiers"
 featuredImageCaption: "Le centre ancien de Hyères se prête particulièrement bien à une découverte à pied."
 canonical: ""
 focusKeyword: "week-end sans voiture à Hyères"

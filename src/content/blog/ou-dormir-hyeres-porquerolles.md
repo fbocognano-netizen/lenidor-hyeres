@@ -1,5 +1,6 @@
 ---
 title: "Où dormir à Hyères pour visiter Porquerolles ?"
+cardTitle: "Où dormir pour visiter Porquerolles"
 seoTitle: "Où dormir à Hyères pour visiter Porquerolles facilement ?"
 description: "Où loger à Hyères pour visiter Porquerolles : Giens, port, centre ou hauteurs. Comparez accès, calme, stationnement et ambiance pour un séjour à deux."
 slug: "ou-dormir-hyeres-porquerolles"
