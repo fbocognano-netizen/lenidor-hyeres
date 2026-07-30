@@ -43,6 +43,7 @@ import photo5 from "@/assets/listing/photo-5.jpg";
 
 const CLEANING_FEE = 40;
 const DEPOSIT_CASH = 500;
+const SEO_IMAGE_URL = "https://lenidor-hyeres.fr/images/seo/le-nid-or-hyeres-vue-mer.jpg";
 // Taxe de séjour TPM (meublé non classé) : 5 % du prix HT par personne et par nuit,
 // plafonné à 3,09 € (2026), majoré de 44 % (10 % département + 34 % région).
 const TOURIST_TAX_RATE = 0.05;
@@ -114,9 +115,9 @@ export const Route = createFileRoute("/")({
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://lenidor-hyeres.fr/" },
-      { property: "og:image", content: photo1 },
+      { property: "og:image", content: SEO_IMAGE_URL },
       { name: "twitter:card", content: "summary_large_image" },
-      { name: "twitter:image", content: photo1 },
+      { name: "twitter:image", content: SEO_IMAGE_URL },
     ],
     links: [
       { rel: "canonical", href: "https://lenidor-hyeres.fr/" },
@@ -136,7 +137,7 @@ export const Route = createFileRoute("/")({
           name: "Le Nid d'Or",
           description:
             "Studio vue mer avec piscine et terrasse plein sud à Hyères, face aux Îles d'Or. Location de vacances en direct.",
-          image: "https://lenidor-hyeres.fr" + photo1,
+          image: SEO_IMAGE_URL,
           url: "https://lenidor-hyeres.fr/",
           address: {
             "@type": "PostalAddress",
@@ -289,6 +290,26 @@ function Stat({ icon, label, value }: { icon: React.ReactNode; label: string; va
 }
 
 const REVIEWS = [
+  {
+    name: "Flo",
+    stay: "22–25 juillet · 3 nuits",
+    text: "Un studio cosy, propre, bien agencé et une vue époustouflante !\nUn véritable petit havre de paix.\nJoëlle ainsi que son fils ont été adorables ainsi que Maxime qui nous a accueillis et nous ont donné plein de conseils afin que l'on puisse découvrir un maximum de choses dans la région.",
+  },
+  {
+    name: "Delphine",
+    stay: "21–22 juillet · 1 nuit",
+    text: "L’appartement de Joëlle est idéalement situé avec une vue époustouflante sur la presqu’île de Giens. Le studio est très bien équipé et propre. Maxime a été super pour l’accueil et le départ. Je recommande",
+  },
+  {
+    name: "Emilie",
+    stay: "17–21 juillet · 4 nuits",
+    text: "Très beau séjour, endroit paisible\nJoëlle a été de bon conseils ! Je recommande",
+  },
+  {
+    name: "Fabrice",
+    stay: "14–17 juillet · 3 nuits",
+    text: "Un super séjour avec une hôtesse très agréable dans la communication, le logement est propre, agreable il ne manque rien, c'est calme reposant. Et la vue est sublime!\nJe le recommande.",
+  },
   {
     name: "Emmanuelle",
     stay: "19–23 juin · 4 nuits",

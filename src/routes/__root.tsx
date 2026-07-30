@@ -5,6 +5,9 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { installClientErrorLogging, reportLovableError } from "../lib/lovable-error-reporting";
 
+const SITE_URL = "https://lenidor-hyeres.fr";
+const SEO_IMAGE_URL = `${SITE_URL}/images/seo/le-nid-or-hyeres-vue-mer.jpg`;
+
 function NotFoundComponent() {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -88,6 +91,14 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         content: "width=device-width, initial-scale=1",
       },
       {
+        name: "application-name",
+        content: "Le Nid d'Or",
+      },
+      {
+        name: "theme-color",
+        content: "#0c2d34",
+      },
+      {
         title: "Le Nid d'Or à Hyères • Studio vue mer & piscine • Site officiel",
       },
       {
@@ -139,13 +150,11 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       {
         property: "og:image",
-        content:
-          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4cfebf76-be57-402d-8084-0261b0223748/id-preview-cc6d774e--ff9f603a-9389-4ad2-a6b4-ee7aa118af46.lovable.app-1784115931645.png",
+        content: SEO_IMAGE_URL,
       },
       {
         name: "twitter:image",
-        content:
-          "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/4cfebf76-be57-402d-8084-0261b0223748/id-preview-cc6d774e--ff9f603a-9389-4ad2-a6b4-ee7aa118af46.lovable.app-1784115931645.png",
+        content: SEO_IMAGE_URL,
       },
     ],
 
@@ -153,6 +162,37 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       {
         rel: "stylesheet",
         href: appCss,
+      },
+      {
+        rel: "icon",
+        href: "/favicon.ico",
+        sizes: "any",
+      },
+      {
+        rel: "icon",
+        type: "image/svg+xml",
+        href: "/favicon.svg",
+      },
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "32x32",
+        href: "/favicon-32x32.png",
+      },
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "16x16",
+        href: "/favicon-16x16.png",
+      },
+      {
+        rel: "apple-touch-icon",
+        sizes: "180x180",
+        href: "/apple-touch-icon.png",
+      },
+      {
+        rel: "manifest",
+        href: "/site.webmanifest",
       },
       {
         rel: "alternate",
@@ -201,7 +241,7 @@ function RootShell({ children }: { children: ReactNode }) {
             __html: JSON.stringify({
               "@context": "https://schema.org",
               "@type": "WebSite",
-              url: "https://lenidor-hyeres.fr/",
+              url: `${SITE_URL}/`,
               name: "Le Nid d'Or",
               alternateName: ["Le Nid d'Or à Hyères", "Nid d'Or Hyères"],
             }),

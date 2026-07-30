@@ -21,6 +21,10 @@ async function assertAdmin() {
 }
 
 export const listGalleryPhotos = createServerFn({ method: "GET" }).handler(async () => {
+  if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    return { photos: [] as GalleryPhoto[] };
+  }
+
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
   const { data, error } = await supabaseAdmin.storage.from(BUCKET).list("", {
     limit: 500,

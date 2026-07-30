@@ -1,0 +1,20 @@
+{
+  "name": "Le Nid d'Or",
+  "short_name": "Le Nid d'Or",
+  "description": "Studio vue mer et piscine à Hyères.",
+  "icons": [
+    {
+      "src": "/android-chrome-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "/android-chrome-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "theme_color": "#0c2d34",
+  "background_color": "#0c2d34",
+  "display": "standalone"
+}
