@@ -1,27 +1,61 @@
+import { useMemo, useState } from "react";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, CalendarDays, Clock } from "lucide-react";
 
-import { Button } from "@/components/ui/button";
+import { SiteNav } from "@/components/site-nav";
 import { Card } from "@/components/ui/card";
 import { absoluteUrl, formatFrenchDate, getPublishedPosts, SITE_URL } from "@/lib/blog";
 
 const PAGE_PATH = "/guides-hyeres";
 const PAGE_URL = `${SITE_URL}${PAGE_PATH}`;
-const PAGE_TITLE = "Guides de Hyères : plages, Porquerolles et bonnes adresses | Le Nid d'Or";
+const PAGE_TITLE = "Que faire à Hyères ? Plages, Porquerolles et bonnes adresses | Le Nid d'Or";
 const PAGE_DESCRIPTION =
-  "Tous nos guides pour préparer vos vacances à Hyères : plages, Îles d'Or, presqu'île de Giens et bonnes adresses, écrits par Joëlle, votre hôte sur place.";
+  "Plages, balades, restaurants, excursions et idées de sorties : découvrez nos recommandations pour profiter pleinement de Hyères et des Îles d'Or.";
+
+const PAGE_INTRO =
+  "Plages, balades, restaurants, excursions et idées de sorties : découvrez nos recommandations pour profiter pleinement de Hyères et des Îles d'Or.";
+
+/** Groupes affichés sur la page (l'ordre définit l'affichage). */
+const GROUPS = [
+  { id: "preparer", label: "Préparer son séjour", heading: "Préparer son séjour" },
+  { id: "hyeres", label: "Hyères", heading: "Découvrir Hyères" },
+  { id: "iles", label: "Îles d'Or", heading: "Porquerolles et les Îles d'Or" },
+  { id: "nature", label: "Nature et plages", heading: "Plages, balades et randonnées" },
+  { id: "restaurants", label: "Restaurants", heading: "Restaurants et moments à deux" },
+] as const;
+
+type GroupId = (typeof GROUPS)[number]["id"];
+
+/** Rattache la catégorie du front matter à un groupe de la page. */
+function groupForCategory(category: string): GroupId {
+  const c = category.toUpperCase();
+  if (c.includes("PRÉPARER")) return "preparer";
+  if (c.includes("PORQUEROLLES") || c.includes("ÎLES")) return "iles";
+  if (c.includes("SAVEURS") || c.includes("RESTAURANT")) return "restaurants";
+  if (c.includes("BALADE") || c.includes("NATURE") || c.includes("PLAGE") || c.includes("GUIDE"))
+    return "nature";
+  return "hyeres";
+}
 
 interface GuideCard {
   slug: string;
   path: string;
   title: string;
+  cardTitle: string;
   excerpt: string;
   category: string;
+  group: GroupId;
   date: string;
   dateLabel: string;
   readingMinutes: number;
   featuredImage: string;
   featuredImageAlt: string;
+}
+
+/** Intro courte pour les cartes : une phrase suffit. */
+function shortExcerpt(excerpt: string): string {
+  const first = excerpt.split(/(?<=[.!?])\s/)[0] ?? excerpt;
+  return first.length > 145 ? `${first.slice(0, 142).trimEnd()}…` : first;
 }
 
 export const Route = createFileRoute("/guides-hyeres")({
@@ -30,8 +64,10 @@ export const Route = createFileRoute("/guides-hyeres")({
       slug: post.slug,
       path: post.path,
       title: post.title,
-      excerpt: post.excerpt,
+      cardTitle: post.cardTitle || post.title,
+      excerpt: shortExcerpt(post.excerpt),
       category: post.category,
+      group: groupForCategory(post.category),
       date: post.date,
       dateLabel: formatFrenchDate(post.date),
       readingMinutes: post.readingMinutes,
@@ -57,7 +93,7 @@ export const Route = createFileRoute("/guides-hyeres")({
         children: JSON.stringify({
           "@context": "https://schema.org",
           "@type": "CollectionPage",
-          name: "Guides de Hyères",
+          name: "Que faire à Hyères ?",
           description: PAGE_DESCRIPTION,
           url: PAGE_URL,
           hasPart: (loaderData?.posts ?? []).map((post) => ({
@@ -76,7 +112,7 @@ export const Route = createFileRoute("/guides-hyeres")({
           "@type": "BreadcrumbList",
           itemListElement: [
             { "@type": "ListItem", position: 1, name: "Accueil", item: `${SITE_URL}/` },
-            { "@type": "ListItem", position: 2, name: "Guides de Hyères", item: PAGE_URL },
+            { "@type": "ListItem", position: 2, name: "Que faire à Hyères ?", item: PAGE_URL },
           ],
         }),
       },
@@ -86,23 +122,70 @@ export const Route = createFileRoute("/guides-hyeres")({
   component: GuidesPage,
 });
 
+function GuideCardItem({ post }: { post: GuideCard }) {
+  return (
+    <Card className="overflow-hidden border border-border/60 bg-card p-0 flex flex-col">
+      <a href={post.path} className="group flex h-full flex-col">
+        {post.featuredImage ? (
+          <div className="relative aspect-[16/10] overflow-hidden">
+            <img
+              src={post.featuredImage}
+              alt={post.featuredImageAlt}
+              loading="lazy"
+              decoding="async"
+              width={1200}
+              height={800}
+              className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+            />
+          </div>
+        ) : null}
+        <div className="flex flex-1 flex-col p-5 sm:p-6">
+          {post.category ? (
+            <p className="text-[10px] sm:text-xs uppercase tracking-[0.18em] text-muted-foreground">
+              {post.category}
+            </p>
+          ) : null}
+          <h3 className="mt-2 font-display text-xl sm:text-2xl leading-snug group-hover:text-primary transition">
+            {post.cardTitle}
+          </h3>
+          <p className="mt-3 text-sm text-muted-foreground leading-relaxed">{post.excerpt}</p>
+          <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
+            {post.dateLabel ? (
+              <span className="inline-flex items-center gap-1.5">
+                <CalendarDays className="h-3.5 w-3.5" /> {post.dateLabel}
+              </span>
+            ) : null}
+            <span className="inline-flex items-center gap-1.5">
+              <Clock className="h-3.5 w-3.5" /> {post.readingMinutes} min de lecture
+            </span>
+          </div>
+          <span className="mt-auto pt-5 inline-flex text-sm font-medium text-primary">
+            Découvrir →
+          </span>
+        </div>
+      </a>
+    </Card>
+  );
+}
+
 function GuidesPage() {
   const { posts } = Route.useLoaderData() as { posts: GuideCard[] };
+  const [filter, setFilter] = useState<GroupId | "all">("all");
+
+  const groups = useMemo(
+    () =>
+      GROUPS.map((group) => ({
+        ...group,
+        posts: posts.filter((post) => post.group === group.id),
+      })).filter((group) => group.posts.length > 0),
+    [posts],
+  );
+
+  const visible = filter === "all" ? groups : groups.filter((group) => group.id === filter);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
-      <header className="sticky top-0 z-40 backdrop-blur-md bg-background/75 border-b border-border/60">
-        <div className="mx-auto max-w-6xl px-5 h-14 sm:h-16 flex items-center justify-between gap-3">
-          <Link to="/" className="font-display text-base sm:text-xl tracking-tight truncate">
-            Le Nid d'Or à Hyères
-          </Link>
-          <Button asChild variant="cta" className="rounded-full h-10 px-4 text-sm sm:h-11 sm:px-5">
-            <Link to="/" hash="reserver">
-              Réserver
-            </Link>
-          </Button>
-        </div>
-      </header>
+      <SiteNav />
 
       <main className="mx-auto max-w-6xl px-5 py-12 sm:py-20">
         <nav aria-label="Fil d'Ariane" className="text-xs sm:text-sm text-muted-foreground">
@@ -113,7 +196,7 @@ function GuidesPage() {
               </Link>
             </li>
             <li aria-hidden="true">/</li>
-            <li className="text-foreground">Guides de Hyères</li>
+            <li className="text-foreground">Que faire à Hyères ?</li>
           </ol>
         </nav>
 
@@ -125,66 +208,54 @@ function GuidesPage() {
         </Link>
 
         <h1 className="mt-6 font-display text-[2rem] sm:text-5xl leading-[1.1]">
-          Guides de Hyères
+          Que faire à Hyères ?
         </h1>
         <p className="mt-4 max-w-2xl text-[15px] sm:text-lg text-muted-foreground leading-relaxed">
-          Plages, Îles d'Or, presqu'île de Giens et bonnes adresses : nos conseils pour profiter de
-          Hyères, écrits depuis le studio par Joëlle.
+          {PAGE_INTRO}
         </p>
 
         {posts.length === 0 ? (
-          <p className="mt-12 text-muted-foreground">
-            Les premiers guides arrivent très bientôt.
-          </p>
+          <p className="mt-12 text-muted-foreground">Les premiers guides arrivent très bientôt.</p>
         ) : (
-          <div className="mt-10 sm:mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {posts.map((post) => (
-              <Card
-                key={post.slug}
-                className="overflow-hidden border border-border/60 bg-card p-0 flex flex-col"
-              >
-                <a href={post.path} className="group flex h-full flex-col">
-                  {post.featuredImage ? (
-                    <div className="relative aspect-[16/10] overflow-hidden">
-                      <img
-                        src={post.featuredImage}
-                        alt={post.featuredImageAlt}
-                        loading="lazy"
-                        decoding="async"
-                        className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
-                      />
-                    </div>
-                  ) : null}
-                  <div className="flex flex-1 flex-col p-5 sm:p-6">
-                    {post.category ? (
-                      <p className="text-[10px] sm:text-xs uppercase tracking-[0.18em] text-muted-foreground">
-                        {post.category}
-                      </p>
-                    ) : null}
-                    <h2 className="mt-2 font-display text-xl sm:text-2xl leading-snug group-hover:text-primary transition">
-                      {post.title}
-                    </h2>
-                    <p className="mt-3 text-sm text-muted-foreground leading-relaxed">
-                      {post.excerpt}
-                    </p>
-                    <div className="mt-5 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted-foreground">
-                      {post.dateLabel ? (
-                        <span className="inline-flex items-center gap-1.5">
-                          <CalendarDays className="h-3.5 w-3.5" /> {post.dateLabel}
-                        </span>
-                      ) : null}
-                      <span className="inline-flex items-center gap-1.5">
-                        <Clock className="h-3.5 w-3.5" /> {post.readingMinutes} min de lecture
-                      </span>
-                    </div>
-                    <span className="mt-5 inline-flex text-sm font-medium text-primary">
-                      Lire le guide →
-                    </span>
+          <>
+            <div
+              role="group"
+              aria-label="Filtrer les guides par thème"
+              className="mt-8 flex flex-wrap gap-2"
+            >
+              <FilterButton
+                active={filter === "all"}
+                onClick={() => setFilter("all")}
+                label="Tout"
+              />
+              {groups.map((group) => (
+                <FilterButton
+                  key={group.id}
+                  active={filter === group.id}
+                  onClick={() => setFilter(group.id)}
+                  label={group.label}
+                />
+              ))}
+            </div>
+
+            <div className="mt-10 sm:mt-14 space-y-12 sm:space-y-16">
+              {visible.map((group) => (
+                <section key={group.id} aria-labelledby={`groupe-${group.id}`}>
+                  <h2
+                    id={`groupe-${group.id}`}
+                    className="font-display text-2xl sm:text-3xl leading-tight"
+                  >
+                    {group.heading}
+                  </h2>
+                  <div className="mt-6 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {group.posts.map((post) => (
+                      <GuideCardItem key={post.slug} post={post} />
+                    ))}
                   </div>
-                </a>
-              </Card>
-            ))}
-          </div>
+                </section>
+              ))}
+            </div>
+          </>
         )}
       </main>
 
@@ -195,16 +266,40 @@ function GuidesPage() {
             <Link to="/" className="hover:text-foreground transition">
               Accueil
             </Link>
-            <Link to="/" hash="reserver" className="hover:text-foreground transition">
+            <a href="/#reserver" className="hover:text-foreground transition">
               Réserver
-            </Link>
+            </a>
             <a href="/rss.xml" className="hover:text-foreground transition">
               Flux RSS
             </a>
-
           </div>
         </div>
       </footer>
     </div>
+  );
+}
+
+function FilterButton({
+  active,
+  onClick,
+  label,
+}: {
+  active: boolean;
+  onClick: () => void;
+  label: string;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={active}
+      className={`rounded-full border px-4 py-2 text-sm transition ${
+        active
+          ? "border-primary bg-primary text-primary-foreground"
+          : "border-border/70 text-muted-foreground hover:text-foreground hover:border-foreground/40"
+      }`}
+    >
+      {label}
+    </button>
   );
 }
