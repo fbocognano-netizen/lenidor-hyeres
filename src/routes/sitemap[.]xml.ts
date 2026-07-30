@@ -17,12 +17,12 @@ export const Route = createFileRoute("/sitemap.xml")({
     handlers: {
       GET: async () => {
         const entries: SitemapEntry[] = [
-          { path: "/", changefreq: "weekly", priority: "1.0" },
-          { path: "/guides-hyeres", changefreq: "weekly", priority: "0.7" },
+          { path: "/", changefreq: "daily", priority: "1.0" },
+          { path: "/guides-hyeres", changefreq: "daily", priority: "0.7" },
           ...getIndexablePosts().map((post) => ({
             path: post.path,
             lastmod: post.updatedAt || post.date || undefined,
-            changefreq: "monthly" as const,
+            changefreq: "daily" as const,
             priority: "0.8",
           })),
         ];
@@ -39,7 +39,6 @@ export const Route = createFileRoute("/sitemap.xml")({
             .filter(Boolean)
             .join("\n"),
         );
-
 
         const xml = [
           `<?xml version="1.0" encoding="UTF-8"?>`,
