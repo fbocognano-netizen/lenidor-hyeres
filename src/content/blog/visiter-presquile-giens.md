@@ -11,7 +11,7 @@ updatedAt: "2026-07-29"
 author: "Joëlle"
 category: "VISITER HYÈRES"
 tags: ["visiter Giens", "presqu’île de Giens", "que faire à Giens", "couple"]
-featuredImage: "/images/blog/randonnees-hyeres.webp"
+featuredImage: "/images/blog/presquile-giens.jpg"
 featuredImageAlt: "Sentier côtier de la presqu’île dominant une mer calme"
 featuredImageCaption: ""
 canonical: ""

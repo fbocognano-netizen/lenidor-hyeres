@@ -11,7 +11,7 @@ updatedAt: "2026-07-28"
 author: "Joëlle"
 category: "VISITER HYÈRES"
 tags: ["visiter Hyères en 3 jours", "week-end Hyères", "séjour couple", "itinéraire Hyères"]
-featuredImage: "/images/blog/visiter-hyeres.webp"
+featuredImage: "/images/blog/hyeres-3-jours.jpg"
 featuredImageAlt: "Ruelle méditerranéenne calme baignée par la lumière dorée"
 featuredImageCaption: ""
 canonical: ""

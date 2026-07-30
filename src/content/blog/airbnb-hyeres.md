@@ -11,7 +11,7 @@ updatedAt: "2026-07-29"
 author: "Joëlle"
 category: "PRÉPARER SON SÉJOUR"
 tags: ["Airbnb Hyères", "location Hyères", "studio Hyères", "séjour couple"]
-featuredImage: "/images/blog/guide-plages-hyeres.jpg"
+featuredImage: "/images/blog/airbnb-hyeres.jpg"
 featuredImageAlt: "Vue sur les Îles d’Or depuis la terrasse du Nid d’Or à Hyères"
 featuredImageCaption: "À Hyères, la vue, le calme et l’emplacement comptent autant que les équipements affichés dans l’annonce."
 canonical: ""

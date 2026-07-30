@@ -11,7 +11,7 @@ updatedAt: "2026-07-29"
 author: "Joëlle"
 category: "BALADES & NATURE"
 tags: ["sentier littoral Giens", "randonnée Giens", "presqu’île de Giens", "balade couple"]
-featuredImage: "/images/blog/randonnees-hyeres.webp"
+featuredImage: "/images/blog/sentier-littoral-giens.jpg"
 featuredImageAlt: "Chemin rocheux longeant une côte méditerranéenne bordée de pins"
 featuredImageCaption: ""
 canonical: ""

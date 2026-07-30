@@ -11,7 +11,7 @@ updatedAt: "2026-07-29"
 author: "Joëlle"
 category: "PRÉPARER SON SÉJOUR"
 tags: ["Hyères sans voiture", "week-end Hyères", "train Hyères", "séjour en couple"]
-featuredImage: "/images/blog/visiter-hyeres.webp"
+featuredImage: "/images/blog/week-end-sans-voiture.jpg"
 featuredImageAlt: "Ruelle méditerranéenne calme dans le centre ancien de Hyères"
 featuredImageCaption: "Le centre ancien de Hyères se prête particulièrement bien à une découverte à pied."
 canonical: ""

@@ -11,7 +11,7 @@ updatedAt: "2026-07-29"
 author: "Joëlle"
 category: "PORQUEROLLES"
 tags: ["aller à Porquerolles", "bateau Porquerolles", "Tour Fondue", "parking Porquerolles"]
-featuredImage: "/images/blog/porquerolles.webp"
+featuredImage: "/images/blog/bateau-porquerolles.jpg"
 featuredImageAlt: "Crique méditerranéenne bordée de pins et d’eucalyptus sur une île"
 featuredImageCaption: "Illustration éditoriale de l’ambiance naturelle recherchée à Porquerolles."
 canonical: ""

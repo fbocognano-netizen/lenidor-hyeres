@@ -11,7 +11,7 @@ updatedAt: "2026-07-29"
 author: "Joëlle"
 category: "PORQUEROLLES"
 tags: ["Porquerolles en une journée", "visiter Porquerolles", "Porquerolles à vélo", "couple"]
-featuredImage: "/images/blog/porquerolles.webp"
+featuredImage: "/images/blog/porquerolles-village.jpg"
 featuredImageAlt: "Sentier ombragé dominant une crique aux eaux turquoise"
 featuredImageCaption: ""
 canonical: ""
