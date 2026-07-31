@@ -1,6 +1,15 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { AlertCircle, CalendarDays, Check, Mail, ShieldCheck, Sparkles, Star } from "lucide-react";
+import {
+  AlertCircle,
+  CalendarDays,
+  Check,
+  LoaderCircle,
+  Mail,
+  ShieldCheck,
+  Sparkles,
+  Star,
+} from "lucide-react";
 import { FormEvent, useRef, useState } from "react";
 
 import { SiteNav } from "@/components/site-nav";
@@ -11,6 +20,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { captureCrmLead } from "@/lib/crm.functions";
+import { cn } from "@/lib/utils";
 
 export type LeadCaptureConfig = {
   source: "club_nid_or" | "direct_booking_offer";
@@ -31,6 +41,7 @@ type FieldErrors = Partial<Record<"first_name" | "email" | "consent" | "form", s
 export function LeadCapturePage({ config }: { config: LeadCaptureConfig }) {
   const submitLead = useServerFn(captureCrmLead);
   const navigate = useNavigate();
+  const alertRef = useRef<HTMLDivElement>(null);
   const firstNameRef = useRef<HTMLInputElement>(null);
   const emailRef = useRef<HTMLInputElement>(null);
   const consentRef = useRef<HTMLButtonElement>(null);
@@ -74,6 +85,7 @@ export function LeadCapturePage({ config }: { config: LeadCaptureConfig }) {
       nextErrors.form = "Il manque une information avant d'envoyer votre inscription.";
       setErrors(nextErrors);
       requestAnimationFrame(() => {
+        alertRef.current?.scrollIntoView({ behavior: "smooth", block: "center" });
         if (nextErrors.first_name) firstNameRef.current?.focus();
         else if (nextErrors.email) emailRef.current?.focus();
         else consentRef.current?.focus();
@@ -168,8 +180,10 @@ export function LeadCapturePage({ config }: { config: LeadCaptureConfig }) {
 
             {errors.form ? (
               <div
+                ref={alertRef}
                 role="alert"
-                className="mt-5 flex items-start gap-3 rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive"
+                aria-live="assertive"
+                className="mt-5 flex items-start gap-3 rounded-md border border-destructive/40 bg-destructive/10 p-3 text-sm font-medium text-destructive shadow-sm"
               >
                 <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                 <p>{errors.form}</p>
@@ -252,7 +266,14 @@ export function LeadCapturePage({ config }: { config: LeadCaptureConfig }) {
                 />
               </div>
 
-              <label className="flex cursor-pointer items-start gap-3 rounded-md border border-border/70 p-3 text-sm leading-relaxed">
+              <label
+                className={cn(
+                  "flex cursor-pointer items-start gap-3 rounded-md border p-3 text-sm leading-relaxed transition-colors",
+                  errors.consent
+                    ? "border-destructive bg-destructive/10 text-destructive ring-1 ring-destructive/30"
+                    : "border-border/70 hover:border-primary/40",
+                )}
+              >
                 <Checkbox
                   ref={consentRef}
                   checked={consent}
@@ -269,13 +290,28 @@ export function LeadCapturePage({ config }: { config: LeadCaptureConfig }) {
                 </span>
               </label>
               {errors.consent ? (
-                <p id="consent-error" className="-mt-2 text-sm text-destructive">
+                <p
+                  id="consent-error"
+                  className="-mt-2 flex items-start gap-2 text-sm text-destructive"
+                >
+                  <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
                   {errors.consent}
                 </p>
               ) : null}
 
-              <Button type="submit" className="h-12 w-full rounded-full" disabled={loading}>
-                {loading ? "Inscription en cours..." : config.cta}
+              <Button
+                type="submit"
+                className="h-12 w-full rounded-full transition-transform active:scale-[0.98]"
+                disabled={loading}
+              >
+                {loading ? (
+                  <span className="inline-flex items-center gap-2">
+                    <LoaderCircle className="h-4 w-4 animate-spin" />
+                    Inscription en cours...
+                  </span>
+                ) : (
+                  config.cta
+                )}
               </Button>
 
               <p className="flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
