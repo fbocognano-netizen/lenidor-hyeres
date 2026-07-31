@@ -12,6 +12,7 @@ type ThankYouPageProps = {
   code?: string;
   codeLabel?: string;
   codeDescription?: string;
+  primaryCtaLabel?: string;
 };
 
 export function ThankYouPage({
@@ -21,6 +22,7 @@ export function ThankYouPage({
   code,
   codeLabel = "Votre code avantage",
   codeDescription,
+  primaryCtaLabel = "Voir les disponibilités",
 }: ThankYouPageProps) {
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -48,7 +50,7 @@ export function ThankYouPage({
           ) : null}
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Button asChild className="rounded-full h-12 px-6">
-              <Link to="/#reserver">Voir les disponibilités</Link>
+              <Link to="/#reserver">{primaryCtaLabel}</Link>
             </Button>
             <Button asChild variant="outline" className="rounded-full h-12 px-6">
               <Link to="/">Retour au studio</Link>
