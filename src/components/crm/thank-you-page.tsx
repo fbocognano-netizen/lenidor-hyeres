@@ -10,9 +10,18 @@ type ThankYouPageProps = {
   title: string;
   text: string;
   code?: string;
+  codeLabel?: string;
+  codeDescription?: string;
 };
 
-export function ThankYouPage({ eyebrow, title, text, code }: ThankYouPageProps) {
+export function ThankYouPage({
+  eyebrow,
+  title,
+  text,
+  code,
+  codeLabel = "Votre code avantage",
+  codeDescription,
+}: ThankYouPageProps) {
   return (
     <div className="min-h-screen bg-background text-foreground">
       <SiteNav />
@@ -27,9 +36,14 @@ export function ThankYouPage({ eyebrow, title, text, code }: ThankYouPageProps) 
           {code ? (
             <div className="mx-auto mt-7 max-w-sm rounded-lg border border-dashed border-primary/50 bg-secondary/60 p-4">
               <p className="text-xs uppercase tracking-[0.16em] text-muted-foreground">
-                Code à rappeler
+                {codeLabel}
               </p>
               <p className="mt-2 font-display text-3xl">{code}</p>
+              {codeDescription ? (
+                <p className="mx-auto mt-3 max-w-xs text-sm leading-relaxed text-muted-foreground">
+                  {codeDescription}
+                </p>
+              ) : null}
             </div>
           ) : null}
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">

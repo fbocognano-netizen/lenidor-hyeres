@@ -18,8 +18,9 @@ function MerciClubPage() {
     <ThankYouPage
       eyebrow="Club du Nid d'Or"
       title="Bienvenue dans le club"
-      text="Votre inscription est bien enregistrée. Vous recevrez les nouvelles, disponibilités et offres directes réservées aux voyageurs du Nid d'Or."
+      text="Votre inscription est bien enregistrée. Gardez ce code : il permettra d'identifier votre demande comme une réservation directe lors de votre prochain échange avec Le Nid d'Or."
       code="NIDOR-DIRECT"
+      codeDescription="À rappeler dans votre message ou lors de votre prochaine demande de disponibilités."
     />
   );
 }

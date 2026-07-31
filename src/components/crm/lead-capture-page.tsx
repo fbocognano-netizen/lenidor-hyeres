@@ -1,8 +1,7 @@
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useServerFn } from "@tanstack/react-start";
-import { CalendarDays, Check, Mail, ShieldCheck, Sparkles, Star } from "lucide-react";
-import { FormEvent, useState } from "react";
-import { toast } from "sonner";
+import { AlertCircle, CalendarDays, Check, Mail, ShieldCheck, Sparkles, Star } from "lucide-react";
+import { FormEvent, useRef, useState } from "react";
 
 import { SiteNav } from "@/components/site-nav";
 import { Button } from "@/components/ui/button";
@@ -27,27 +26,68 @@ export type LeadCaptureConfig = {
   messagePlaceholder?: string;
 };
 
+type FieldErrors = Partial<Record<"first_name" | "email" | "consent" | "form", string>>;
+
 export function LeadCapturePage({ config }: { config: LeadCaptureConfig }) {
   const submitLead = useServerFn(captureCrmLead);
   const navigate = useNavigate();
+  const firstNameRef = useRef<HTMLInputElement>(null);
+  const emailRef = useRef<HTMLInputElement>(null);
+  const consentRef = useRef<HTMLButtonElement>(null);
   const [consent, setConsent] = useState(false);
+  const [errors, setErrors] = useState<FieldErrors>({});
   const [loading, setLoading] = useState(false);
+
+  function clearError(field: keyof FieldErrors) {
+    setErrors((current) => {
+      if (!current[field]) return current;
+      const next = { ...current };
+      delete next[field];
+      delete next.form;
+      return next;
+    });
+  }
 
   async function onSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
     const form = new FormData(event.currentTarget);
+    const firstName = String(form.get("first_name") || "").trim();
+    const email = String(form.get("email") || "").trim();
+    const nextErrors: FieldErrors = {};
+
+    if (!firstName) {
+      nextErrors.first_name = "Indiquez votre prénom pour continuer.";
+    }
+
+    if (!email) {
+      nextErrors.email = "Indiquez votre email pour recevoir les offres.";
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      nextErrors.email = "Vérifiez le format de votre email.";
+    }
 
     if (!consent) {
-      toast.error("Merci de cocher le consentement pour recevoir les offres.");
+      nextErrors.consent =
+        "Cochez cette case pour confirmer que vous souhaitez recevoir nos offres.";
+    }
+
+    if (Object.keys(nextErrors).length > 0) {
+      nextErrors.form = "Il manque une information avant d'envoyer votre inscription.";
+      setErrors(nextErrors);
+      requestAnimationFrame(() => {
+        if (nextErrors.first_name) firstNameRef.current?.focus();
+        else if (nextErrors.email) emailRef.current?.focus();
+        else consentRef.current?.focus();
+      });
       return;
     }
 
+    setErrors({});
     setLoading(true);
     try {
       await submitLead({
         data: {
-          first_name: String(form.get("first_name") || ""),
-          email: String(form.get("email") || ""),
+          first_name: firstName,
+          email,
           phone: String(form.get("phone") || "") || null,
           stay_period: String(form.get("stay_period") || "") || null,
           desired_dates: String(form.get("desired_dates") || "") || null,
@@ -59,7 +99,10 @@ export function LeadCapturePage({ config }: { config: LeadCaptureConfig }) {
       });
       await navigate({ to: config.thankYouPath });
     } catch (error) {
-      toast.error(error instanceof Error ? error.message : "Inscription impossible.");
+      setErrors({
+        form:
+          error instanceof Error ? error.message : "Inscription impossible. Merci de réessayer.",
+      });
     } finally {
       setLoading(false);
     }
@@ -123,15 +166,54 @@ export function LeadCapturePage({ config }: { config: LeadCaptureConfig }) {
               </div>
             </div>
 
-            <form onSubmit={onSubmit} className="mt-6 space-y-4">
+            {errors.form ? (
+              <div
+                role="alert"
+                className="mt-5 flex items-start gap-3 rounded-md border border-destructive/30 bg-destructive/10 p-3 text-sm text-destructive"
+              >
+                <AlertCircle className="mt-0.5 h-4 w-4 shrink-0" />
+                <p>{errors.form}</p>
+              </div>
+            ) : null}
+
+            <form onSubmit={onSubmit} className="mt-6 space-y-4" noValidate>
               <div className="grid gap-2">
                 <Label htmlFor="first_name">Prénom</Label>
-                <Input id="first_name" name="first_name" autoComplete="given-name" required />
+                <Input
+                  ref={firstNameRef}
+                  id="first_name"
+                  name="first_name"
+                  autoComplete="given-name"
+                  aria-invalid={Boolean(errors.first_name)}
+                  aria-describedby={errors.first_name ? "first_name-error" : undefined}
+                  onInput={() => clearError("first_name")}
+                  required
+                />
+                {errors.first_name ? (
+                  <p id="first_name-error" className="text-sm text-destructive">
+                    {errors.first_name}
+                  </p>
+                ) : null}
               </div>
 
               <div className="grid gap-2">
                 <Label htmlFor="email">Email</Label>
-                <Input id="email" name="email" type="email" autoComplete="email" required />
+                <Input
+                  ref={emailRef}
+                  id="email"
+                  name="email"
+                  type="email"
+                  autoComplete="email"
+                  aria-invalid={Boolean(errors.email)}
+                  aria-describedby={errors.email ? "email-error" : undefined}
+                  onInput={() => clearError("email")}
+                  required
+                />
+                {errors.email ? (
+                  <p id="email-error" className="text-sm text-destructive">
+                    {errors.email}
+                  </p>
+                ) : null}
               </div>
 
               <div className="grid gap-2">
@@ -172,14 +254,25 @@ export function LeadCapturePage({ config }: { config: LeadCaptureConfig }) {
 
               <label className="flex cursor-pointer items-start gap-3 rounded-md border border-border/70 p-3 text-sm leading-relaxed">
                 <Checkbox
+                  ref={consentRef}
                   checked={consent}
-                  onCheckedChange={(value) => setConsent(value === true)}
+                  aria-invalid={Boolean(errors.consent)}
+                  aria-describedby={errors.consent ? "consent-error" : undefined}
+                  onCheckedChange={(value) => {
+                    setConsent(value === true);
+                    clearError("consent");
+                  }}
                 />
                 <span>
                   J'accepte de recevoir les offres, actualités et disponibilités du Nid d'Or par
                   email. Je pourrai me désinscrire à tout moment.
                 </span>
               </label>
+              {errors.consent ? (
+                <p id="consent-error" className="-mt-2 text-sm text-destructive">
+                  {errors.consent}
+                </p>
+              ) : null}
 
               <Button type="submit" className="h-12 w-full rounded-full" disabled={loading}>
                 {loading ? "Inscription en cours..." : config.cta}
