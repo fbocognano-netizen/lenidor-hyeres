@@ -16,6 +16,7 @@ import { Route as ClubNidOrRouteImport } from './routes/club-nid-or'
 import { Route as GuidesHyeresRouteImport } from './routes/guides-hyeres'
 import { Route as MerciClubNidOrRouteImport } from './routes/merci-club-nid-or'
 import { Route as MerciOffreDirecteRouteImport } from './routes/merci-offre-directe'
+import { Route as OffresDirectesRouteImport } from './routes/offres-directes'
 import { Route as ReserverEnDirectRouteImport } from './routes/reserver-en-direct'
 import { Route as RssDotxmlRouteImport } from './routes/rss[.]xml'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
@@ -58,6 +59,11 @@ const MerciClubNidOrRoute = MerciClubNidOrRouteImport.update({
 const MerciOffreDirecteRoute = MerciOffreDirecteRouteImport.update({
   id: '/merci-offre-directe',
   path: '/merci-offre-directe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OffresDirectesRoute = OffresDirectesRouteImport.update({
+  id: '/offres-directes',
+  path: '/offres-directes',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReserverEnDirectRoute = ReserverEnDirectRouteImport.update({
@@ -109,6 +115,7 @@ export interface FileRoutesByFullPath {
   '/guides-hyeres': typeof GuidesHyeresRoute
   '/merci-club-nid-or': typeof MerciClubNidOrRoute
   '/merci-offre-directe': typeof MerciOffreDirecteRoute
+  '/offres-directes': typeof OffresDirectesRoute
   '/reserver-en-direct': typeof ReserverEnDirectRoute
   '/rss.xml': typeof RssDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -126,6 +133,7 @@ export interface FileRoutesByTo {
   '/guides-hyeres': typeof GuidesHyeresRoute
   '/merci-club-nid-or': typeof MerciClubNidOrRoute
   '/merci-offre-directe': typeof MerciOffreDirecteRoute
+  '/offres-directes': typeof OffresDirectesRoute
   '/reserver-en-direct': typeof ReserverEnDirectRoute
   '/rss.xml': typeof RssDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -144,6 +152,7 @@ export interface FileRoutesById {
   '/guides-hyeres': typeof GuidesHyeresRoute
   '/merci-club-nid-or': typeof MerciClubNidOrRoute
   '/merci-offre-directe': typeof MerciOffreDirecteRoute
+  '/offres-directes': typeof OffresDirectesRoute
   '/reserver-en-direct': typeof ReserverEnDirectRoute
   '/rss.xml': typeof RssDotxmlRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
@@ -163,6 +172,7 @@ export interface FileRouteTypes {
     | '/guides-hyeres'
     | '/merci-club-nid-or'
     | '/merci-offre-directe'
+    | '/offres-directes'
     | '/reserver-en-direct'
     | '/rss.xml'
     | '/sitemap.xml'
@@ -180,6 +190,7 @@ export interface FileRouteTypes {
     | '/guides-hyeres'
     | '/merci-club-nid-or'
     | '/merci-offre-directe'
+    | '/offres-directes'
     | '/reserver-en-direct'
     | '/rss.xml'
     | '/sitemap.xml'
@@ -197,6 +208,7 @@ export interface FileRouteTypes {
     | '/guides-hyeres'
     | '/merci-club-nid-or'
     | '/merci-offre-directe'
+    | '/offres-directes'
     | '/reserver-en-direct'
     | '/rss.xml'
     | '/sitemap.xml'
@@ -215,6 +227,7 @@ export interface RootRouteChildren {
   GuidesHyeresRoute: typeof GuidesHyeresRoute
   MerciClubNidOrRoute: typeof MerciClubNidOrRoute
   MerciOffreDirecteRoute: typeof MerciOffreDirecteRoute
+  OffresDirectesRoute: typeof OffresDirectesRoute
   ReserverEnDirectRoute: typeof ReserverEnDirectRoute
   RssDotxmlRoute: typeof RssDotxmlRoute
   SitemapDotxmlRoute: typeof SitemapDotxmlRoute
@@ -274,6 +287,13 @@ declare module '@tanstack/react-router' {
       path: '/merci-offre-directe'
       fullPath: '/merci-offre-directe'
       preLoaderRoute: typeof MerciOffreDirecteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/offres-directes': {
+      id: '/offres-directes'
+      path: '/offres-directes'
+      fullPath: '/offres-directes'
+      preLoaderRoute: typeof OffresDirectesRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/reserver-en-direct': {
@@ -343,6 +363,7 @@ const rootRouteChildren: RootRouteChildren = {
   GuidesHyeresRoute: GuidesHyeresRoute,
   MerciClubNidOrRoute: MerciClubNidOrRoute,
   MerciOffreDirecteRoute: MerciOffreDirecteRoute,
+  OffresDirectesRoute: OffresDirectesRoute,
   ReserverEnDirectRoute: ReserverEnDirectRoute,
   RssDotxmlRoute: RssDotxmlRoute,
   SitemapDotxmlRoute: SitemapDotxmlRoute,
