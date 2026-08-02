@@ -5,11 +5,18 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { installClientErrorLogging, reportLovableError } from "../lib/lovable-error-reporting";
 import { SOCIAL_LINKS } from "../components/social-links";
+import { getPublishedPosts } from "../lib/blog";
 
 const SITE_URL = "https://lenidor-hyeres.fr";
 const SEO_IMAGE_URL = `${SITE_URL}/images/seo/le-nid-or-hyeres-vue-mer.jpg`;
 
-const PUBLIC_PAGES = [
+type PageSuggestion = {
+  path: string;
+  title: string;
+  searchText: string;
+};
+
+const STATIC_PAGES = [
   { path: "/", title: "Le Nid d'Or à Hyères" },
   { path: "/guides-hyeres", title: "Tous les guides de Hyères" },
   { path: "/offres-directes", title: "Recevoir les offres directes" },
@@ -33,19 +40,50 @@ const PUBLIC_PAGES = [
   { path: "/week-end-sans-voiture-hyeres", title: "Un week-end sans voiture à Hyères" },
 ] as const;
 
-function normalizePath(path: string): string {
-  let decodedPath = path;
+const SUGGESTIBLE_PAGES: PageSuggestion[] = Array.from(
+  new Map(
+    [
+      ...STATIC_PAGES.map((page) => ({
+        ...page,
+        searchText: `${page.path} ${page.title}`,
+      })),
+      ...getPublishedPosts().map((post) => ({
+        path: post.path,
+        title: post.title,
+        searchText: [
+          post.path,
+          post.slug,
+          post.title,
+          post.cardTitle,
+          post.seoTitle,
+          post.description,
+          post.excerpt,
+          post.category,
+          post.tags.join(" "),
+          post.focusKeyword,
+        ]
+          .filter(Boolean)
+          .join(" "),
+      })),
+    ].map((page) => [page.path, page]),
+  ).values(),
+);
+
+function normalizeText(value: string): string {
+  let decodedValue = value;
   try {
-    decodedPath = decodeURIComponent(path);
+    decodedValue = decodeURIComponent(value);
   } catch {
     // Keep the original path when a malformed URL cannot be decoded.
   }
 
-  return decodedPath
+  return decodedValue
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
-    .replace(/[^a-z0-9]/g, "");
+    .replace(/[^a-z0-9]+/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
 }
 
 function editDistance(left: string, right: string): number {
@@ -68,17 +106,46 @@ function editDistance(left: string, right: string): number {
 }
 
 function findPageSuggestions(pathname: string) {
-  const requestedPath = normalizePath(pathname);
-  if (!requestedPath) return [];
+  const requestedText = normalizeText(pathname);
+  const requestedTerms = requestedText.split(" ").filter((term) => term.length >= 2);
+  if (requestedTerms.length === 0) return [];
 
-  return PUBLIC_PAGES.map((page) => {
-    const candidatePath = normalizePath(page.path);
-    const distance = editDistance(requestedPath, candidatePath);
-    const similarity = 1 - distance / Math.max(requestedPath.length, candidatePath.length, 1);
-    const sharedStart = requestedPath.startsWith(candidatePath) || candidatePath.startsWith(requestedPath);
-    return { ...page, score: similarity + (sharedStart ? 0.2 : 0) };
+  return SUGGESTIBLE_PAGES.map((page) => {
+    const candidatePath = normalizeText(page.path);
+    const candidateTitle = normalizeText(page.title);
+    const candidateText = normalizeText(page.searchText);
+    const candidateWords = candidateText.split(" ");
+    let score = 0;
+    let matchedTerms = 0;
+
+    for (const term of requestedTerms) {
+      if (candidatePath.includes(term)) {
+        score += 18;
+        matchedTerms += 1;
+      } else if (candidateTitle.includes(term)) {
+        score += 14;
+        matchedTerms += 1;
+      } else if (candidateText.includes(term)) {
+        score += 6;
+        matchedTerms += 1;
+      } else if (
+        term.length >= 4 &&
+        candidateWords.some((word) => editDistance(term, word) <= Math.max(1, Math.floor(term.length / 5)))
+      ) {
+        score += 4;
+        matchedTerms += 1;
+      }
+    }
+
+    const compactRequested = requestedText.replace(/\s/g, "");
+    const compactPath = candidatePath.replace(/\s/g, "");
+    const distance = editDistance(compactRequested, compactPath);
+    const similarity = 1 - distance / Math.max(compactRequested.length, compactPath.length, 1);
+    const sharedStart = compactRequested.startsWith(compactPath) || compactPath.startsWith(compactRequested);
+
+    return { ...page, score: score + similarity + (sharedStart ? 0.2 : 0), matchedTerms };
   })
-    .filter((page) => page.score >= 0.58)
+    .filter((page) => page.matchedTerms > 0 || page.score >= 0.58)
     .sort((first, second) => second.score - first.score)
     .slice(0, 3);
 }
