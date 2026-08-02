@@ -55,6 +55,10 @@ export function SiteNav({ home = false }: { home?: boolean }) {
         </nav>
 
         <div className="flex items-center gap-2">
+          <GuideSearchButton
+            className="lg:hidden h-11 w-11 justify-center px-0 py-0 [&_span]:sr-only"
+            label="Rechercher dans le guide"
+          />
           <Button
             asChild
             variant="cta"
@@ -103,7 +107,8 @@ export function SiteNav({ home = false }: { home?: boolean }) {
             <li className="border-b border-border/40 py-3">
               <GuideSearchButton
                 className="w-full justify-start border-0 px-0 py-0"
-                label="Rechercher dans les guides"
+                label="Rechercher dans le guide"
+                onOpen={() => setOpen(false)}
               />
             </li>
             <li>
