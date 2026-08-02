@@ -3,6 +3,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, CalendarDays, Clock } from "lucide-react";
 
 import { SiteNav } from "@/components/site-nav";
+import { GuideSearchButton } from "@/components/guide-search";
 import { AgencyCredit } from "@/components/agency-credit";
 import { SocialLinks } from "@/components/social-links";
 import { Card } from "@/components/ui/card";
@@ -215,6 +216,9 @@ function GuidesPage() {
         <p className="mt-4 max-w-2xl text-[15px] sm:text-lg text-muted-foreground leading-relaxed">
           {PAGE_INTRO}
         </p>
+        <div className="mt-6">
+          <GuideSearchButton label="Rechercher un lieu, une plage, un restaurant..." />
+        </div>
 
         {posts.length === 0 ? (
           <p className="mt-12 text-muted-foreground">Les premiers guides arrivent très bientôt.</p>

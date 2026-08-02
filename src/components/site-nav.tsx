@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Menu, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
+import { GuideSearchButton } from "@/components/guide-search";
 
 export const SITE_NAV_ITEMS = [
   { hash: "sejour", label: "Le studio" },
@@ -50,6 +51,7 @@ export function SiteNav({ home = false }: { home?: boolean }) {
           >
             Découvrir Hyères
           </Link>
+          <GuideSearchButton className="border-0 px-0 py-0 hover:border-0" label="Rechercher" />
         </nav>
 
         <div className="flex items-center gap-2">
@@ -97,6 +99,12 @@ export function SiteNav({ home = false }: { home?: boolean }) {
               >
                 Découvrir Hyères
               </Link>
+            </li>
+            <li className="border-b border-border/40 py-3">
+              <GuideSearchButton
+                className="w-full justify-start border-0 px-0 py-0"
+                label="Rechercher dans les guides"
+              />
             </li>
             <li>
               <a
