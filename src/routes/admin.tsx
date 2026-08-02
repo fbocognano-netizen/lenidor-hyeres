@@ -44,6 +44,7 @@ import {
   updateBookingStatus,
   updateIcalSource,
 } from "@/lib/admin-bookings.functions";
+import { importHyeresAgenda, listHyeresAgendaPreview, previewHyeresAgenda } from "@/lib/agenda-admin.functions";
 import { deleteGalleryPhoto, listGalleryPhotos, reorderGalleryPhotos } from "@/lib/gallery.functions";
 import {
   createOtaLink,
@@ -382,6 +383,7 @@ function AdminPage() {
             <TabsTrigger value="calendar" className="rounded-full">Calendrier</TabsTrigger>
             <TabsTrigger value="list" className="rounded-full">Liste ({data.counts.total})</TabsTrigger>
             <TabsTrigger value="ical" className="rounded-full">Calendriers iCal</TabsTrigger>
+            <TabsTrigger value="agenda" className="rounded-full">Agenda de Hyères</TabsTrigger>
             <TabsTrigger value="ota" className="rounded-full">Plateformes</TabsTrigger>
             <TabsTrigger value="photos" className="rounded-full">Photos</TabsTrigger>
             <TabsTrigger value="logs" className="rounded-full">Logs</TabsTrigger>
@@ -421,6 +423,10 @@ function AdminPage() {
 
           <TabsContent value="ical" className="mt-6">
             <IcalSourcesPanel />
+          </TabsContent>
+
+          <TabsContent value="agenda" className="mt-6">
+            <HyeresAgendaPanel />
           </TabsContent>
 
           <TabsContent value="ota" className="mt-6">
@@ -874,6 +880,66 @@ function buildMailto(booking: Booking, nights: number) {
   ].filter(Boolean).join("\n");
 
   return `mailto:${encodeURIComponent(booking.email)}?subject=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+}
+
+type AgendaPreviewItem = { date: string; title: string; category: string | null; location: string | null; scheduleText: string | null; sourceUrl: string };
+
+function HyeresAgendaPanel() {
+  const previewSource = useServerFn(previewHyeresAgenda);
+  const importAgenda = useServerFn(importHyeresAgenda);
+  const loadStored = useServerFn(listHyeresAgendaPreview);
+  const queryClient = useQueryClient();
+  const [sourcePreview, setSourcePreview] = useState<null | { rangeStart: string; rangeEnd: string; eventCards: number; unmatched: number; cards: AgendaPreviewItem[] }>(null);
+  const storedQuery = useQuery({ queryKey: ["admin-hyeres-agenda"], queryFn: () => loadStored(), retry: false });
+  const previewMutation = useMutation({
+    mutationFn: () => previewSource({ data: { days: 30 } }),
+    onSuccess: (result) => {
+      if (!result.authenticated || !result.preview) return toast.error("Session expirée. Entrez à nouveau le code admin.");
+      setSourcePreview(result.preview);
+      toast.success("Source testée sur les 30 prochains jours");
+    },
+    onError: () => toast.error("La source officielle ne répond pas pour le moment"),
+  });
+  const importMutation = useMutation({
+    mutationFn: () => importAgenda({ data: { days: 30 } }),
+    onSuccess: (result) => {
+      if (!result.authenticated || !result.ok) return toast.error("Session expirée. Entrez à nouveau le code admin.");
+      toast.success(`${result.occurrences} occurrence${result.occurrences > 1 ? "s" : ""} importée${result.occurrences > 1 ? "s" : ""}`);
+      queryClient.invalidateQueries({ queryKey: ["admin-hyeres-agenda"] });
+    },
+    onError: (error: Error) => toast.error(error.message || "Import impossible"),
+  });
+  const storedEvents = (storedQuery.data?.authenticated ? storedQuery.data.events : []) as AgendaPreviewItem[];
+  const latestRun = storedQuery.data?.authenticated ? storedQuery.data.latestRun : null;
+  const visibleEvents = sourcePreview?.cards ?? storedEvents;
+
+  return (
+    <div className="space-y-5">
+      <Card className="rounded-3xl border-border/60 p-5 shadow-none sm:p-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+          <div>
+            <h3 className="font-display text-2xl">Agenda de Hyères</h3>
+            <p className="mt-2 max-w-2xl text-sm leading-relaxed text-muted-foreground">Vérifie les événements officiels des 30 prochains jours, puis importe-les dans la base privée du Nid d'Or. Rien n'est affiché aux voyageurs à ce stade.</p>
+          </div>
+          <div className="flex flex-wrap gap-2">
+            <Button type="button" variant="outline" className="rounded-full" onClick={() => previewMutation.mutate()} disabled={previewMutation.isPending || importMutation.isPending}>
+              <RefreshCw className={cn("mr-2 h-4 w-4", previewMutation.isPending && "animate-spin")} />{previewMutation.isPending ? "Test en cours…" : "Tester la source"}
+            </Button>
+            <Button type="button" className="rounded-full" onClick={() => importMutation.mutate()} disabled={importMutation.isPending || previewMutation.isPending}>
+              <CalendarDays className="mr-2 h-4 w-4" />{importMutation.isPending ? "Import en cours…" : "Importer 30 jours"}
+            </Button>
+          </div>
+        </div>
+        {latestRun && <div className="mt-5 rounded-2xl border border-border/60 bg-secondary/40 p-4 text-sm"><p className="font-medium">Dernier import : {latestRun.status === "completed" ? "terminé" : latestRun.status === "failed" ? "en erreur" : "en cours"}</p><p className="mt-1 text-muted-foreground">{latestRun.completed_at ? `Terminé le ${format(new Date(latestRun.completed_at), "d MMM yyyy à HH:mm", { locale: fr })} · ` : ""}{latestRun.events_seen} fiches · {latestRun.occurrences_seen} occurrences · {latestRun.unmatched_events} sans correspondance</p>{latestRun.error_message && <p className="mt-2 text-destructive">{latestRun.error_message}</p>}</div>}
+        {sourcePreview && <div className="mt-5 grid gap-3 sm:grid-cols-3"><Info label="Période testée" value={`${formatDate(sourcePreview.rangeStart)} → ${formatDate(sourcePreview.rangeEnd)}`} /><Info label="Résultats Ville" value={`${sourcePreview.eventCards} occurrences`} /><Info label="À vérifier" value={`${sourcePreview.unmatched} sans fiche REST`} /></div>}
+      </Card>
+      <div className="space-y-3">
+        {storedQuery.isLoading && !sourcePreview && <p className="text-sm text-muted-foreground">Chargement de l’aperçu…</p>}
+        {!storedQuery.isLoading && visibleEvents.length === 0 && <Card className="rounded-2xl border-border/60 p-6 text-center text-sm text-muted-foreground shadow-none">Lance un test de source ou un premier import pour afficher les événements ici.</Card>}
+        {visibleEvents.map((event, index) => <Card key={`${event.date}-${event.sourceUrl}-${index}`} className="rounded-2xl border-border/60 p-4 shadow-none"><div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between"><div><div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground"><span>{formatDate(event.date)}</span>{event.category && <span>· {event.category.replaceAll("_", " ")}</span>}{event.location && <span>· {event.location}</span>}</div><h4 className="mt-1 font-medium">{event.title}</h4>{event.scheduleText && <p className="mt-2 line-clamp-2 text-sm text-muted-foreground">{event.scheduleText}</p>}</div><a href={event.sourceUrl} target="_blank" rel="noreferrer" className="inline-flex shrink-0 items-center gap-1 text-sm font-medium text-primary hover:underline">Source <ExternalLink className="h-3.5 w-3.5" /></a></div></Card>)}
+      </div>
+    </div>
+  );
 }
 
 type IcalSourceRow = { id: string; label: string; url: string; enabled: boolean };
