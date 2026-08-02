@@ -7,7 +7,7 @@ slug: "aller-porquerolles-depuis-hyeres"
 path: "/aller-porquerolles-depuis-hyeres"
 excerpt: "Bateau, bus, parking et horaires : tout ce qu’il faut préparer pour que l’escapade commence avant même de poser le pied sur l’île."
 date: "2026-07-27"
-updatedAt: "2026-07-29"
+updatedAt: "2026-08-02"
 author: "Joëlle"
 category: "PORQUEROLLES"
 tags: ["aller à Porquerolles", "bateau Porquerolles", "Tour Fondue", "parking Porquerolles"]
@@ -18,7 +18,7 @@ canonical: ""
 focusKeyword: "aller à Porquerolles depuis Hyères"
 draft: false
 noindex: false
-relatedPosts: ["porquerolles-en-une-journee", "ou-dormir-hyeres-porquerolles", "visiter-hyeres-3-jours"]
+relatedPosts: ["porquerolles-en-une-journee", "ou-dormir-hyeres-porquerolles", "port-cros-ou-porquerolles"]
 ctaTitle: "Dormir près du départ, sans dormir dans l’agitation"
 ctaText: "Le Nid d’Or permet de rejoindre la presqu’île tout en retrouvant le soir un environnement calme, une terrasse face aux îles et une place de stationnement privée."
 ctaLabel: "Découvrir Le Nid d’Or"
@@ -111,6 +111,8 @@ Ne raisonnez pas seulement en temps de bateau. Ajoutez :
 - le retour vers l’embarcadère.
 
 Pour profiter réellement de l’île, réservez-lui une journée complète. Une demi-journée peut fonctionner hors saison ou pour une découverte ciblée, mais elle laisse peu de marge.
+
+Si vous envisagez aussi Port-Cros pendant le séjour, comparez d’abord [Port-Cros et Porquerolles](/port-cros-ou-porquerolles) : les deux îles ne demandent pas le même niveau de préparation.
 
 ## Checklist avant de partir
 

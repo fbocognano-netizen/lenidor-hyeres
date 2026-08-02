@@ -13,6 +13,7 @@ export const Route = createFileRoute("/offres-directes")({
     meta: [
       { title: PAGE_TITLE },
       { name: "description", content: PAGE_DESCRIPTION },
+      { name: "robots", content: "noindex, follow" },
       { property: "og:title", content: PAGE_TITLE },
       { property: "og:description", content: PAGE_DESCRIPTION },
       { property: "og:type", content: "website" },

@@ -7,7 +7,7 @@ slug: "visiter-hyeres-3-jours"
 path: "/visiter-hyeres-3-jours"
 excerpt: "Trois jours, trois ambiances : le charme du centre ancien, l’évasion à Porquerolles et la nature de Giens, avec du temps pour souffler."
 date: "2026-07-27"
-updatedAt: "2026-07-28"
+updatedAt: "2026-08-02"
 author: "Joëlle"
 category: "VISITER HYÈRES"
 tags: ["visiter Hyères en 3 jours", "week-end Hyères", "séjour couple", "itinéraire Hyères"]
@@ -18,7 +18,7 @@ canonical: ""
 focusKeyword: "visiter Hyères en 3 jours"
 draft: false
 noindex: false
-relatedPosts: ["que-faire-hyeres", "porquerolles-en-une-journee", "visiter-presquile-giens"]
+relatedPosts: ["que-faire-hyeres", "port-cros-ou-porquerolles", "porquerolles-en-une-journee"]
 ctaTitle: "Votre camp de base, version vue mer"
 ctaText: "Après les ruelles, les bateaux et les sentiers, retrouvez le calme du Nid d’Or, sa terrasse plein sud et sa piscine."
 ctaLabel: "Vérifier les disponibilités"
@@ -27,6 +27,8 @@ ctaUrlLabel: ""
 ---
 
 Trois jours suffisent pour ressentir Hyères, à condition de ne pas essayer de visiter la ville, Giens, Porquerolles, Port-Cros et toutes les plages avant dimanche soir. Notre proposition tient en trois ambiances : patrimoine, île et nature.
+
+Si l’hésitation principale porte sur les îles, commencez par comparer [Port-Cros et Porquerolles](/port-cros-ou-porquerolles), puis gardez une seule grande sortie maritime dans le programme.
 
 L’ordre peut être modifié selon la météo. Gardez la journée la plus stable pour Porquerolles et adaptez la randonnée à la chaleur, au vent et aux restrictions d’accès.
 

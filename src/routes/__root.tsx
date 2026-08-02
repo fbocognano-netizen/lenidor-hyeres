@@ -1,31 +1,141 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Outlet, Link, createRootRouteWithContext, useRouter, HeadContent, Scripts } from "@tanstack/react-router";
+import { Outlet, Link, createRootRouteWithContext, useLocation, useRouter, HeadContent, Scripts } from "@tanstack/react-router";
 import { useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { installClientErrorLogging, reportLovableError } from "../lib/lovable-error-reporting";
+import { SOCIAL_LINKS } from "../components/social-links";
 
 const SITE_URL = "https://lenidor-hyeres.fr";
 const SEO_IMAGE_URL = `${SITE_URL}/images/seo/le-nid-or-hyeres-vue-mer.jpg`;
 
+const PUBLIC_PAGES = [
+  { path: "/", title: "Le Nid d'Or à Hyères" },
+  { path: "/guides-hyeres", title: "Tous les guides de Hyères" },
+  { path: "/offres-directes", title: "Recevoir les offres directes" },
+  { path: "/airbnb-hyeres", title: "Airbnb à Hyères : où loger et comment bien choisir ?" },
+  { path: "/aller-porquerolles-depuis-hyeres", title: "Comment aller à Porquerolles depuis Hyères ?" },
+  { path: "/carqueiranne-en-amoureux", title: "Que faire à Carqueiranne en amoureux ?" },
+  { path: "/guide-plages-hyeres", title: "Les plus belles plages de Hyères" },
+  { path: "/hyeres-quand-il-pleut", title: "Que faire à Hyères quand il pleut ?" },
+  { path: "/location-vacances-hyeres-avec-piscine", title: "Location de vacances à Hyères avec piscine" },
+  { path: "/ou-dormir-hyeres-porquerolles", title: "Où dormir à Hyères pour visiter Porquerolles ?" },
+  { path: "/porquerolles-en-une-journee", title: "Visiter Porquerolles en une journée" },
+  { path: "/port-cros-ou-porquerolles", title: "Port-Cros ou Porquerolles : quelle île choisir ?" },
+  { path: "/que-faire-hyeres", title: "Que faire à Hyères ?" },
+  { path: "/que-voir-vieux-hyeres", title: "Que voir dans le vieux Hyères ?" },
+  { path: "/randonnees-hyeres", title: "Randonnées à Hyères" },
+  { path: "/restaurant-romantique-hyeres", title: "Dîner en amoureux à Hyères" },
+  { path: "/restaurants-hyeres", title: "Où manger à Hyères ?" },
+  { path: "/sentier-littoral-giens", title: "Sentier du littoral de Giens" },
+  { path: "/visiter-hyeres-3-jours", title: "Visiter Hyères en 3 jours" },
+  { path: "/visiter-presquile-giens", title: "Visiter la presqu'île de Giens" },
+  { path: "/week-end-sans-voiture-hyeres", title: "Un week-end sans voiture à Hyères" },
+] as const;
+
+function normalizePath(path: string): string {
+  let decodedPath = path;
+  try {
+    decodedPath = decodeURIComponent(path);
+  } catch {
+    // Keep the original path when a malformed URL cannot be decoded.
+  }
+
+  return decodedPath
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]/g, "");
+}
+
+function editDistance(left: string, right: string): number {
+  const previous = Array.from({ length: right.length + 1 }, (_, index) => index);
+
+  for (let leftIndex = 1; leftIndex <= left.length; leftIndex++) {
+    const current = [leftIndex];
+    for (let rightIndex = 1; rightIndex <= right.length; rightIndex++) {
+      const substitutionCost = left[leftIndex - 1] === right[rightIndex - 1] ? 0 : 1;
+      current[rightIndex] = Math.min(
+        current[rightIndex - 1] + 1,
+        previous[rightIndex] + 1,
+        previous[rightIndex - 1] + substitutionCost,
+      );
+    }
+    previous.splice(0, previous.length, ...current);
+  }
+
+  return previous[right.length];
+}
+
+function findPageSuggestions(pathname: string) {
+  const requestedPath = normalizePath(pathname);
+  if (!requestedPath) return [];
+
+  return PUBLIC_PAGES.map((page) => {
+    const candidatePath = normalizePath(page.path);
+    const distance = editDistance(requestedPath, candidatePath);
+    const similarity = 1 - distance / Math.max(requestedPath.length, candidatePath.length, 1);
+    const sharedStart = requestedPath.startsWith(candidatePath) || candidatePath.startsWith(requestedPath);
+    return { ...page, score: similarity + (sharedStart ? 0.2 : 0) };
+  })
+    .filter((page) => page.score >= 0.58)
+    .sort((first, second) => second.score - first.score)
+    .slice(0, 3);
+}
+
 function NotFoundComponent() {
+  const location = useLocation();
+  const suggestions = findPageSuggestions(location.pathname);
+
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
         <h1 className="text-7xl font-bold text-foreground">404</h1>
 
-        <h2 className="mt-4 text-xl font-semibold text-foreground">Page not found</h2>
+        <h2 className="mt-4 text-xl font-semibold text-foreground">Cette page n'existe pas</h2>
 
         <p className="mt-2 text-sm text-muted-foreground">
-          The page you're looking for doesn't exist or has been moved.
+          L'adresse est peut-être incorrecte ou la page a été déplacée. Vous pouvez revenir à l'accueil ou poursuivre
+          votre découverte de Hyères.
         </p>
 
-        <div className="mt-6">
+        {suggestions.length > 0 && (
+          <div className="mt-6 rounded-md border border-border bg-card p-4 text-left">
+            <p className="text-sm font-medium text-foreground">Vous cherchiez peut-être...</p>
+            <ul className="mt-3 space-y-2">
+              {suggestions.map((page) => (
+                <li key={page.path}>
+                  <Link
+                    to={page.path}
+                    className="block rounded-md px-3 py-2 text-sm text-primary transition-colors hover:bg-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                  >
+                    {page.title}
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
+
+        <div className="mt-6 flex flex-wrap justify-center gap-3">
           <Link
             to="/"
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Go home
+            Revenir à l'accueil
+          </Link>
+          <Link
+            to="/guides-hyeres"
+            className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
+          >
+            Découvrir les guides
+          </Link>
+          <Link
+            to="/"
+            hash="reserver"
+            className="inline-flex items-center justify-center rounded-md px-4 py-2 text-sm font-medium text-primary transition-colors hover:bg-accent"
+          >
+            Vérifier les disponibilités
           </Link>
         </div>
       </div>
@@ -47,10 +157,10 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
       <div className="max-w-md text-center">
-        <h1 className="text-xl font-semibold tracking-tight text-foreground">This page didn't load</h1>
+        <h1 className="text-xl font-semibold tracking-tight text-foreground">La page n'a pas pu se charger</h1>
 
         <p className="mt-2 text-sm text-muted-foreground">
-          Something went wrong on our end. You can try refreshing or head back home.
+          Un problème temporaire est survenu. Vous pouvez réessayer ou revenir à l'accueil.
         </p>
 
         <div className="mt-6 flex flex-wrap justify-center gap-2">
@@ -61,14 +171,14 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
             }}
             className="inline-flex items-center justify-center rounded-md bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-primary/90"
           >
-            Try again
+            Réessayer
           </button>
 
           <a
             href="/"
             className="inline-flex items-center justify-center rounded-md border border-input bg-background px-4 py-2 text-sm font-medium text-foreground transition-colors hover:bg-accent"
           >
-            Go home
+            Revenir à l'accueil
           </a>
         </div>
       </div>
@@ -244,6 +354,7 @@ function RootShell({ children }: { children: ReactNode }) {
               url: `${SITE_URL}/`,
               name: "Le Nid d'Or",
               alternateName: ["Le Nid d'Or à Hyères", "Nid d'Or Hyères"],
+              sameAs: [SOCIAL_LINKS.instagram, SOCIAL_LINKS.facebook],
             }),
           }}
         />

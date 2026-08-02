@@ -7,7 +7,7 @@ slug: "guide-plages-hyeres"
 path: "/guide-plages-hyeres"
 excerpt: "Almanarre, Giens, Porquerolles… Découvrez les plus belles plages accessibles depuis le studio."
 date: "2026-02-10"
-updatedAt: "2026-07-28"
+updatedAt: "2026-08-02"
 author: "Joëlle"
 category: "GUIDE HYÈRES"
 tags: ["plage de l'almanarre", "hyeres vacances", "porquerolles", "presqu'ile de giens"]
@@ -18,7 +18,7 @@ canonical: ""
 focusKeyword: "plage de l'almanarre"
 draft: false
 noindex: false
-relatedPosts: []
+relatedPosts: ["porquerolles-en-une-journee", "aller-porquerolles-depuis-hyeres", "port-cros-ou-porquerolles"]
 ctaTitle: "Envie de rejoindre les Îles d'Or ?"
 ctaText: "Depuis la Tour Fondue, les bateaux pour Porquerolles partent régulièrement. En 15 minutes de traversée, vous débarquez dans un monde de calme, de sentiers de pinède et de plages aux eaux turquoise. C'est l'excursion incontournable de vos hyères vacances."
 ctaLabel: "Vérifier les disponibilités"
@@ -29,6 +29,8 @@ ctaUrlLabel: "Voir la plage de l'Almanarre sur Maps"
 Vous préparez vos **vacances à Hyères** et cherchez les meilleures plages ? Vous êtes au bon endroit. Depuis le studio **Le Nid d'Or**, chaque spot de baignade est à portée de main — de la célèbre **plage de l'Almanarre** aux criques sauvages de **Porquerolles**.
 
 Que vous soyez amateur de kitesurf, de farniente ou d'excursions en bateau, ce guide vous aide à choisir la plage qui correspond à votre envie du moment.
+
+Si votre séjour inclut une sortie vers les îles, commencez par préparer [la traversée vers Porquerolles](/aller-porquerolles-depuis-hyeres), puis comparez [Port-Cros et Porquerolles](/port-cros-ou-porquerolles) selon le rythme que vous recherchez.
 
 ## Plage de l'Almanarre
 

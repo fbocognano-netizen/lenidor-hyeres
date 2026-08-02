@@ -3,6 +3,8 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { ArrowLeft, CalendarDays, Clock } from "lucide-react";
 
 import { SiteNav } from "@/components/site-nav";
+import { AgencyCredit } from "@/components/agency-credit";
+import { SocialLinks } from "@/components/social-links";
 import { Card } from "@/components/ui/card";
 import { absoluteUrl, formatFrenchDate, getPublishedPosts, SITE_URL } from "@/lib/blog";
 
@@ -261,17 +263,24 @@ function GuidesPage() {
 
       <footer className="border-t border-border/60 bg-background">
         <div className="mx-auto max-w-6xl px-5 py-10 sm:py-12 flex flex-col sm:flex-row items-center justify-between gap-4 text-sm text-muted-foreground">
-          <p>© {new Date().getFullYear()} Le Nid d'Or à Hyères. Tous droits réservés.</p>
-          <div className="flex items-center gap-6">
+          <div className="text-center sm:text-left">
+            <p>© {new Date().getFullYear()} Le Nid d'Or à Hyères. Tous droits réservés.</p>
+            <AgencyCredit className="mt-1" />
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-5 sm:gap-6">
             <Link to="/" className="hover:text-foreground transition">
               Accueil
             </Link>
             <a href="/#reserver" className="hover:text-foreground transition">
               Réserver
             </a>
+            <Link to="/offres-directes" className="hover:text-foreground transition">
+              Offres directes
+            </Link>
             <a href="/rss.xml" className="hover:text-foreground transition">
               Flux RSS
             </a>
+            <SocialLinks />
           </div>
         </div>
       </footer>

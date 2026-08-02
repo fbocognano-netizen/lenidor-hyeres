@@ -5,7 +5,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { format, differenceInCalendarDays } from "date-fns";
 import { fr } from "date-fns/locale";
 import type { DateRange } from "react-day-picker";
-import { CalendarIcon, Waves, Sun, Bed, Bath, Users, MapPin, Wifi, Wind, ChefHat, Car, Star, Expand, Menu, X, Clock } from "lucide-react";
+import { CalendarIcon, Waves, Sun, Bed, Bath, Users, MapPin, Wifi, Wind, ChefHat, Car, Star, Expand, Menu, X, Clock, ExternalLink } from "lucide-react";
 import { toast, Toaster } from "sonner";
 
 import { Button } from "@/components/ui/button";
@@ -22,6 +22,8 @@ import { listPublicOtaLinks, type OtaLink } from "@/lib/ota-links.functions";
 import { sendContactMessage, getContactInfo } from "@/lib/contact.functions";
 import { Lightbox, useLightbox } from "@/components/lightbox";
 import { SiteNav } from "@/components/site-nav";
+import { AgencyCredit } from "@/components/agency-credit";
+import { SocialLinks, SOCIAL_LINKS } from "@/components/social-links";
 import { getPublishedPosts } from "@/lib/blog";
 
 interface GuideTeaser {
@@ -77,6 +79,40 @@ function computeStay(from: Date, to: Date): { nights: number; nightsTotal: numbe
 }
 const PHOTOS = [photo1, photo2, photo3, photo4, photo5];
 
+const HOME_GUIDE_SLUGS = [
+  "port-cros-ou-porquerolles",
+  "ou-dormir-hyeres-porquerolles",
+  "location-vacances-hyeres-avec-piscine",
+] as const;
+
+const PROPERTY_COORDINATES = "43.092840,6.113301";
+const NEARBY_DESTINATIONS = [
+  { label: "Plage de l'Almanarre", destination: "Plage de l'Almanarre, Hyères", duration: "env. 10 min" },
+  { label: "Gare de Hyères", destination: "Gare de Hyères, Place de l'Europe, Hyères", duration: "env. 10 min" },
+  {
+    label: "E.Leclerc Location Hyères",
+    destination: "E.Leclerc Location, 689 Avenue Mario Bénard, Hyères",
+    duration: "env. 10 min",
+  },
+  { label: "Plage de la Capte", destination: "Plage de la Capte, Hyères", duration: "env. 10-15 min" },
+  { label: "Village de Giens", destination: "Village de Giens, Hyères", duration: "env. 10-15 min" },
+  { label: "Port de la Tour Fondue", destination: "Port de la Tour Fondue, Hyères", duration: "env. 15 min" },
+  { label: "Place Massillon · centre historique", destination: "Place Massillon, Hyères", duration: "env. 15 min" },
+  { label: "Plage des Salins", destination: "Plage des Salins, Hyères", duration: "env. 15 min" },
+  { label: "Port de Carqueiranne", destination: "Port de Carqueiranne", duration: "env. 15 min" },
+  { label: "Aéroport Toulon-Hyères", destination: "Aéroport Toulon-Hyères", duration: "env. 11 min" },
+] as const;
+
+function googleMapsDirectionsUrl(destination: string): string {
+  const params = new URLSearchParams({
+    api: "1",
+    origin: PROPERTY_COORDINATES,
+    destination,
+    travelmode: "driving",
+  });
+  return `https://www.google.com/maps/dir/?${params.toString()}`;
+}
+
 const FALLBACK_GALLERY: GalleryPhoto[] = [
   { name: "fallback-1", url: photo1, alt: "Vue mer depuis le studio" },
   { name: "fallback-2", url: photo2, alt: "Piscine de 18 mètres" },
@@ -105,13 +141,13 @@ export const Route = createFileRoute("/")({
       {
         name: "description",
         content:
-          "Réservez en direct au Nid d'Or à Hyères : studio vue mer & piscine, terrasse plein sud, calme assuré. Site officiel, sans intermédiaire. Meilleur Prix assuré",
+          "Réservez en direct au Nid d'Or à Hyères : studio vue mer & piscine au Mont des Oiseaux, proche plages, centre, Giens et Tour Fondue.",
       },
       { property: "og:title", content: "Le Nid d'Or à Hyères • Studio vue mer & piscine • Site officiel" },
       {
         property: "og:description",
         content:
-          "Réservez en direct au Nid d'Or à Hyères : studio vue mer & piscine, terrasse plein sud, calme assuré. Site officiel, sans intermédiaire. Meilleur Prix assuré",
+          "Réservez en direct au Nid d'Or à Hyères : studio vue mer & piscine au Mont des Oiseaux, proche plages, centre, Giens et Tour Fondue.",
       },
       { property: "og:type", content: "website" },
       { property: "og:url", content: "https://lenidor-hyeres.fr/" },
@@ -153,14 +189,23 @@ export const Route = createFileRoute("/")({
             { "@type": "LocationFeatureSpecification", name: "Vue mer", value: true },
             { "@type": "LocationFeatureSpecification", name: "Terrasse", value: true },
           ],
+          sameAs: [SOCIAL_LINKS.instagram, SOCIAL_LINKS.facebook],
         }),
       },
     ],
   }),
   loader: ({ context }): { guides: GuideTeaser[] } => {
     context.queryClient.ensureQueryData(galleryQueryOptions);
+    const publishedPosts = getPublishedPosts();
+    const strategicGuides = HOME_GUIDE_SLUGS.map((slug) =>
+      publishedPosts.find((post) => post.slug === slug),
+    ).filter((post): post is NonNullable<typeof post> => Boolean(post));
+    const fallbackGuides = publishedPosts.filter(
+      (post) => !HOME_GUIDE_SLUGS.includes(post.slug as (typeof HOME_GUIDE_SLUGS)[number]),
+    );
+
     return {
-      guides: getPublishedPosts()
+      guides: [...strategicGuides, ...fallbackGuides]
         .slice(0, 3)
         .map((post) => ({
           slug: post.slug,
@@ -256,14 +301,38 @@ function Intro() {
           <h2 className="mt-3 font-display text-[1.75rem] sm:text-4xl md:text-5xl leading-[1.15]">
             Votre refuge à deux, avec Porquerolles à l'horizon.
           </h2>
-          <div className="mt-5 sm:mt-6 space-y-4 text-muted-foreground text-[15px] leading-relaxed whitespace-pre-line">
+          <div className="mt-5 sm:mt-6 space-y-5 text-muted-foreground text-[15px] leading-relaxed">
             <p>
               Niché sur les hauteurs de Hyères dans une résidence privée, ce studio a été pensé comme une retraite à
               deux : un coin nuit confortable, une cuisine équipée, et surtout cette terrasse plein sud d'où l'on suit
-              le ballet des voiliers entre Port-Cros et Porquerolles. Le matin, le soleil entre doucement. L'après-midi
-              se passe au bord de la piscine de 18m, à l'ombre des pins, face à la baie de Hyères. Le soir, la lumière
-              dorée du sud descend sur la mer — et c'est tout.
+              le ballet des voiliers entre Port-Cros et Porquerolles.
             </p>
+            <p>
+              Pour choisir votre excursion, notre guide
+              <Link to="/port-cros-ou-porquerolles" className="text-primary underline underline-offset-4">
+                {" "}
+                Port-Cros ou Porquerolles
+              </Link>{" "}
+              compare les deux îles selon le rythme recherché.
+            </p>
+            <p>
+              Le matin, le soleil entre doucement. L'après-midi se passe au bord de la piscine de 18m, à l'ombre des
+              pins, face à la baie de Hyères. Le soir, la lumière dorée du sud descend sur la mer.
+            </p>
+          </div>
+          <div className="mt-7 grid gap-3 sm:grid-cols-3">
+            {[
+              "Terrasse plein sud",
+              "Vue sur les Îles d'Or",
+              "Piscine à quelques pas",
+            ].map((item) => (
+              <div
+                key={item}
+                className="rounded-xl border border-border/60 bg-secondary/40 px-4 py-3 text-sm text-foreground"
+              >
+                {item}
+              </div>
+            ))}
           </div>
         </div>
         <div className="md:col-span-5 grid grid-cols-2 gap-3 sm:gap-4">
@@ -604,9 +673,33 @@ function BookingSection() {
         </div>
         <div className="lg:col-span-7">
           <BookingForm />
+          <DirectOffersPrompt />
         </div>
       </div>
     </section>
+  );
+}
+
+function DirectOffersPrompt() {
+  return (
+    <div className="mt-5 rounded-2xl border border-primary-foreground/15 bg-primary-foreground/10 p-5 text-primary-foreground sm:p-6">
+      <p className="text-xs uppercase tracking-[0.2em] text-primary-foreground/60">
+        Pas encore prêt à réserver ?
+      </p>
+      <div className="mt-3 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <p className="max-w-xl text-sm leading-relaxed text-primary-foreground/75">
+          Recevez les disponibilités, périodes calmes et offres directes du Nid d'Or pour préparer
+          un futur séjour sans choisir vos dates maintenant.
+        </p>
+        <Button
+          asChild
+          variant="outline"
+          className="h-12 shrink-0 rounded-full border-primary-foreground/50 bg-transparent px-5 text-sm text-primary-foreground hover:border-primary-foreground/70 hover:bg-primary-foreground/15 hover:text-primary-foreground"
+        >
+          <Link to="/offres-directes">Recevoir les offres directes</Link>
+        </Button>
+      </div>
+    </div>
   );
 }
 
@@ -917,27 +1010,43 @@ function Location() {
             Au calme sur les hauteurs de Hyères.
           </h2>
           <p className="mt-4 sm:mt-5 text-muted-foreground leading-relaxed text-[15px]">
-            À 10 minutes en voiture des plages de l'Almanarre, à 15 minutes du port pour Porquerolles, à 15 minutes du
-            centre historique. Tout est proche si vous le désirez, mais vous êtes au calme et au paradis en même temps.
+            Le Mont des Oiseaux est l'un des secteurs résidentiels les plus recherchés de Hyères : un domaine calme,
+            sécurisé et gardé, où se mêlent résidences soignées et villas avec vues ouvertes sur la baie.
           </p>
-          <ul className="mt-6 sm:mt-8 space-y-2 sm:space-y-3 text-sm">
-            <li className="flex justify-between border-b border-border/60 pb-2 sm:pb-3">
-              <span>Plage de l'Almanarre</span>
-              <span className="text-muted-foreground">10 min</span>
-            </li>
-            <li className="flex justify-between border-b border-border/60 pb-2 sm:pb-3">
-              <span>Port de la Tour Fondue</span>
-              <span className="text-muted-foreground">15 min</span>
-            </li>
-            <li className="flex justify-between border-b border-border/60 pb-2 sm:pb-3">
-              <span>Centre historique</span>
-              <span className="text-muted-foreground">15 min</span>
-            </li>
-            <li className="flex justify-between border-b border-border/60 pb-2 sm:pb-3">
-              <span>Aéroport Toulon-Hyères</span>
-              <span className="text-muted-foreground">11 min</span>
-            </li>
+          <p className="mt-3 text-muted-foreground leading-relaxed text-[15px]">
+            Depuis Le Nid d'Or, la vue domine les Îles d'Or et la baie de Hyères. Vous dormez à l'écart de l'agitation,
+            mais dans une position très centrale pour rayonner entre les plages, le centre historique, Giens, La Capte,
+            les Salins, Carqueiranne, la Tour Fondue et les accès vers Toulon.
+          </p>
+          <p className="mt-3 text-muted-foreground leading-relaxed text-[15px]">
+            La carte en bas de page le montre bien : rien n'est isolé. En voiture, la plupart des points clés du séjour
+            se rejoignent autour de 10 à 15 minutes selon la circulation.
+          </p>
+          <ul className="mt-6 sm:mt-8 text-sm">
+            {NEARBY_DESTINATIONS.map((place) => (
+              <li key={place.label} className="border-b border-border/60">
+                <a
+                  href={googleMapsDirectionsUrl(place.destination)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label={`Voir l'itinéraire en voiture vers ${place.label} sur Google Maps`}
+                  className="group flex min-h-11 items-center justify-between gap-4 py-2 transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:min-h-12 sm:py-3"
+                >
+                  <span className="flex min-w-0 items-center gap-2 font-medium">
+                    <span>{place.label}</span>
+                    <ExternalLink
+                      aria-hidden="true"
+                      className="size-3.5 shrink-0 text-muted-foreground transition-colors group-hover:text-primary"
+                    />
+                  </span>
+                  <span className="shrink-0 text-right text-muted-foreground">{place.duration}</span>
+                </a>
+              </li>
+            ))}
           </ul>
+          <p className="mt-3 text-xs leading-relaxed text-muted-foreground">
+            Durées indicatives en voiture, selon la circulation. Chaque lien ouvre l'itinéraire depuis Le Nid d'Or.
+          </p>
         </div>
         <div className="aspect-[4/5] overflow-hidden rounded-3xl">
           <img src={photo2} alt="Vue extérieure et piscine" className="h-full w-full object-cover" />
@@ -947,8 +1056,8 @@ function Location() {
         <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground">Sur la carte</p>
         <h3 className="mt-2 sm:mt-3 font-display text-2xl sm:text-3xl md:text-4xl">Le Nid d'Or et ses alentours</h3>
         <p className="mt-2 sm:mt-3 text-muted-foreground max-w-2xl text-[15px]">
-          Quartier du Mont des Oiseaux, sur les hauteurs de Hyères — à quelques minutes des plages et du port pour
-          Porquerolles.
+          Quartier du Mont des Oiseaux, sur les hauteurs de Hyères : une adresse calme, centrale et pratique pour
+          rejoindre les plages, le centre-ville, la presqu'île de Giens, la Tour Fondue et les routes vers Toulon.
         </p>
         <div className="mt-5 sm:mt-8 overflow-hidden rounded-3xl border border-border/60 shadow-sm">
           <iframe
@@ -1090,7 +1199,13 @@ function Footer() {
               <Link to="/guide-plages-hyeres" className="text-muted-foreground hover:text-foreground transition">
                 Guide des plages de Hyères
               </Link>
+              <Link to="/offres-directes" className="text-muted-foreground hover:text-foreground transition">
+                Recevoir les offres directes
+              </Link>
             </nav>
+            <div className="mt-5">
+              <SocialLinks />
+            </div>
           </div>
 
 
@@ -1125,11 +1240,14 @@ function Footer() {
         </div>
       </div>
       <div className="border-t border-border/60 py-5 text-center text-xs text-muted-foreground">
-        © {new Date().getFullYear()} Le Nid d'Or — Tous droits réservés
-        <span className="mx-2" aria-hidden="true">·</span>
-        <Link to="/guides-hyeres" className="hover:text-foreground transition">
-          Découvrir Hyères
-        </Link>
+        <div>
+          © {new Date().getFullYear()} Le Nid d'Or — Tous droits réservés
+          <span className="mx-2" aria-hidden="true">·</span>
+          <Link to="/guides-hyeres" className="hover:text-foreground transition">
+            Découvrir Hyères
+          </Link>
+        </div>
+        <AgencyCredit className="mt-1.5" />
       </div>
     </footer>
   );

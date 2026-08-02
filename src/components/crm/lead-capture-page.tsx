@@ -13,6 +13,8 @@ import {
 import { FormEvent, useRef, useState } from "react";
 
 import { SiteNav } from "@/components/site-nav";
+import { AgencyCredit } from "@/components/agency-credit";
+import { SocialLinks } from "@/components/social-links";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -323,6 +325,15 @@ export function LeadCapturePage({ config }: { config: LeadCaptureConfig }) {
           </Card>
         </section>
       </main>
+      <footer className="border-t border-border/60 bg-background">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-4 px-5 py-8 text-sm text-muted-foreground sm:flex-row">
+          <div className="text-center sm:text-left">
+            <p>© {new Date().getFullYear()} Le Nid d'Or à Hyères. Tous droits réservés.</p>
+            <AgencyCredit className="mt-1" />
+          </div>
+          <SocialLinks />
+        </div>
+      </footer>
     </div>
   );
 }

@@ -7,7 +7,7 @@ slug: "airbnb-hyeres"
 path: "/airbnb-hyeres"
 excerpt: "Centre historique, port, presqu’île ou hauteurs : le bon Airbnb à Hyères dépend surtout de votre programme. Voici les critères à comparer avant de réserver."
 date: "2026-07-29"
-updatedAt: "2026-07-29"
+updatedAt: "2026-08-02"
 author: "Joëlle"
 category: "PRÉPARER SON SÉJOUR"
 tags: ["Airbnb Hyères", "location Hyères", "studio Hyères", "séjour couple"]
@@ -117,7 +117,7 @@ Réserver sur Airbnb permet de consulter l’annonce, les avis disponibles, les 
 
 Lorsque le logement possède son propre site, la réservation directe offre une autre possibilité : échanger avec la personne qui connaît le lieu et obtenir des réponses précises avant de confirmer. Comparez toujours le même séjour — mêmes dates, même nombre de voyageurs et mêmes conditions — plutôt qu’un simple prix affiché à la nuit.
 
-Pour Le Nid d’Or, le calendrier du site est synchronisé avec Airbnb. La demande directe est ensuite confirmée par Joëlle avec les modalités du séjour. Le tarif direct évite les frais de service d’une plateforme intermédiaire. Le studio reste également présenté sur Airbnb pour les voyageurs qui préfèrent réserver par ce canal.
+Pour Le Nid d’Or, le calendrier du site est synchronisé avec Airbnb. Vous pouvez [vérifier les disponibilités en direct](/#reserver), puis la demande est confirmée par Joëlle avec les modalités du séjour. Le tarif direct évite les frais de service d’une plateforme intermédiaire. Le studio reste également présenté sur Airbnb pour les voyageurs qui préfèrent réserver par ce canal.
 
 ## Le Nid d’Or : un studio à Hyères pour deux voyageurs
 

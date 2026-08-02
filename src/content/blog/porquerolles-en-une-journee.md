@@ -7,7 +7,7 @@ slug: "porquerolles-en-une-journee"
 path: "/porquerolles-en-une-journee"
 excerpt: "Un itinéraire pour voir, sentir et goûter Porquerolles — pas pour établir un record personnel entre deux bateaux."
 date: "2026-07-27"
-updatedAt: "2026-07-29"
+updatedAt: "2026-08-02"
 author: "Joëlle"
 category: "PORQUEROLLES"
 tags: ["Porquerolles en une journée", "visiter Porquerolles", "Porquerolles à vélo", "couple"]
@@ -18,7 +18,7 @@ canonical: ""
 focusKeyword: "Porquerolles en une journée"
 draft: false
 noindex: false
-relatedPosts: ["aller-porquerolles-depuis-hyeres", "guide-plages-hyeres", "visiter-hyeres-3-jours"]
+relatedPosts: ["port-cros-ou-porquerolles", "aller-porquerolles-depuis-hyeres", "guide-plages-hyeres"]
 ctaTitle: "Une île la journée, les Îles d’Or le soir"
 ctaText: "Après Porquerolles, retrouvez au Nid d’Or une terrasse tournée vers l’archipel, loin du mouvement des quais."
 ctaLabel: "Voir le studio"
@@ -29,6 +29,8 @@ ctaUrlLabel: "Consulter les itinéraires officiels"
 Visiter Porquerolles en une journée est largement possible. La vraie question est ailleurs : voulez-vous découvrir l’île ou essayer de la terminer ?
 
 Pour une première visite à deux, choisissez un secteur, une activité principale et une vraie pause. L’île se savoure beaucoup mieux lorsqu’on accepte de ne pas atteindre chaque plage, chaque fort et chaque point de vue avant le dernier bateau.
+
+Si vous hésitez encore entre deux îles, commencez par notre comparaison [Port-Cros ou Porquerolles](/port-cros-ou-porquerolles) avant de réserver une traversée.
 
 ## Avant l’arrivée : préparer la partie la moins glamour
 
@@ -122,6 +124,8 @@ Il donne plus de liberté. Achetez ce dont vous avez besoin avant de vous éloig
 Le romantisme à Porquerolles ne nécessite pas un panier en osier parfaitement photogénique. Il tient souvent à des choses plus simples : partir assez tôt, choisir un chemin calme, partager une baignade et s’asseoir quelque part sans consulter l’heure pendant dix minutes.
 
 Pour prolonger ce rythme pendant le séjour, notre guide [visiter Hyères en 3 jours](/visiter-hyeres-3-jours) répartit les expériences sans les empiler.
+
+Pour le choix du secteur où dormir, lisez aussi [où loger à Hyères pour visiter Porquerolles](/ou-dormir-hyeres-porquerolles).
 
 ## Votre journée en résumé
 

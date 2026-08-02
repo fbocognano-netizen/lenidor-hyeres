@@ -7,7 +7,7 @@ slug: "visiter-presquile-giens"
 path: "/visiter-presquile-giens"
 excerpt: "Giens mérite mieux qu’un passage vers le bateau : une journée entre village, petits ports, sentiers et pauses face à la Méditerranée."
 date: "2026-07-27"
-updatedAt: "2026-07-29"
+updatedAt: "2026-08-02"
 author: "Joëlle"
 category: "VISITER HYÈRES"
 tags: ["visiter Giens", "presqu’île de Giens", "que faire à Giens", "couple"]
@@ -18,7 +18,7 @@ canonical: ""
 focusKeyword: "visiter la presqu’île de Giens"
 draft: false
 noindex: false
-relatedPosts: ["sentier-littoral-giens", "guide-plages-hyeres", "visiter-hyeres-3-jours"]
+relatedPosts: ["sentier-littoral-giens", "port-cros-ou-porquerolles", "guide-plages-hyeres"]
 ctaTitle: "Giens devant vous, le calme derrière vous"
 ctaText: "Depuis Le Nid d’Or, partez explorer la presqu’île puis retrouvez les hauteurs, la piscine et la vue sur l’archipel."
 ctaLabel: "Voir Le Nid d’Or"
@@ -88,6 +88,8 @@ Retrouvez toutes les précautions dans notre guide du [sentier du littoral de Gi
 Oui, mais cela réduit Giens à un complément de programme. Si vous prenez le bateau tôt et revenez en milieu d’après-midi, une courte promenade ou un dîner sur la presqu’île reste envisageable.
 
 Pour vraiment découvrir Giens, consacrez-lui une autre journée. Vous profiterez davantage des ports, des sentiers et du changement d’ambiance.
+
+Si vous devez choisir entre une journée d’île et une journée nature plus proche, notre guide [Port-Cros ou Porquerolles](/port-cros-ou-porquerolles) aide aussi à clarifier le rythme du séjour.
 
 ## Se déplacer et stationner
 
