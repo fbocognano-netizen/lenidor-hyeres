@@ -139,6 +139,104 @@ export type Database = {
         }
         Relationships: []
       }
+      crm_contacts: {
+        Row: {
+          created_at: string
+          email: string
+          first_name: string
+          id: string
+          last_source: string | null
+          last_source_url: string | null
+          last_submitted_at: string
+          lifecycle_stage: string
+          newsletter_consent: boolean
+          newsletter_consent_at: string | null
+          newsletter_consent_text: string | null
+          newsletter_consent_version: string | null
+          notes: string | null
+          phone: string | null
+          segments: string[]
+          sources: string[]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          email: string
+          first_name: string
+          id?: string
+          last_source?: string | null
+          last_source_url?: string | null
+          last_submitted_at?: string
+          lifecycle_stage?: string
+          newsletter_consent?: boolean
+          newsletter_consent_at?: string | null
+          newsletter_consent_text?: string | null
+          newsletter_consent_version?: string | null
+          notes?: string | null
+          phone?: string | null
+          segments?: string[]
+          sources?: string[]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          email?: string
+          first_name?: string
+          id?: string
+          last_source?: string | null
+          last_source_url?: string | null
+          last_submitted_at?: string
+          lifecycle_stage?: string
+          newsletter_consent?: boolean
+          newsletter_consent_at?: string | null
+          newsletter_consent_text?: string | null
+          newsletter_consent_version?: string | null
+          notes?: string | null
+          phone?: string | null
+          segments?: string[]
+          sources?: string[]
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      crm_events: {
+        Row: {
+          contact_id: string
+          created_at: string
+          event_type: string
+          id: string
+          metadata: Json
+          source: string
+          source_url: string | null
+        }
+        Insert: {
+          contact_id: string
+          created_at?: string
+          event_type: string
+          id?: string
+          metadata?: Json
+          source: string
+          source_url?: string | null
+        }
+        Update: {
+          contact_id?: string
+          created_at?: string
+          event_type?: string
+          id?: string
+          metadata?: Json
+          source?: string
+          source_url?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "crm_events_contact_id_fkey"
+            columns: ["contact_id"]
+            isOneToOne: false
+            referencedRelation: "crm_contacts"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       ical_sources: {
         Row: {
           created_at: string
@@ -201,7 +299,21 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      capture_crm_lead: {
+        Args: {
+          p_consent_version: string
+          p_desired_dates: string
+          p_email: string
+          p_first_name: string
+          p_message: string
+          p_newsletter_consent: boolean
+          p_phone: string
+          p_source: string
+          p_source_url: string
+          p_stay_period: string
+        }
+        Returns: undefined
+      }
     }
     Enums: {
       [_ in never]: never
