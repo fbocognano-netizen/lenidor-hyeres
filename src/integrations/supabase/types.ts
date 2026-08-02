@@ -50,24 +50,6 @@ export type Database = {
         }
         Relationships: []
       }
-      agenda_events: {
-        Row: { category: string | null; created_at: string; id: string; last_synced_at: string; location_label: string | null; location_slug: string | null; schedule_text: string | null; source: string; source_event_id: string; source_published_at: string | null; source_updated_at: string | null; source_url: string; title: string; updated_at: string }
-        Insert: { category?: string | null; created_at?: string; id?: string; last_synced_at?: string; location_label?: string | null; location_slug?: string | null; schedule_text?: string | null; source?: string; source_event_id: string; source_published_at?: string | null; source_updated_at?: string | null; source_url: string; title: string; updated_at?: string }
-        Update: { category?: string | null; created_at?: string; id?: string; last_synced_at?: string; location_label?: string | null; location_slug?: string | null; schedule_text?: string | null; source?: string; source_event_id?: string; source_published_at?: string | null; source_updated_at?: string | null; source_url?: string; title?: string; updated_at?: string }
-        Relationships: []
-      }
-      agenda_occurrences: {
-        Row: { created_at: string; event_id: string; id: string; occurrence_date: string; source_checked_at: string }
-        Insert: { created_at?: string; event_id: string; id?: string; occurrence_date: string; source_checked_at?: string }
-        Update: { created_at?: string; event_id?: string; id?: string; occurrence_date?: string; source_checked_at?: string }
-        Relationships: [{ foreignKeyName: "agenda_occurrences_event_id_fkey"; columns: ["event_id"]; isOneToOne: false; referencedRelation: "agenda_events"; referencedColumns: ["id"] }]
-      }
-      agenda_sync_runs: {
-        Row: { completed_at: string | null; created_at: string; error_message: string | null; events_seen: number; id: string; occurrences_seen: number; range_end: string; range_start: string; source: string; started_at: string; status: string; unmatched_events: number }
-        Insert: { completed_at?: string | null; created_at?: string; error_message?: string | null; events_seen?: number; id?: string; occurrences_seen?: number; range_end: string; range_start: string; source?: string; started_at?: string; status: string; unmatched_events?: number }
-        Update: { completed_at?: string | null; created_at?: string; error_message?: string | null; events_seen?: number; id?: string; occurrences_seen?: number; range_end?: string; range_start?: string; source?: string; started_at?: string; status?: string; unmatched_events?: number }
-        Relationships: []
-      }
       booking_notifications: {
         Row: {
           booking_id: string | null
