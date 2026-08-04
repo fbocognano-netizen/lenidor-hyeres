@@ -12,8 +12,8 @@ author: "Joëlle"
 category: "PRÉPARER SON SÉJOUR"
 tags: ["week-end Hyères", "Hyères en amoureux", "séjour en couple", "48 heures à Hyères"]
 featuredImage: "/images/blog/hyeres-3-jours.jpg"
-featuredImageAlt: "Vue panoramique sur les toits de Hyères, la baie et les Îles d'Or"
-featuredImageCaption: "Hyères permet d'alterner facilement centre ancien, littoral et vues sur les îles."
+featuredImageAlt: "Plage de sable sur le littoral de Hyères, avec mer et collines au loin"
+featuredImageCaption: "Un week-end à Hyères permet d'alterner naturellement centre ancien, littoral et temps au bord de l'eau."
 canonical: ""
 focusKeyword: "week-end en amoureux à Hyères"
 draft: false
