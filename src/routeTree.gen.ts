@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as SplatRouteImport } from './routes/$'
 import { Route as AdminRouteImport } from './routes/admin'
+import { Route as AgendaControleLocalRouteImport } from './routes/agenda-controle-local'
 import { Route as ClubNidOrRouteImport } from './routes/club-nid-or'
 import { Route as GuidesHyeresRouteImport } from './routes/guides-hyeres'
 import { Route as MerciClubNidOrRouteImport } from './routes/merci-club-nid-or'
@@ -39,6 +40,11 @@ const SplatRoute = SplatRouteImport.update({
 const AdminRoute = AdminRouteImport.update({
   id: '/admin',
   path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AgendaControleLocalRoute = AgendaControleLocalRouteImport.update({
+  id: '/agenda-controle-local',
+  path: '/agenda-controle-local',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ClubNidOrRoute = ClubNidOrRouteImport.update({
@@ -111,6 +117,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/admin': typeof AdminRoute
+  '/agenda-controle-local': typeof AgendaControleLocalRoute
   '/club-nid-or': typeof ClubNidOrRoute
   '/guides-hyeres': typeof GuidesHyeresRoute
   '/merci-club-nid-or': typeof MerciClubNidOrRoute
@@ -129,6 +136,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/admin': typeof AdminRoute
+  '/agenda-controle-local': typeof AgendaControleLocalRoute
   '/club-nid-or': typeof ClubNidOrRoute
   '/guides-hyeres': typeof GuidesHyeresRoute
   '/merci-club-nid-or': typeof MerciClubNidOrRoute
@@ -148,6 +156,7 @@ export interface FileRoutesById {
   '/': typeof IndexRoute
   '/$': typeof SplatRoute
   '/admin': typeof AdminRoute
+  '/agenda-controle-local': typeof AgendaControleLocalRoute
   '/club-nid-or': typeof ClubNidOrRoute
   '/guides-hyeres': typeof GuidesHyeresRoute
   '/merci-club-nid-or': typeof MerciClubNidOrRoute
@@ -168,6 +177,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$'
     | '/admin'
+    | '/agenda-controle-local'
     | '/club-nid-or'
     | '/guides-hyeres'
     | '/merci-club-nid-or'
@@ -186,6 +196,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$'
     | '/admin'
+    | '/agenda-controle-local'
     | '/club-nid-or'
     | '/guides-hyeres'
     | '/merci-club-nid-or'
@@ -204,6 +215,7 @@ export interface FileRouteTypes {
     | '/'
     | '/$'
     | '/admin'
+    | '/agenda-controle-local'
     | '/club-nid-or'
     | '/guides-hyeres'
     | '/merci-club-nid-or'
@@ -223,6 +235,7 @@ export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   SplatRoute: typeof SplatRoute
   AdminRoute: typeof AdminRoute
+  AgendaControleLocalRoute: typeof AgendaControleLocalRoute
   ClubNidOrRoute: typeof ClubNidOrRoute
   GuidesHyeresRoute: typeof GuidesHyeresRoute
   MerciClubNidOrRoute: typeof MerciClubNidOrRoute
@@ -259,6 +272,13 @@ declare module '@tanstack/react-router' {
       path: '/admin'
       fullPath: '/admin'
       preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/agenda-controle-local': {
+      id: '/agenda-controle-local'
+      path: '/agenda-controle-local'
+      fullPath: '/agenda-controle-local'
+      preLoaderRoute: typeof AgendaControleLocalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/club-nid-or': {
@@ -359,6 +379,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   SplatRoute: SplatRoute,
   AdminRoute: AdminRoute,
+  AgendaControleLocalRoute: AgendaControleLocalRoute,
   ClubNidOrRoute: ClubNidOrRoute,
   GuidesHyeresRoute: GuidesHyeresRoute,
   MerciClubNidOrRoute: MerciClubNidOrRoute,

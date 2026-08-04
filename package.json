@@ -10,7 +10,8 @@
     "preview": "vite preview",
     "lint": "eslint .",
     "format": "prettier --write .",
-    "validate:blog": "node scripts/validate-blog.mjs"
+    "validate:blog": "node scripts/validate-blog.mjs",
+    "agenda:check": "node scripts/check-hyeres-agenda-source.mjs"
   },
   "dependencies": {
     "@hookform/resolvers": "^5.2.2",
