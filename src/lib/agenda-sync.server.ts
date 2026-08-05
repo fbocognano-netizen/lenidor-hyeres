@@ -3,11 +3,17 @@
 
 import { annotateEvent } from "./agenda-editorial.server";
 import {
+  getCoteAzurEvents,
+  matchCoteAzurEvent,
+  type CoteAzurEvent,
+} from "./cote-azur-agenda.server";
+import {
   getCityAgendaPreview,
   locationLabel,
   type CityAgendaEvent,
 } from "./hyeres-agenda.server";
 import { errorDetails, logAppEvent } from "./logging.server";
+
 
 export type AgendaSyncResult = {
   runId: string | null;
