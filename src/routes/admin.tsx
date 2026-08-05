@@ -432,6 +432,12 @@ function AdminPage() {
             <GalleryPanel />
           </TabsContent>
 
+          <TabsContent value="agenda" className="mt-6">
+            <AgendaPanel />
+          </TabsContent>
+
+
+
           <TabsContent value="logs" className="mt-6">
             <AppLogsPanel />
           </TabsContent>
