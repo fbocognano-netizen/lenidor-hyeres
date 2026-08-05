@@ -4,7 +4,8 @@
 const CITY_ORIGIN = "https://hyeres.fr";
 const CITY_AGENDA_PATH = "/agenda-hyeres/";
 const CITY_EVENTS_PATH = "/wp-json/wp/v2/evenement";
-const REQUEST_TIMEOUT_MS = 15_000;
+const REQUEST_TIMEOUT_MS = 25_000;
+const DAY_CONCURRENCY = 5;
 const MAX_RESPONSE_BYTES = 4_000_000;
 
 export type CityAgendaCard = {
@@ -160,15 +161,18 @@ export async function getCityAgendaPreview(
     { length: days },
     (_, index) => new Date(startDate.getTime() + index * 86_400_000),
   );
-  const [cardsByDay, cityEvents] = await Promise.all([
-    Promise.all(
-      dates.map(async (date) => ({
+  const cardsByDay: Array<{ date: string; cards: CityAgendaCard[] }> = [];
+  for (let index = 0; index < dates.length; index += DAY_CONCURRENCY) {
+    const batch = dates.slice(index, index + DAY_CONCURRENCY);
+    const results = await Promise.all(
+      batch.map(async (date) => ({
         date: date.toISOString().slice(0, 10),
-        cards: await getCityAgendaCardsForDay(date),
+        cards: await getCityAgendaCardsForDay(date).catch(() => [] as CityAgendaCard[]),
       })),
-    ),
-    getCityAgendaEvents(),
-  ]);
+    );
+    cardsByDay.push(...results);
+  }
+  const cityEvents = await getCityAgendaEvents();
   return {
     startDate: dates[0]?.toISOString().slice(0, 10) ?? "",
     endDate: dates.at(-1)?.toISOString().slice(0, 10) ?? "",
