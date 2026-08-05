@@ -384,6 +384,7 @@ function AdminPage() {
             <TabsTrigger value="ical" className="rounded-full">Calendriers iCal</TabsTrigger>
             <TabsTrigger value="ota" className="rounded-full">Plateformes</TabsTrigger>
             <TabsTrigger value="photos" className="rounded-full">Photos</TabsTrigger>
+            <TabsTrigger value="agenda" className="rounded-full">Agenda</TabsTrigger>
             <TabsTrigger value="logs" className="rounded-full">Logs</TabsTrigger>
           </TabsList>
 
