@@ -1,0 +1,25 @@
+name: Synchroniser l'agenda de Hyères
+
+on:
+  schedule:
+    - cron: "17 2 * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  synchronize:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Lancer la synchronisation
+        env:
+          AGENDA_SYNC_URL: ${{ secrets.AGENDA_SYNC_URL }}
+          AGENDA_SYNC_SECRET: ${{ secrets.AGENDA_SYNC_SECRET }}
+        run: |
+          test -n "$AGENDA_SYNC_URL"
+          test -n "$AGENDA_SYNC_SECRET"
+          curl --fail --silent --show-error --retry 2 --retry-all-errors \
+            --request POST \
+            --header "Authorization: Bearer $AGENDA_SYNC_SECRET" \
+            "$AGENDA_SYNC_URL/api/internal/agenda/sync"

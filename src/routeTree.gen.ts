@@ -25,6 +25,7 @@ import { Route as ApiAppLogRouteImport } from './routes/api/app-log'
 import { Route as ApiAdminLoginRouteImport } from './routes/api/admin/login'
 import { Route as ApiAdminLogoutRouteImport } from './routes/api/admin/logout'
 import { Route as ApiAdminGalleryUploadRouteImport } from './routes/api/admin/gallery/upload'
+import { Route as ApiInternalAgendaSyncRouteImport } from './routes/api/internal/agenda/sync'
 import { Route as ApiPublicGalleryNameRouteImport } from './routes/api/public/gallery/$name'
 
 const IndexRoute = IndexRouteImport.update({
@@ -107,6 +108,11 @@ const ApiAdminGalleryUploadRoute = ApiAdminGalleryUploadRouteImport.update({
   path: '/api/admin/gallery/upload',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiInternalAgendaSyncRoute = ApiInternalAgendaSyncRouteImport.update({
+  id: '/api/internal/agenda/sync',
+  path: '/api/internal/agenda/sync',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiPublicGalleryNameRoute = ApiPublicGalleryNameRouteImport.update({
   id: '/api/public/gallery/$name',
   path: '/api/public/gallery/$name',
@@ -130,6 +136,7 @@ export interface FileRoutesByFullPath {
   '/api/admin/login': typeof ApiAdminLoginRoute
   '/api/admin/logout': typeof ApiAdminLogoutRoute
   '/api/admin/gallery/upload': typeof ApiAdminGalleryUploadRoute
+  '/api/internal/agenda/sync': typeof ApiInternalAgendaSyncRoute
   '/api/public/gallery/$name': typeof ApiPublicGalleryNameRoute
 }
 export interface FileRoutesByTo {
@@ -149,6 +156,7 @@ export interface FileRoutesByTo {
   '/api/admin/login': typeof ApiAdminLoginRoute
   '/api/admin/logout': typeof ApiAdminLogoutRoute
   '/api/admin/gallery/upload': typeof ApiAdminGalleryUploadRoute
+  '/api/internal/agenda/sync': typeof ApiInternalAgendaSyncRoute
   '/api/public/gallery/$name': typeof ApiPublicGalleryNameRoute
 }
 export interface FileRoutesById {
@@ -169,6 +177,7 @@ export interface FileRoutesById {
   '/api/admin/login': typeof ApiAdminLoginRoute
   '/api/admin/logout': typeof ApiAdminLogoutRoute
   '/api/admin/gallery/upload': typeof ApiAdminGalleryUploadRoute
+  '/api/internal/agenda/sync': typeof ApiInternalAgendaSyncRoute
   '/api/public/gallery/$name': typeof ApiPublicGalleryNameRoute
 }
 export interface FileRouteTypes {
@@ -190,6 +199,7 @@ export interface FileRouteTypes {
     | '/api/admin/login'
     | '/api/admin/logout'
     | '/api/admin/gallery/upload'
+    | '/api/internal/agenda/sync'
     | '/api/public/gallery/$name'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -209,6 +219,7 @@ export interface FileRouteTypes {
     | '/api/admin/login'
     | '/api/admin/logout'
     | '/api/admin/gallery/upload'
+    | '/api/internal/agenda/sync'
     | '/api/public/gallery/$name'
   id:
     | '__root__'
@@ -228,6 +239,7 @@ export interface FileRouteTypes {
     | '/api/admin/login'
     | '/api/admin/logout'
     | '/api/admin/gallery/upload'
+    | '/api/internal/agenda/sync'
     | '/api/public/gallery/$name'
   fileRoutesById: FileRoutesById
 }
@@ -248,6 +260,7 @@ export interface RootRouteChildren {
   ApiAdminLoginRoute: typeof ApiAdminLoginRoute
   ApiAdminLogoutRoute: typeof ApiAdminLogoutRoute
   ApiAdminGalleryUploadRoute: typeof ApiAdminGalleryUploadRoute
+  ApiInternalAgendaSyncRoute: typeof ApiInternalAgendaSyncRoute
   ApiPublicGalleryNameRoute: typeof ApiPublicGalleryNameRoute
 }
 
@@ -365,6 +378,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminGalleryUploadRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/internal/agenda/sync': {
+      id: '/api/internal/agenda/sync'
+      path: '/api/internal/agenda/sync'
+      fullPath: '/api/internal/agenda/sync'
+      preLoaderRoute: typeof ApiInternalAgendaSyncRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/api/public/gallery/$name': {
       id: '/api/public/gallery/$name'
       path: '/api/public/gallery/$name'
@@ -392,6 +412,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminLoginRoute: ApiAdminLoginRoute,
   ApiAdminLogoutRoute: ApiAdminLogoutRoute,
   ApiAdminGalleryUploadRoute: ApiAdminGalleryUploadRoute,
+  ApiInternalAgendaSyncRoute: ApiInternalAgendaSyncRoute,
   ApiPublicGalleryNameRoute: ApiPublicGalleryNameRoute,
 }
 export const routeTree = rootRouteImport
