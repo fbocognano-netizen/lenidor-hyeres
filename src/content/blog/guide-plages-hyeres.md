@@ -36,7 +36,7 @@ Si votre séjour inclut une sortie vers les îles, commencez par préparer [la t
 
 *10 min en voiture du studio*
 
-La plage de l'Almanarre est l'une des plus célèbres de Hyères. Longue bande de sable bordée de pins et de sel, elle offre une vue magnifique sur les Salins et les Îles d'Or. C'est aussi le spot incontournable pour le kitesurf et la planche à voile quand le mistral souffle.
+La [plage de l'Almanarre](/plage-almanarre-acces-vent) est l'une des plus célèbres de Hyères. Longue bande de sable bordée de pins et de sel, elle offre une vue magnifique sur les Salins et les Îles d'Or. C'est aussi le spot incontournable pour le kitesurf et la planche à voile quand le mistral souffle. Pour choisir votre moment, consultez notre guide consacré à son accès et au vent.
 
 ## Plage Notre-Dame
 
@@ -46,9 +46,9 @@ Située sur l'île de Porquerolles, la plage Notre-Dame est une plage familiale 
 
 ## Plage de la Bergerie
 
-*Sur la presqu'île de Giens*
+*Sur la presqu’île de Giens*
 
-Sur la presqu’île de Giens, la plage de la Bergerie est une longue plage de sable aux eaux peu profondes, particulièrement appréciée des familles. Facilement accessible en voiture, elle offre un cadre agréable et une belle vue sur la baie de Hyères.
+Sur la presqu’île de Giens, la [plage de la Bergerie](/plage-bergerie-hyeres) est une longue plage de sable aux eaux peu profondes, particulièrement appréciée des familles. Facilement accessible en voiture, elle offre un cadre agréable et une belle vue sur la baie de Hyères. Notre article dédié détaille l’accès, la baignade et les repères utiles sur place.
 
 ## Plage d'Argent
 
@@ -60,7 +60,7 @@ La plage d'Argent, à Porquerolles, est souvent citée parmi les plus belles de 
 
 | Plage | Situation | Idéale pour |
 | --- | --- | --- |
-| Almanarre | Hyères, 10 min en voiture du studio | Kitesurf, planche à voile, couchers de soleil |
+| [Almanarre](/plage-almanarre-acces-vent) | Hyères, 10 min en voiture du studio | Kitesurf, planche à voile, couchers de soleil |
 | Notre-Dame | Île de Porquerolles (traversée + trajet sur l'île) | Familles, eaux calmes |
-| La Bergerie | Presqu'île de Giens | Nature, snorkeling |
+| [La Bergerie](/plage-bergerie-hyeres) | Presqu'île de Giens | Nature, snorkeling |
 | Plage d'Argent | Île de Porquerolles (traversée) | Baignade, sable fin |
