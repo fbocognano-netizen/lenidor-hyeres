@@ -23,7 +23,10 @@ export type AgendaSyncResult = {
   eventsSeen: number;
   occurrencesSeen: number;
   unmatchedEvents: number;
+  coteAzurEvents: number;
+  coteAzurMatched: number;
   errorMessage?: string;
+
 };
 
 const DEFAULT_DAYS = 45;
