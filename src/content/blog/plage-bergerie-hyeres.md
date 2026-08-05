@@ -11,7 +11,7 @@ updatedAt: "2026-08-05"
 author: "Joëlle"
 category: "PLAGES & NATURE"
 tags: ["plage de la Bergerie", "plage Giens", "plage Hyères", "presqu’île de Giens"]
-featuredImage: "/images/blog/presquile-giens.jpg"
+featuredImage: "/images/blog/plage-bergerie-hyeres.jpg"
 featuredImageAlt: "Escalier en bois vers le littoral de Giens, avec une main au premier plan"
 featuredImageCaption: ""
 canonical: ""
