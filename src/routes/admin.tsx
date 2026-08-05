@@ -26,6 +26,7 @@ import {
 import { useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { toast, Toaster } from "sonner";
 
+import { AgendaPanel } from "@/components/admin/agenda-panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
