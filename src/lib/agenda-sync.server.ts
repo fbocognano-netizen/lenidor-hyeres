@@ -232,6 +232,8 @@ export async function runAgendaSync(options: { days?: number } = {}): Promise<Ag
       eventsSeen: 0,
       occurrencesSeen: 0,
       unmatchedEvents: 0,
+      coteAzurEvents: 0,
+      coteAzurMatched: 0,
       errorMessage,
     };
   }
