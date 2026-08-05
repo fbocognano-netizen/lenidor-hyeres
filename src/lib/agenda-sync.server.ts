@@ -75,9 +75,8 @@ export async function runAgendaSync(options: { days?: number } = {}): Promise<Ag
       }
     }
 
-    const nowIso = new Date().toISOString();
-    const rows = Array.from(matched.values()).map(({ event }) => {
     let coteAzurCandidates: CoteAzurEvent[] = [];
+
     try {
       coteAzurCandidates = await getCoteAzurEvents(rangeStart, rangeEnd);
     } catch (coteAzurError) {
