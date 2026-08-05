@@ -176,6 +176,8 @@ export async function runAgendaSync(options: { days?: number } = {}): Promise<Ag
       eventsSeen: rows.length,
       occurrencesSeen,
       unmatchedEvents,
+      coteAzurEvents: coteAzurCandidates.length,
+      coteAzurMatched,
     };
 
     if (runId) {
