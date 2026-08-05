@@ -81,7 +81,7 @@ export async function runAgendaSync(options: { days?: number } = {}): Promise<Ag
       coteAzurCandidates = await getCoteAzurEvents(rangeStart, rangeEnd);
     } catch (coteAzurError) {
       await logAppEvent({
-        level: "warn",
+        level: "warning",
         event: "agenda_cote_azur_fetch_failed",
         area: "agenda",
         message: "La source Côte d'Azur est indisponible, synchronisation poursuivie sans elle.",
