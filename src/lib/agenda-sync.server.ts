@@ -77,12 +77,30 @@ export async function runAgendaSync(options: { days?: number } = {}): Promise<Ag
 
     const nowIso = new Date().toISOString();
     const rows = Array.from(matched.values()).map(({ event }) => {
+    let coteAzurCandidates: CoteAzurEvent[] = [];
+    try {
+      coteAzurCandidates = await getCoteAzurEvents(rangeStart, rangeEnd);
+    } catch (coteAzurError) {
+      await logAppEvent({
+        level: "warn",
+        event: "agenda_cote_azur_fetch_failed",
+        area: "agenda",
+        message: "La source Côte d'Azur est indisponible, synchronisation poursuivie sans elle.",
+        details: errorDetails(coteAzurError, { rangeStart, rangeEnd }),
+      });
+    }
+
+    let coteAzurMatched = 0;
+    const nowIso = new Date().toISOString();
+    const rows = Array.from(matched.values()).map(({ event, dates }) => {
       const annotation = annotateEvent({
         title: event.title,
         category: event.category,
         locationSlug: event.locationSlug,
         scheduleText: event.scheduleText,
       });
+      const coteAzur = matchCoteAzurEvent(event.title, dates, coteAzurCandidates);
+      if (coteAzur) coteAzurMatched += 1;
       return {
         source: "hyeres",
         source_event_id: event.sourceEventId,
@@ -100,8 +118,12 @@ export async function runAgendaSync(options: { days?: number } = {}): Promise<Ag
         editorial_rhythm: annotation.editorialRhythm,
         editorial_score: annotation.editorialScore,
         editorial_tags: annotation.editorialTags,
+        cote_azur_source_url: coteAzur?.sourceUrl ?? null,
+        cote_azur_type: coteAzur?.type ?? null,
       };
     });
+
+
 
     if (rows.length > 0) {
       const { data: upserted, error: upsertError } = await supabaseAdmin
