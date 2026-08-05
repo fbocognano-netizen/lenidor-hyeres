@@ -12,8 +12,8 @@ author: "Joëlle"
 category: "VISITER HYÈRES"
 tags: ["visiter Hyères en 3 jours", "week-end Hyères", "séjour couple", "itinéraire Hyères"]
 featuredImage: "/images/blog/hyeres-3-jours.jpg"
-featuredImageAlt: "Panorama sur Hyères et les Îles d'Or depuis les hauteurs"
-featuredImageCaption: ""
+featuredImageAlt: "Plage de sable sur le littoral de Hyères, avec mer et collines au loin"
+featuredImageCaption: "Une pause au bord de l'eau trouve naturellement sa place dans un séjour de trois jours à Hyères."
 canonical: ""
 focusKeyword: "visiter Hyères en 3 jours"
 draft: false
