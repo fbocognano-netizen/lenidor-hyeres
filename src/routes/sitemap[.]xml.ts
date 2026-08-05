@@ -4,7 +4,7 @@ import type {} from "@tanstack/react-start";
 import { getIndexablePosts } from "@/lib/blog";
 
 const BASE_URL = "https://lenidor-hyeres.fr";
-const SITEMAP_CHANGEFREQ = "daily";
+const SITEMAP_CHANGEFREQ = "daily" as const;
 
 interface SitemapEntry {
   path: string;
