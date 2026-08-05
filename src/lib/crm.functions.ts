@@ -25,12 +25,12 @@ export const captureCrmLead = createServerFn({ method: "POST" })
     const { error } = await supabase.rpc("capture_crm_lead", {
       p_first_name: data.first_name,
       p_email: data.email,
-      p_phone: data.phone || null,
+      p_phone: data.phone || "",
       p_source: data.source,
-      p_source_url: data.source_url || null,
-      p_stay_period: data.stay_period || null,
-      p_desired_dates: data.desired_dates || null,
-      p_message: data.message || null,
+      p_source_url: data.source_url || "",
+      p_stay_period: data.stay_period || "",
+      p_desired_dates: data.desired_dates || "",
+      p_message: data.message || "",
       p_newsletter_consent: data.newsletter_consent,
       p_consent_version: CONSENT_VERSION,
     });
