@@ -26,6 +26,7 @@ import {
 import { useMemo, useState, type FormEvent, type ReactNode } from "react";
 import { toast, Toaster } from "sonner";
 
+import { AgendaPanel } from "@/components/admin/agenda-panel";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -384,6 +385,7 @@ function AdminPage() {
             <TabsTrigger value="ical" className="rounded-full">Calendriers iCal</TabsTrigger>
             <TabsTrigger value="ota" className="rounded-full">Plateformes</TabsTrigger>
             <TabsTrigger value="photos" className="rounded-full">Photos</TabsTrigger>
+            <TabsTrigger value="agenda" className="rounded-full">Agenda</TabsTrigger>
             <TabsTrigger value="logs" className="rounded-full">Logs</TabsTrigger>
           </TabsList>
 
@@ -430,6 +432,12 @@ function AdminPage() {
           <TabsContent value="photos" className="mt-6">
             <GalleryPanel />
           </TabsContent>
+
+          <TabsContent value="agenda" className="mt-6">
+            <AgendaPanel />
+          </TabsContent>
+
+
 
           <TabsContent value="logs" className="mt-6">
             <AppLogsPanel />
