@@ -17,7 +17,13 @@ export type Database = {
       agenda_events: {
         Row: {
           category: string | null
+          cote_azur_source_url: string | null
+          cote_azur_type: string | null
           created_at: string
+          editorial_priority: string | null
+          editorial_rhythm: string | null
+          editorial_score: number
+          editorial_tags: string[]
           id: string
           last_synced_at: string
           location_label: string | null
@@ -29,11 +35,18 @@ export type Database = {
           source_updated_at: string | null
           source_url: string
           title: string
+          traveler_category: string | null
           updated_at: string
         }
         Insert: {
           category?: string | null
+          cote_azur_source_url?: string | null
+          cote_azur_type?: string | null
           created_at?: string
+          editorial_priority?: string | null
+          editorial_rhythm?: string | null
+          editorial_score?: number
+          editorial_tags?: string[]
           id?: string
           last_synced_at?: string
           location_label?: string | null
@@ -45,11 +58,18 @@ export type Database = {
           source_updated_at?: string | null
           source_url: string
           title: string
+          traveler_category?: string | null
           updated_at?: string
         }
         Update: {
           category?: string | null
+          cote_azur_source_url?: string | null
+          cote_azur_type?: string | null
           created_at?: string
+          editorial_priority?: string | null
+          editorial_rhythm?: string | null
+          editorial_score?: number
+          editorial_tags?: string[]
           id?: string
           last_synced_at?: string
           location_label?: string | null
@@ -61,6 +81,7 @@ export type Database = {
           source_updated_at?: string | null
           source_url?: string
           title?: string
+          traveler_category?: string | null
           updated_at?: string
         }
         Relationships: []

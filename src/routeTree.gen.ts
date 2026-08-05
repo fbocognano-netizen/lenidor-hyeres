@@ -9,66 +9,26 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
-import { Route as IndexRouteImport } from './routes/index'
-import { Route as SplatRouteImport } from './routes/$'
-import { Route as AdminRouteImport } from './routes/admin'
-import { Route as ClubNidOrRouteImport } from './routes/club-nid-or'
-import { Route as GuidesHyeresRouteImport } from './routes/guides-hyeres'
-import { Route as MerciClubNidOrRouteImport } from './routes/merci-club-nid-or'
-import { Route as MerciOffreDirecteRouteImport } from './routes/merci-offre-directe'
-import { Route as OffresDirectesRouteImport } from './routes/offres-directes'
-import { Route as ReserverEnDirectRouteImport } from './routes/reserver-en-direct'
-import { Route as RssDotxmlRouteImport } from './routes/rss[.]xml'
 import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
+import { Route as RssDotxmlRouteImport } from './routes/rss[.]xml'
+import { Route as ReserverEnDirectRouteImport } from './routes/reserver-en-direct'
+import { Route as OffresDirectesRouteImport } from './routes/offres-directes'
+import { Route as MerciOffreDirecteRouteImport } from './routes/merci-offre-directe'
+import { Route as MerciClubNidOrRouteImport } from './routes/merci-club-nid-or'
+import { Route as GuidesHyeresRouteImport } from './routes/guides-hyeres'
+import { Route as ClubNidOrRouteImport } from './routes/club-nid-or'
+import { Route as AdminRouteImport } from './routes/admin'
+import { Route as SplatRouteImport } from './routes/$'
+import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiAppLogRouteImport } from './routes/api/app-log'
-import { Route as ApiAdminLoginRouteImport } from './routes/api/admin/login'
 import { Route as ApiAdminLogoutRouteImport } from './routes/api/admin/logout'
-import { Route as ApiAdminGalleryUploadRouteImport } from './routes/api/admin/gallery/upload'
+import { Route as ApiAdminLoginRouteImport } from './routes/api/admin/login'
 import { Route as ApiPublicGalleryNameRouteImport } from './routes/api/public/gallery/$name'
+import { Route as ApiAdminGalleryUploadRouteImport } from './routes/api/admin/gallery/upload'
 
-const IndexRoute = IndexRouteImport.update({
-  id: '/',
-  path: '/',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const SplatRoute = SplatRouteImport.update({
-  id: '/$',
-  path: '/$',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const AdminRoute = AdminRouteImport.update({
-  id: '/admin',
-  path: '/admin',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ClubNidOrRoute = ClubNidOrRouteImport.update({
-  id: '/club-nid-or',
-  path: '/club-nid-or',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const GuidesHyeresRoute = GuidesHyeresRouteImport.update({
-  id: '/guides-hyeres',
-  path: '/guides-hyeres',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MerciClubNidOrRoute = MerciClubNidOrRouteImport.update({
-  id: '/merci-club-nid-or',
-  path: '/merci-club-nid-or',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const MerciOffreDirecteRoute = MerciOffreDirecteRouteImport.update({
-  id: '/merci-offre-directe',
-  path: '/merci-offre-directe',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const OffresDirectesRoute = OffresDirectesRouteImport.update({
-  id: '/offres-directes',
-  path: '/offres-directes',
-  getParentRoute: () => rootRouteImport,
-} as any)
-const ReserverEnDirectRoute = ReserverEnDirectRouteImport.update({
-  id: '/reserver-en-direct',
-  path: '/reserver-en-direct',
+const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
+  id: '/sitemap.xml',
+  path: '/sitemap.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RssDotxmlRoute = RssDotxmlRouteImport.update({
@@ -76,9 +36,49 @@ const RssDotxmlRoute = RssDotxmlRouteImport.update({
   path: '/rss.xml',
   getParentRoute: () => rootRouteImport,
 } as any)
-const SitemapDotxmlRoute = SitemapDotxmlRouteImport.update({
-  id: '/sitemap.xml',
-  path: '/sitemap.xml',
+const ReserverEnDirectRoute = ReserverEnDirectRouteImport.update({
+  id: '/reserver-en-direct',
+  path: '/reserver-en-direct',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OffresDirectesRoute = OffresDirectesRouteImport.update({
+  id: '/offres-directes',
+  path: '/offres-directes',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MerciOffreDirecteRoute = MerciOffreDirecteRouteImport.update({
+  id: '/merci-offre-directe',
+  path: '/merci-offre-directe',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MerciClubNidOrRoute = MerciClubNidOrRouteImport.update({
+  id: '/merci-club-nid-or',
+  path: '/merci-club-nid-or',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuidesHyeresRoute = GuidesHyeresRouteImport.update({
+  id: '/guides-hyeres',
+  path: '/guides-hyeres',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ClubNidOrRoute = ClubNidOrRouteImport.update({
+  id: '/club-nid-or',
+  path: '/club-nid-or',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRoute = AdminRouteImport.update({
+  id: '/admin',
+  path: '/admin',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SplatRoute = SplatRouteImport.update({
+  id: '/$',
+  path: '/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const IndexRoute = IndexRouteImport.update({
+  id: '/',
+  path: '/',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiAppLogRoute = ApiAppLogRouteImport.update({
@@ -86,24 +86,24 @@ const ApiAppLogRoute = ApiAppLogRouteImport.update({
   path: '/api/app-log',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAdminLoginRoute = ApiAdminLoginRouteImport.update({
-  id: '/api/admin/login',
-  path: '/api/admin/login',
-  getParentRoute: () => rootRouteImport,
-} as any)
 const ApiAdminLogoutRoute = ApiAdminLogoutRouteImport.update({
   id: '/api/admin/logout',
   path: '/api/admin/logout',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiAdminGalleryUploadRoute = ApiAdminGalleryUploadRouteImport.update({
-  id: '/api/admin/gallery/upload',
-  path: '/api/admin/gallery/upload',
+const ApiAdminLoginRoute = ApiAdminLoginRouteImport.update({
+  id: '/api/admin/login',
+  path: '/api/admin/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ApiPublicGalleryNameRoute = ApiPublicGalleryNameRouteImport.update({
   id: '/api/public/gallery/$name',
   path: '/api/public/gallery/$name',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiAdminGalleryUploadRoute = ApiAdminGalleryUploadRouteImport.update({
+  id: '/api/admin/gallery/upload',
+  path: '/api/admin/gallery/upload',
   getParentRoute: () => rootRouteImport,
 } as any)
 
@@ -240,67 +240,11 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
-    '/': {
-      id: '/'
-      path: '/'
-      fullPath: '/'
-      preLoaderRoute: typeof IndexRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/$': {
-      id: '/$'
-      path: '/$'
-      fullPath: '/$'
-      preLoaderRoute: typeof SplatRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/admin': {
-      id: '/admin'
-      path: '/admin'
-      fullPath: '/admin'
-      preLoaderRoute: typeof AdminRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/club-nid-or': {
-      id: '/club-nid-or'
-      path: '/club-nid-or'
-      fullPath: '/club-nid-or'
-      preLoaderRoute: typeof ClubNidOrRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/guides-hyeres': {
-      id: '/guides-hyeres'
-      path: '/guides-hyeres'
-      fullPath: '/guides-hyeres'
-      preLoaderRoute: typeof GuidesHyeresRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/merci-club-nid-or': {
-      id: '/merci-club-nid-or'
-      path: '/merci-club-nid-or'
-      fullPath: '/merci-club-nid-or'
-      preLoaderRoute: typeof MerciClubNidOrRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/merci-offre-directe': {
-      id: '/merci-offre-directe'
-      path: '/merci-offre-directe'
-      fullPath: '/merci-offre-directe'
-      preLoaderRoute: typeof MerciOffreDirecteRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/offres-directes': {
-      id: '/offres-directes'
-      path: '/offres-directes'
-      fullPath: '/offres-directes'
-      preLoaderRoute: typeof OffresDirectesRouteImport
-      parentRoute: typeof rootRouteImport
-    }
-    '/reserver-en-direct': {
-      id: '/reserver-en-direct'
-      path: '/reserver-en-direct'
-      fullPath: '/reserver-en-direct'
-      preLoaderRoute: typeof ReserverEnDirectRouteImport
+    '/sitemap.xml': {
+      id: '/sitemap.xml'
+      path: '/sitemap.xml'
+      fullPath: '/sitemap.xml'
+      preLoaderRoute: typeof SitemapDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/rss.xml': {
@@ -310,11 +254,67 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof RssDotxmlRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/sitemap.xml': {
-      id: '/sitemap.xml'
-      path: '/sitemap.xml'
-      fullPath: '/sitemap.xml'
-      preLoaderRoute: typeof SitemapDotxmlRouteImport
+    '/reserver-en-direct': {
+      id: '/reserver-en-direct'
+      path: '/reserver-en-direct'
+      fullPath: '/reserver-en-direct'
+      preLoaderRoute: typeof ReserverEnDirectRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/offres-directes': {
+      id: '/offres-directes'
+      path: '/offres-directes'
+      fullPath: '/offres-directes'
+      preLoaderRoute: typeof OffresDirectesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/merci-offre-directe': {
+      id: '/merci-offre-directe'
+      path: '/merci-offre-directe'
+      fullPath: '/merci-offre-directe'
+      preLoaderRoute: typeof MerciOffreDirecteRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/merci-club-nid-or': {
+      id: '/merci-club-nid-or'
+      path: '/merci-club-nid-or'
+      fullPath: '/merci-club-nid-or'
+      preLoaderRoute: typeof MerciClubNidOrRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guides-hyeres': {
+      id: '/guides-hyeres'
+      path: '/guides-hyeres'
+      fullPath: '/guides-hyeres'
+      preLoaderRoute: typeof GuidesHyeresRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/club-nid-or': {
+      id: '/club-nid-or'
+      path: '/club-nid-or'
+      fullPath: '/club-nid-or'
+      preLoaderRoute: typeof ClubNidOrRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin': {
+      id: '/admin'
+      path: '/admin'
+      fullPath: '/admin'
+      preLoaderRoute: typeof AdminRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/$': {
+      id: '/$'
+      path: '/$'
+      fullPath: '/$'
+      preLoaderRoute: typeof SplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/': {
+      id: '/'
+      path: '/'
+      fullPath: '/'
+      preLoaderRoute: typeof IndexRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/app-log': {
@@ -324,13 +324,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAppLogRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/admin/login': {
-      id: '/api/admin/login'
-      path: '/api/admin/login'
-      fullPath: '/api/admin/login'
-      preLoaderRoute: typeof ApiAdminLoginRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/admin/logout': {
       id: '/api/admin/logout'
       path: '/api/admin/logout'
@@ -338,11 +331,11 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminLogoutRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/admin/gallery/upload': {
-      id: '/api/admin/gallery/upload'
-      path: '/api/admin/gallery/upload'
-      fullPath: '/api/admin/gallery/upload'
-      preLoaderRoute: typeof ApiAdminGalleryUploadRouteImport
+    '/api/admin/login': {
+      id: '/api/admin/login'
+      path: '/api/admin/login'
+      fullPath: '/api/admin/login'
+      preLoaderRoute: typeof ApiAdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/api/public/gallery/$name': {
@@ -350,6 +343,13 @@ declare module '@tanstack/react-router' {
       path: '/api/public/gallery/$name'
       fullPath: '/api/public/gallery/$name'
       preLoaderRoute: typeof ApiPublicGalleryNameRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/admin/gallery/upload': {
+      id: '/api/admin/gallery/upload'
+      path: '/api/admin/gallery/upload'
+      fullPath: '/api/admin/gallery/upload'
+      preLoaderRoute: typeof ApiAdminGalleryUploadRouteImport
       parentRoute: typeof rootRouteImport
     }
   }
