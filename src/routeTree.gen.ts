@@ -23,7 +23,6 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as ApiAppLogRouteImport } from './routes/api/app-log'
 import { Route as ApiAdminLogoutRouteImport } from './routes/api/admin/logout'
 import { Route as ApiAdminLoginRouteImport } from './routes/api/admin/login'
-import { Route as ApiPublicHooksAgendaSyncRouteImport } from './routes/api/public/hooks/agenda-sync'
 import { Route as ApiPublicGalleryNameRouteImport } from './routes/api/public/gallery/$name'
 import { Route as ApiAdminGalleryUploadRouteImport } from './routes/api/admin/gallery/upload'
 
@@ -97,12 +96,6 @@ const ApiAdminLoginRoute = ApiAdminLoginRouteImport.update({
   path: '/api/admin/login',
   getParentRoute: () => rootRouteImport,
 } as any)
-const ApiPublicHooksAgendaSyncRoute =
-  ApiPublicHooksAgendaSyncRouteImport.update({
-    id: '/api/public/hooks/agenda-sync',
-    path: '/api/public/hooks/agenda-sync',
-    getParentRoute: () => rootRouteImport,
-  } as any)
 const ApiPublicGalleryNameRoute = ApiPublicGalleryNameRouteImport.update({
   id: '/api/public/gallery/$name',
   path: '/api/public/gallery/$name',
@@ -131,7 +124,6 @@ export interface FileRoutesByFullPath {
   '/api/admin/logout': typeof ApiAdminLogoutRoute
   '/api/admin/gallery/upload': typeof ApiAdminGalleryUploadRoute
   '/api/public/gallery/$name': typeof ApiPublicGalleryNameRoute
-  '/api/public/hooks/agenda-sync': typeof ApiPublicHooksAgendaSyncRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -150,7 +142,6 @@ export interface FileRoutesByTo {
   '/api/admin/logout': typeof ApiAdminLogoutRoute
   '/api/admin/gallery/upload': typeof ApiAdminGalleryUploadRoute
   '/api/public/gallery/$name': typeof ApiPublicGalleryNameRoute
-  '/api/public/hooks/agenda-sync': typeof ApiPublicHooksAgendaSyncRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -170,7 +161,6 @@ export interface FileRoutesById {
   '/api/admin/logout': typeof ApiAdminLogoutRoute
   '/api/admin/gallery/upload': typeof ApiAdminGalleryUploadRoute
   '/api/public/gallery/$name': typeof ApiPublicGalleryNameRoute
-  '/api/public/hooks/agenda-sync': typeof ApiPublicHooksAgendaSyncRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -191,7 +181,6 @@ export interface FileRouteTypes {
     | '/api/admin/logout'
     | '/api/admin/gallery/upload'
     | '/api/public/gallery/$name'
-    | '/api/public/hooks/agenda-sync'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -210,7 +199,6 @@ export interface FileRouteTypes {
     | '/api/admin/logout'
     | '/api/admin/gallery/upload'
     | '/api/public/gallery/$name'
-    | '/api/public/hooks/agenda-sync'
   id:
     | '__root__'
     | '/'
@@ -229,7 +217,6 @@ export interface FileRouteTypes {
     | '/api/admin/logout'
     | '/api/admin/gallery/upload'
     | '/api/public/gallery/$name'
-    | '/api/public/hooks/agenda-sync'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -249,7 +236,6 @@ export interface RootRouteChildren {
   ApiAdminLogoutRoute: typeof ApiAdminLogoutRoute
   ApiAdminGalleryUploadRoute: typeof ApiAdminGalleryUploadRoute
   ApiPublicGalleryNameRoute: typeof ApiPublicGalleryNameRoute
-  ApiPublicHooksAgendaSyncRoute: typeof ApiPublicHooksAgendaSyncRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -352,13 +338,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ApiAdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
-    '/api/public/hooks/agenda-sync': {
-      id: '/api/public/hooks/agenda-sync'
-      path: '/api/public/hooks/agenda-sync'
-      fullPath: '/api/public/hooks/agenda-sync'
-      preLoaderRoute: typeof ApiPublicHooksAgendaSyncRouteImport
-      parentRoute: typeof rootRouteImport
-    }
     '/api/public/gallery/$name': {
       id: '/api/public/gallery/$name'
       path: '/api/public/gallery/$name'
@@ -393,8 +372,17 @@ const rootRouteChildren: RootRouteChildren = {
   ApiAdminLogoutRoute: ApiAdminLogoutRoute,
   ApiAdminGalleryUploadRoute: ApiAdminGalleryUploadRoute,
   ApiPublicGalleryNameRoute: ApiPublicGalleryNameRoute,
-  ApiPublicHooksAgendaSyncRoute: ApiPublicHooksAgendaSyncRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
+
+import type { getRouter } from './router.tsx'
+import type { startInstance } from './start.ts'
+declare module '@tanstack/react-start' {
+  interface Register {
+    ssr: true
+    router: Awaited<ReturnType<typeof getRouter>>
+    config: Awaited<ReturnType<typeof startInstance.getOptions>>
+  }
+}
