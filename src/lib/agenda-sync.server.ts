@@ -3,11 +3,17 @@
 
 import { annotateEvent } from "./agenda-editorial.server";
 import {
+  getCoteAzurEvents,
+  matchCoteAzurEvent,
+  type CoteAzurEvent,
+} from "./cote-azur-agenda.server";
+import {
   getCityAgendaPreview,
   locationLabel,
   type CityAgendaEvent,
 } from "./hyeres-agenda.server";
 import { errorDetails, logAppEvent } from "./logging.server";
+
 
 export type AgendaSyncResult = {
   runId: string | null;
@@ -17,7 +23,10 @@ export type AgendaSyncResult = {
   eventsSeen: number;
   occurrencesSeen: number;
   unmatchedEvents: number;
+  coteAzurEvents: number;
+  coteAzurMatched: number;
   errorMessage?: string;
+
 };
 
 const DEFAULT_DAYS = 45;
@@ -66,14 +75,31 @@ export async function runAgendaSync(options: { days?: number } = {}): Promise<Ag
       }
     }
 
+    let coteAzurCandidates: CoteAzurEvent[] = [];
+
+    try {
+      coteAzurCandidates = await getCoteAzurEvents(rangeStart, rangeEnd);
+    } catch (coteAzurError) {
+      await logAppEvent({
+        level: "warning",
+        event: "agenda_cote_azur_fetch_failed",
+        area: "agenda",
+        message: "La source Côte d'Azur est indisponible, synchronisation poursuivie sans elle.",
+        details: errorDetails(coteAzurError, { rangeStart, rangeEnd }),
+      });
+    }
+
+    let coteAzurMatched = 0;
     const nowIso = new Date().toISOString();
-    const rows = Array.from(matched.values()).map(({ event }) => {
+    const rows = Array.from(matched.values()).map(({ event, dates }) => {
       const annotation = annotateEvent({
         title: event.title,
         category: event.category,
         locationSlug: event.locationSlug,
         scheduleText: event.scheduleText,
       });
+      const coteAzur = matchCoteAzurEvent(event.title, dates, coteAzurCandidates);
+      if (coteAzur) coteAzurMatched += 1;
       return {
         source: "hyeres",
         source_event_id: event.sourceEventId,
@@ -91,8 +117,12 @@ export async function runAgendaSync(options: { days?: number } = {}): Promise<Ag
         editorial_rhythm: annotation.editorialRhythm,
         editorial_score: annotation.editorialScore,
         editorial_tags: annotation.editorialTags,
+        cote_azur_source_url: coteAzur?.sourceUrl ?? null,
+        cote_azur_type: coteAzur?.type ?? null,
       };
     });
+
+
 
     if (rows.length > 0) {
       const { data: upserted, error: upsertError } = await supabaseAdmin
@@ -146,6 +176,8 @@ export async function runAgendaSync(options: { days?: number } = {}): Promise<Ag
       eventsSeen: rows.length,
       occurrencesSeen,
       unmatchedEvents,
+      coteAzurEvents: coteAzurCandidates.length,
+      coteAzurMatched,
     };
 
     if (runId) {
@@ -200,6 +232,8 @@ export async function runAgendaSync(options: { days?: number } = {}): Promise<Ag
       eventsSeen: 0,
       occurrencesSeen: 0,
       unmatchedEvents: 0,
+      coteAzurEvents: 0,
+      coteAzurMatched: 0,
       errorMessage,
     };
   }
