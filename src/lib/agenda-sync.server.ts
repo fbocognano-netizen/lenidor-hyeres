@@ -201,16 +201,17 @@ export async function runAgendaSync(options: { days?: number } = {}): Promise<Ag
     };
 
     if (runId) {
-      await supabaseAdmin
+      const { error: completedRunError } = await supabaseAdmin
         .from("agenda_sync_runs")
         .update({
-          status: "success",
+          status: "completed",
           events_seen: result.eventsSeen,
           occurrences_seen: result.occurrencesSeen,
           unmatched_events: result.unmatchedEvents,
           completed_at: new Date().toISOString(),
         })
         .eq("id", runId);
+      if (completedRunError) throw completedRunError;
     }
 
     await logAppEvent({
@@ -226,14 +227,23 @@ export async function runAgendaSync(options: { days?: number } = {}): Promise<Ag
     const errorMessage = error instanceof Error ? error.message : "Erreur inconnue";
 
     if (runId) {
-      await supabaseAdmin
+      const { error: failedRunError } = await supabaseAdmin
         .from("agenda_sync_runs")
         .update({
-          status: "error",
+          status: "failed",
           error_message: errorMessage.slice(0, 500),
           completed_at: new Date().toISOString(),
         })
         .eq("id", runId);
+      if (failedRunError) {
+        await logAppEvent({
+          level: "error",
+          event: "agenda_sync_run_update_failed",
+          area: "agenda",
+          message: "Impossible de mettre à jour le journal de synchronisation.",
+          details: errorDetails(failedRunError, { runId }),
+        });
+      }
     }
 
     await logAppEvent({

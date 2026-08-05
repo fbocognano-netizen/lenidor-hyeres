@@ -13,6 +13,12 @@ function formatDate(value: string | null) {
   return new Date(value).toLocaleString("fr-FR", { dateStyle: "short", timeStyle: "short" });
 }
 
+function runBadgeVariant(status: string) {
+  if (status === "completed") return "secondary" as const;
+  if (status === "failed") return "destructive" as const;
+  return "outline" as const;
+}
+
 export function AgendaPanel() {
   const queryClient = useQueryClient();
   const fetchStatus = useServerFn(getAgendaStatus);
@@ -70,7 +76,7 @@ export function AgendaPanel() {
                 key={run.id}
                 className="flex flex-wrap items-center gap-3 rounded-2xl border border-border/60 p-3 text-sm"
               >
-                <Badge variant={run.status === "success" ? "secondary" : "destructive"}>
+                <Badge variant={runBadgeVariant(run.status)}>
                   {run.status}
                 </Badge>
                 <span className="text-muted-foreground">
