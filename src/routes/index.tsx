@@ -280,7 +280,7 @@ function Hero() {
               <Button
                 asChild
                 variant="outline"
-                className="rounded-full bg-background/10 border-background/50 text-primary-foreground hover:bg-background/25 hover:text-primary-foreground hover:border-background/70 h-14 px-6 text-base w-full sm:w-auto sm:h-16 sm:px-8 sm:text-lg"
+                className="rounded-full border-white/80 bg-white/95 text-foreground hover:bg-white hover:text-foreground hover:border-white h-14 px-6 text-base w-full sm:w-auto sm:h-16 sm:px-8 sm:text-lg"
               >
                 <a href="#galerie">Voir le lieu</a>
               </Button>

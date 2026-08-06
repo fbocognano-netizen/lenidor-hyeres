@@ -24,6 +24,53 @@ const CATEGORY_LABELS: Record<string, string> = {
   sport: "Sport",
 };
 
+const LOCATION_FILTERS = [
+  { value: "all", label: "Tous les lieux", matches: () => true },
+  {
+    value: "hyeres-centre",
+    label: "Hyères centre-ville",
+    matches: (value: string) => /centre|hyeres ville/i.test(value),
+  },
+  {
+    value: "hyeres-port",
+    label: "Hyères port",
+    matches: (value: string) => /port de hyeres|port d'hyeres|hyeres les palmiers/i.test(value),
+  },
+  {
+    value: "capte",
+    label: "La Capte",
+    matches: (value: string) => /capte|presqu'ile de giens|presquile de giens/i.test(value),
+  },
+  {
+    value: "giens",
+    label: "Presqu'île de Giens",
+    matches: (value: string) =>
+      /giens|tour fondue|plage d'almanarre|plage de l'almanarre|almanarre/i.test(value),
+  },
+  {
+    value: "porquerolles",
+    label: "Porquerolles",
+    matches: (value: string) => /porquerolles/i.test(value),
+  },
+  {
+    value: "port-cros",
+    label: "Port-Cros",
+    matches: (value: string) => /port[- ]cros/i.test(value),
+  },
+  {
+    value: "alentours",
+    label: "Hyères et alentours",
+    matches: (value: string) => /toulon|la londe|bormes|le lavandou|var|alentour/i.test(value),
+  },
+] as const;
+
+function normalizeText(value: string | null) {
+  return (value ?? "")
+    .toLocaleLowerCase("fr-FR")
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "");
+}
+
 function labelForCategory(value: string | null) {
   if (!value) return "Autres sorties";
   const normalized = value.toLowerCase().replaceAll("-", "_");
@@ -139,6 +186,8 @@ function AgendaPage() {
   });
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
+  const [location, setLocation] = useState("all");
+  const [sort, setSort] = useState("relevance");
 
   const categories = useMemo(
     () =>
@@ -149,7 +198,7 @@ function AgendaPage() {
   );
   const visibleEvents = useMemo(() => {
     const query = search.trim().toLowerCase();
-    return (agendaQuery.data ?? []).filter((event) => {
+    const filtered = (agendaQuery.data ?? []).filter((event) => {
       const haystack = [
         event.title,
         event.category,
@@ -162,10 +211,26 @@ function AgendaPage() {
         .toLowerCase();
       return (
         (!query || haystack.includes(query)) &&
-        (category === "all" || labelForCategory(event.category) === category)
+        (category === "all" || labelForCategory(event.category) === category) &&
+        LOCATION_FILTERS.find((item) => item.value === location)?.matches(
+          normalizeText(event.locationLabel),
+        )
       );
     });
-  }, [agendaQuery.data, category, search]);
+    return [...filtered].sort((left, right) => {
+      if (sort === "relevance") {
+        return (
+          (right.editorialScore ?? 0) - (left.editorialScore ?? 0) ||
+          left.title.localeCompare(right.title, "fr")
+        );
+      }
+      const leftDate = left.dates[0] ?? "9999-12-31";
+      const rightDate = right.dates[0] ?? "9999-12-31";
+      return sort === "date-desc"
+        ? rightDate.localeCompare(leftDate)
+        : leftDate.localeCompare(rightDate);
+    });
+  }, [agendaQuery.data, category, location, search, sort]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -198,7 +263,7 @@ function AgendaPage() {
           aria-label="Rechercher dans l'agenda"
           className="mt-10 border-y border-border/60 py-5"
         >
-          <div className="flex flex-col gap-3 lg:flex-row">
+          <div className="grid gap-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_13rem_13rem_13rem]">
             <label className="relative block flex-1">
               <span className="sr-only">Rechercher un événement</span>
               <Search className="pointer-events-none absolute left-4 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
@@ -222,6 +287,32 @@ function AgendaPage() {
                     {item}
                   </option>
                 ))}
+              </select>
+            </label>
+            <label className="block lg:w-64">
+              <span className="sr-only">Filtrer par lieu</span>
+              <select
+                value={location}
+                onChange={(event) => setLocation(event.target.value)}
+                className="h-12 w-full rounded-full border border-input bg-background px-4 text-sm"
+              >
+                {LOCATION_FILTERS.map((item) => (
+                  <option key={item.value} value={item.value}>
+                    {item.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="block lg:w-64">
+              <span className="sr-only">Trier les événements</span>
+              <select
+                value={sort}
+                onChange={(event) => setSort(event.target.value)}
+                className="h-12 w-full rounded-full border border-input bg-background px-4 text-sm"
+              >
+                <option value="relevance">Pertinence</option>
+                <option value="date-asc">Date la plus proche</option>
+                <option value="date-desc">Date la plus éloignée</option>
               </select>
             </label>
           </div>
