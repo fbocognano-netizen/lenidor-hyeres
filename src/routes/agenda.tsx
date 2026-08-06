@@ -8,6 +8,7 @@ import { SiteNav } from "@/components/site-nav";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { getPublicAgenda, type PublicAgendaEvent } from "@/lib/agenda-public.functions";
+import agendaConcertImage from "@/assets/agenda-concert-hyeres.png";
 
 const PAGE_URL = "https://lenidor-hyeres.fr/agenda";
 const PAGE_TITLE = "Agenda de Hyères : événements, sorties et activités à faire";
@@ -264,7 +265,7 @@ function AgendaPage() {
         </nav>
         <section className="relative mt-8 min-h-[24rem] overflow-hidden rounded-3xl bg-deep px-6 py-10 text-primary-foreground sm:px-10 sm:py-14">
           <img
-            src="/agenda-concert-hyeres.png"
+            src={agendaConcertImage}
             alt="Concert en plein air au coucher du soleil à Hyères"
             className="absolute inset-0 h-full w-full object-cover"
           />
