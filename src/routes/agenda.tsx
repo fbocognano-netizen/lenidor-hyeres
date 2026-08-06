@@ -64,6 +64,11 @@ const LOCATION_FILTERS = [
     label: "Hyères et alentours",
     matches: (value: string) => /toulon|la londe|bormes|le lavandou|var|alentour/i.test(value),
   },
+  {
+    value: "ayguade",
+    label: "L'Ayguade",
+    matches: (value: string) => /ayguade/i.test(value),
+  },
 ] as const;
 
 const SORTED_LOCATION_FILTERS = [
