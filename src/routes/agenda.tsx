@@ -15,8 +15,8 @@ const PAGE_DESCRIPTION =
   "Concerts, cinéma en plein air, sorties, spectacles et événements à Hyères : découvrez les idées à faire dans les deux prochaines semaines autour du Nid d'Or.";
 
 const CATEGORY_LABELS: Record<string, string> = {
-  concert: "Concerts",
-  musique: "Musique",
+  concert: "Musique / Concerts",
+  musique: "Musique / Concerts",
   cinema: "Cinéma",
   spectacle: "Spectacles",
   visites_sorties: "Visites et sorties",
@@ -74,7 +74,8 @@ function normalizeText(value: string | null) {
 function labelForCategory(value: string | null) {
   if (!value) return "Autres sorties";
   const normalized = value.toLowerCase().replaceAll("-", "_");
-  return CATEGORY_LABELS[normalized] ?? value.replaceAll("_", " ");
+  const label = CATEGORY_LABELS[normalized] ?? value.replaceAll("_", " ");
+  return label.charAt(0).toLocaleUpperCase("fr-FR") + label.slice(1);
 }
 
 function formatDate(value: string) {
