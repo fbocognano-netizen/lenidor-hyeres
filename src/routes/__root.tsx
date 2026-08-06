@@ -19,6 +19,7 @@ type PageSuggestion = {
 const STATIC_PAGES = [
   { path: "/", title: "Le Nid d'Or à Hyères" },
   { path: "/guides-hyeres", title: "Tous les guides de Hyères" },
+  { path: "/agenda", title: "Agenda de Hyères : événements et sorties" },
   { path: "/offres-directes", title: "Recevoir les offres directes" },
   { path: "/airbnb-hyeres", title: "Airbnb à Hyères : où loger et comment bien choisir ?" },
   { path: "/aller-porquerolles-depuis-hyeres", title: "Comment aller à Porquerolles depuis Hyères ?" },
@@ -349,6 +350,12 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
         rel: "icon",
         type: "image/svg+xml",
         href: "/favicon.svg",
+      },
+      {
+        rel: "icon",
+        type: "image/png",
+        sizes: "48x48",
+        href: "/favicon-48x48.png",
       },
       {
         rel: "icon",
