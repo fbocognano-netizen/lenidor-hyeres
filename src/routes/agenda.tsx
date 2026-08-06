@@ -18,6 +18,8 @@ const CATEGORY_LABELS: Record<string, string> = {
   concert: "Musique / Concerts",
   musique: "Musique / Concerts",
   cinema: "Cinéma",
+  cinéma: "Cinéma",
+  cinema_projection: "Cinéma",
   spectacle: "Spectacles",
   visites_sorties: "Visites et sorties",
   exposition: "Expositions",
@@ -63,6 +65,13 @@ const LOCATION_FILTERS = [
     matches: (value: string) => /toulon|la londe|bormes|le lavandou|var|alentour/i.test(value),
   },
 ] as const;
+
+const SORTED_LOCATION_FILTERS = [
+  LOCATION_FILTERS[0],
+  ...LOCATION_FILTERS.slice(1).sort((left, right) =>
+    left.label.localeCompare(right.label, "fr-FR"),
+  ),
+];
 
 function normalizeText(value: string | null) {
   return (value ?? "")
@@ -297,7 +306,7 @@ function AgendaPage() {
                 onChange={(event) => setLocation(event.target.value)}
                 className="h-12 w-full rounded-full border border-input bg-background px-4 text-sm"
               >
-                {LOCATION_FILTERS.map((item) => (
+                {SORTED_LOCATION_FILTERS.map((item) => (
                   <option key={item.value} value={item.value}>
                     {item.label}
                   </option>
