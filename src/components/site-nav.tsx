@@ -51,6 +51,13 @@ export function SiteNav({ home = false }: { home?: boolean }) {
           >
             Découvrir Hyères
           </Link>
+          <Link
+            to="/agenda"
+            className="hover:text-foreground transition"
+            activeProps={{ className: "text-foreground font-medium" }}
+          >
+            Agenda
+          </Link>
           <GuideSearchButton className="border-0 px-0 py-0 hover:border-0" label="Rechercher" />
         </nav>
 
@@ -102,6 +109,15 @@ export function SiteNav({ home = false }: { home?: boolean }) {
                 className="block py-3 text-[15px] border-b border-border/40"
               >
                 Découvrir Hyères
+              </Link>
+            </li>
+            <li>
+              <Link
+                to="/agenda"
+                onClick={() => setOpen(false)}
+                className="block py-3 text-[15px] border-b border-border/40"
+              >
+                Agenda des sorties
               </Link>
             </li>
             <li className="border-b border-border/40 py-3">

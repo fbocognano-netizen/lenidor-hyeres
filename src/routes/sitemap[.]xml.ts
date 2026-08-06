@@ -20,6 +20,7 @@ export const Route = createFileRoute("/sitemap.xml")({
         const entries: SitemapEntry[] = [
           { path: "/", changefreq: SITEMAP_CHANGEFREQ, priority: "1.0" },
           { path: "/guides-hyeres", changefreq: SITEMAP_CHANGEFREQ, priority: "0.7" },
+          { path: "/agenda", changefreq: SITEMAP_CHANGEFREQ, priority: "0.8" },
           ...getIndexablePosts().map((post) => ({
             path: post.path,
             lastmod: post.updatedAt || post.date || undefined,
