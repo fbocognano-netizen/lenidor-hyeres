@@ -262,17 +262,25 @@ function AgendaPage() {
             <li className="text-foreground">Agenda de Hyères</li>
           </ol>
         </nav>
-        <div className="mt-8 max-w-3xl">
-          <p className="text-xs font-medium uppercase tracking-[0.2em] text-primary">
-            Sortir à Hyères
-          </p>
-          <h1 className="mt-4 font-display text-[2.2rem] leading-[1.08] sm:text-5xl">
-            Que faire à Hyères dans les deux prochaines semaines ?
-          </h1>
-          <p className="mt-5 text-base leading-relaxed text-muted-foreground sm:text-lg">
-            {PAGE_DESCRIPTION}
-          </p>
-        </div>
+        <section className="relative mt-8 min-h-[24rem] overflow-hidden rounded-3xl bg-deep px-6 py-10 text-primary-foreground sm:px-10 sm:py-14">
+          <img
+            src="/agenda-concert-hyeres.png"
+            alt="Concert en plein air au coucher du soleil à Hyères"
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+          <div className="absolute inset-0 bg-deep/60" />
+          <div className="relative max-w-3xl">
+            <p className="text-xs font-medium uppercase tracking-[0.2em] text-primary-foreground/80">
+              Sortir à Hyères
+            </p>
+            <h1 className="mt-4 font-display text-[2.2rem] leading-[1.08] sm:text-5xl">
+              Que faire à Hyères dans les deux prochaines semaines ?
+            </h1>
+            <p className="mt-5 text-base leading-relaxed text-primary-foreground/90 sm:text-lg">
+              {PAGE_DESCRIPTION}
+            </p>
+          </div>
+        </section>
 
         <section
           aria-label="Rechercher dans l'agenda"
