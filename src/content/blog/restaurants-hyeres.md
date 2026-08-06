@@ -7,7 +7,7 @@ slug: "restaurants-hyeres"
 path: "/restaurants-hyeres"
 excerpt: "Vieille ville animée, dîner au port ou soirée près de Giens : trouvez d’abord l’ambiance qui vous ressemble, puis l’adresse qui tient ses promesses."
 date: "2026-07-27"
-updatedAt: "2026-07-29"
+updatedAt: "2026-08-06"
 author: "Joëlle"
 category: "SAVEURS & ADRESSES"
 tags: ["restaurant Hyères", "où manger à Hyères", "restaurant Giens", "couple"]
@@ -60,6 +60,34 @@ Le port peut être très animé en saison. Réservez si vous souhaitez une table
 **Notre adresse testée :**
 
 - **Ô Cap Couleurs**, sur le port de Hyères : une table traditionnelle avec terrasse, pratique pour dîner après une promenade au port ou une journée côté mer. C’est une bonne option pour le rapport qualité-prix et pour une soirée simple, sans chercher l’adresse la plus intimiste du séjour.
+
+## Deux adresses les pieds dans le sable
+
+Pour une table avec la mer juste devant vous, partez vers le littoral de l’Almanarre. Ces deux adresses sont proches du Nid d’Or et se prêtent particulièrement bien à une pause après la plage, à un déjeuner face à l’eau ou à un apéritif lorsque la lumière descend.
+
+### Pizzeria Gaetano, sur la plage de l’Almanarre
+
+[Pizzeria Gaetano](https://maps.app.goo.gl/CGPXDwiuvrqM4T878?g_st=iw) se trouve au 3089 route de l’Almanarre, directement sur la plage. Comptez environ 12 minutes en voiture depuis Le Nid d’Or, selon la circulation.
+
+La terrasse donne sur la mer : c’est une adresse facile à retenir après une baignade ou une balade sur le tombolo. Le choix est naturellement tourné vers la pizza et la cuisine italienne, avec l’envie de profiter du cadre autant que de l’assiette. Pour une soirée à deux, essayez d’arriver assez tôt si vous souhaitez profiter de la lumière sur la baie.
+
+![Pizzas et boissons face à la mer à la Pizzeria Gaetano](/images/blog/gaetano-plage-almanarre-table.webp#1020x1020 "Pizzas et boissons face à la mer à la Pizzeria Gaetano")
+
+![Terrasse de la Pizzeria Gaetano au bord de la plage de l’Almanarre](/images/blog/gaetano-plage-almanarre-terrasse.webp#1360x1020 "Terrasse de la Pizzeria Gaetano au bord de la plage de l’Almanarre")
+
+![Pizzas servies face à la mer à l’Almanarre](/images/blog/gaetano-plage-almanarre-pizzas.webp#1360x1020 "Pizzas servies face à la mer à l’Almanarre")
+
+### Le Jardin d’été – MER & Fils, côté Port Hélène
+
+[Le Jardin d’été – MER & Fils](https://maps.app.goo.gl/h1bnxcvUrzvPepig7) est installé au 3706 route de l’Almanarre, sur le littoral de Port Hélène, entre l’Almanarre et Carqueiranne. Le lieu associe un restaurant de plage, une pinède et un accès direct à la mer : l’ambiance change naturellement entre le déjeuner, l’apéritif et le coucher du soleil.
+
+La carte de MER & Fils met en avant une cuisine maison et des produits locaux. Selon la période et la programmation, on peut y venir pour partager quelques assiettes, boire un verre face à l’eau ou s’attarder autour d’une table de chefs invités. Vérifiez la formule proposée et les horaires avant de vous déplacer, surtout hors saison.
+
+![Assiettes à partager et boissons au Jardin d’été – MER & Fils](/images/blog/jardin-ete-mer-fils-assiettes.png#794x1228 "Assiettes à partager et boissons au Jardin d’été – MER & Fils")
+
+![Tables du Jardin d’été – MER & Fils sous les pins, au bord de la plage](/images/blog/jardin-ete-mer-fils-plage.png#1212x1196 "Tables du Jardin d’été – MER & Fils sous les pins, au bord de la plage")
+
+Cette adresse fonctionne particulièrement bien pour une fin de journée sans programme serré : installez-vous dans la pinède, prenez le temps de regarder la mer et gardez une marge pour le coucher du soleil. Le Jardin d’été est également situé le long de la piste cyclable du littoral, ce qui peut en faire une halte agréable à vélo.
 
 ## Manger sur la presqu’île de Giens
 
