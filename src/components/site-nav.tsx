@@ -23,7 +23,7 @@ export function SiteNav({ home = false }: { home?: boolean }) {
   const href = (hash: string) => (home ? `#${hash}` : `/#${hash}`);
 
   return (
-    <header className="sticky top-0 z-40 backdrop-blur-md bg-background/75 border-b border-border/60">
+    <header className="sticky top-0 z-[100] isolate backdrop-blur-md bg-background/95 border-b border-border/60">
       <div className="mx-auto max-w-6xl px-5 h-14 sm:h-16 flex items-center justify-between gap-3">
         {home ? (
           <a href="#top" className="font-display text-base sm:text-xl tracking-tight truncate">
@@ -78,7 +78,7 @@ export function SiteNav({ home = false }: { home?: boolean }) {
             onClick={() => setOpen((v) => !v)}
             aria-label={open ? "Fermer le menu" : "Ouvrir le menu"}
             aria-expanded={open}
-            className="lg:hidden inline-flex h-11 w-11 items-center justify-center rounded-full border border-border/70 text-foreground"
+            className="lg:hidden inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-border/70 text-foreground cursor-pointer touch-manipulation"
           >
             {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
           </button>
@@ -88,7 +88,7 @@ export function SiteNav({ home = false }: { home?: boolean }) {
       {open ? (
         <nav
           aria-label="Navigation principale mobile"
-          className="lg:hidden border-t border-border/60 bg-background/95 backdrop-blur-md"
+          className="relative z-[101] lg:hidden border-t border-border/60 bg-background/95 backdrop-blur-md"
         >
           <ul className="mx-auto max-w-6xl px-5 py-3 flex flex-col">
             {SITE_NAV_ITEMS.map((item) => (

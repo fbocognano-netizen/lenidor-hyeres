@@ -26,7 +26,7 @@ export function GuideSearchButton({
           setOpen(true);
         }}
         className={cn(
-          "inline-flex items-center gap-2 rounded-full border border-border/70 px-3 py-2 text-sm text-muted-foreground transition hover:border-foreground/40 hover:text-foreground",
+          "inline-flex cursor-pointer touch-manipulation items-center gap-2 rounded-full border border-border/70 px-3 py-2 text-sm text-muted-foreground transition hover:border-foreground/40 hover:text-foreground",
           className,
         )}
       >
@@ -62,7 +62,7 @@ function GuideSearchDialog({
         if (!nextOpen) setQuery("");
       }}
     >
-      <DialogContent className="top-[8vh] max-h-[86vh] translate-y-0 overflow-hidden p-0 sm:max-w-2xl">
+      <DialogContent className="top-[8vh] z-[110] max-h-[86vh] translate-y-0 overflow-hidden bg-background p-0 sm:max-w-2xl">
         <div className="border-b border-border/70 p-4 sm:p-5">
           <div className="flex items-start justify-between gap-4">
             <div>
