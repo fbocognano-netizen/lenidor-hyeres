@@ -6,11 +6,7 @@ import {
   getCoteAzurAgendaEvents,
   type CoteAzurAgendaEvent,
 } from "./cote-azur-agenda-source.server";
-import {
-  getCityAgendaPreview,
-  locationLabel,
-  type CityAgendaEvent,
-} from "./hyeres-agenda.server";
+import { getCityAgendaPreview, locationLabel, type CityAgendaEvent } from "./hyeres-agenda.server";
 import { errorDetails, logAppEvent } from "./logging.server";
 
 export type AgendaSyncResult = {
@@ -38,22 +34,40 @@ function normalizeMatchValue(value: string): string {
     .replace(/\s+/g, " ");
 }
 
+function normalizeSourceCategory(value: string | null): string | null {
+  if (!value) return null;
+  const normalized = normalizeMatchValue(value).replace(/\s+/g, "_");
+  if (["projection", "cinema", "film", "cinema_projection"].includes(normalized)) return "cinema";
+  if (["concert", "musique", "live", "dj"].includes(normalized)) return "musique";
+  if (["exposition", "expo"].includes(normalized)) return "exposition";
+  if (["visite", "visites", "sortie", "visites_sorties"].includes(normalized))
+    return "visites_sorties";
+  if (["spectacle", "theatre", "theatre_spectacle"].includes(normalized)) return "spectacle";
+  if (normalized === "sport") return "sport";
+  return normalized || null;
+}
+
 function findCoteAzurMatch(
   title: string,
   date: string,
   events: CoteAzurAgendaEvent[],
 ): CoteAzurAgendaEvent | null {
   const normalizedTitle = normalizeMatchValue(title);
-  return events.find((event) => {
-    const normalizedCandidate = normalizeMatchValue(event.title);
-    const matchingTitle = normalizedCandidate === normalizedTitle
-      || (normalizedCandidate.length > 8 && normalizedTitle.includes(normalizedCandidate))
-      || (normalizedTitle.length > 8 && normalizedCandidate.includes(normalizedTitle));
-    return matchingTitle
-      && event.startsAt !== null
-      && event.startsAt <= date
-      && (event.endsAt ?? event.startsAt) >= date;
-  }) ?? null;
+  return (
+    events.find((event) => {
+      const normalizedCandidate = normalizeMatchValue(event.title);
+      const matchingTitle =
+        normalizedCandidate === normalizedTitle ||
+        (normalizedCandidate.length > 8 && normalizedTitle.includes(normalizedCandidate)) ||
+        (normalizedTitle.length > 8 && normalizedCandidate.includes(normalizedTitle));
+      return (
+        matchingTitle &&
+        event.startsAt !== null &&
+        event.startsAt <= date &&
+        (event.endsAt ?? event.startsAt) >= date
+      );
+    }) ?? null
+  );
 }
 
 export async function runAgendaSync(options: { days?: number } = {}): Promise<AgendaSyncResult> {
@@ -83,11 +97,14 @@ export async function runAgendaSync(options: { days?: number } = {}): Promise<Ag
     const preview = await getCityAgendaPreview(days, startedAt);
     const coteAzurEvents = await getCoteAzurAgendaEvents(preview.startDate, preview.endDate);
 
-    const matched = new Map<string, {
-      event: CityAgendaEvent;
-      dates: Set<string>;
-      coteAzurEvent: CoteAzurAgendaEvent | null;
-    }>();
+    const matched = new Map<
+      string,
+      {
+        event: CityAgendaEvent;
+        dates: Set<string>;
+        coteAzurEvent: CoteAzurAgendaEvent | null;
+      }
+    >();
     let unmatchedEvents = 0;
     let occurrencesSeen = 0;
     let crossCheckedEvents = 0;
@@ -119,16 +136,18 @@ export async function runAgendaSync(options: { days?: number } = {}): Promise<Ag
         title: event.title,
         category: event.category,
         locationSlug: event.locationSlug,
-        scheduleText: [event.scheduleText, coteAzurEvent?.description, coteAzurEvent?.type]
-          .filter(Boolean)
-          .join(" ") || null,
+        scheduleText:
+          [event.scheduleText, coteAzurEvent?.description, coteAzurEvent?.type]
+            .filter(Boolean)
+            .join(" ") || null,
       });
       return {
         source: "hyeres",
         source_event_id: event.sourceEventId,
         source_url: event.sourceUrl,
         title: event.title,
-        category: event.category,
+        category: normalizeSourceCategory(event.category),
+        source_category: event.category,
         location_slug: event.locationSlug,
         location_label: locationLabel(event.locationSlug),
         schedule_text: event.scheduleText,
