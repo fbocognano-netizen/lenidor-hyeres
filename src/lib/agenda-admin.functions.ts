@@ -28,14 +28,14 @@ export const getAgendaStatus = createServerFn({ method: "GET" }).handler(async (
     supabaseAdmin
       .from("agenda_sync_runs")
       .select(
-        "id, status, range_start, range_end, events_seen, occurrences_seen, unmatched_events, error_message, started_at, completed_at",
+        "id, status, range_start, range_end, events_seen, occurrences_seen, unmatched_events, error_message, source_stats, started_at, completed_at",
       )
       .order("started_at", { ascending: false })
       .limit(10),
     supabaseAdmin
       .from("agenda_events")
       .select(
-        "id, title, source_url, category, source_category, location_label, traveler_category, editorial_priority, editorial_score, editorial_tags, last_synced_at",
+        "id, title, source_url, source_name, city, category, source_category, location_label, traveler_category, editorial_priority, editorial_score, editorial_tags, last_synced_at",
       )
       .order("editorial_score", { ascending: false })
       .limit(25),

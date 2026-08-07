@@ -1,0 +1,122 @@
+{
+  "tested_at": "2026-08-07T00:00:00+02:00",
+  "scope_name": "Autour de Hyères",
+  "priority_cities": [
+    "Hyères",
+    "La Londe-les-Maures",
+    "Le Lavandou",
+    "Bormes-les-Mimosas",
+    "Carqueiranne",
+    "Le Pradet"
+  ],
+  "secondary_cities": [
+    "La Garde",
+    "La Crau",
+    "Toulon",
+    "La Farlède",
+    "Pierrefeu-du-Var",
+    "Solliès-Ville",
+    "Solliès-Pont",
+    "Solliès-Toucas"
+  ],
+  "sources": [
+    {
+      "source_name": "Ville d'Hyères - Agenda",
+      "domain": "hyeres.fr",
+      "page_url": "https://hyeres.fr/agenda-hyeres/",
+      "cities_covered": [
+        "Hyères"
+      ],
+      "source_type": "HTML",
+      "status": "usable",
+      "recommendation": "integrate_first",
+      "notes": "Agenda officiel de la commune, avec filtres temporels et événements datés."
+    },
+    {
+      "source_name": "Provence Méditerranée - Agenda Hyères",
+      "domain": "www.provencemed.com",
+      "page_url": "https://www.provencemed.com/preparer-ma-venue/agenda/agenda-hyeres/",
+      "cities_covered": [
+        "Hyères"
+      ],
+      "source_type": "HTML",
+      "status": "usable",
+      "recommendation": "integrate_first",
+      "notes": "Page office de tourisme dédiée aux événements à Hyères."
+    },
+    {
+      "source_name": "Ville de La Londe-les-Maures - Agenda",
+      "domain": "www.ville-lalondelesmaures.fr",
+      "page_url": "https://www.ville-lalondelesmaures.fr/culture-et-sport/agenda.html",
+      "cities_covered": [
+        "La Londe-les-Maures"
+      ],
+      "source_type": "HTML",
+      "status": "usable",
+      "recommendation": "integrate_first",
+      "notes": "Agenda municipal HTML listant événements, horaires, lieux et détails."
+    },
+    {
+      "source_name": "Office de tourisme du Lavandou - Tout l'agenda",
+      "domain": "www.ot-lelavandou.fr",
+      "page_url": "https://www.ot-lelavandou.fr/agenda-lavandou/tout-lagenda/",
+      "cities_covered": [
+        "Le Lavandou",
+        "Bormes-les-Mimosas",
+        "La Londe-les-Maures"
+      ],
+      "source_type": "HTML",
+      "status": "usable",
+      "recommendation": "integrate_first",
+      "notes": "Agenda touristique riche ; certaines fiches peuvent concerner Bormes ou La Londe."
+    },
+    {
+      "source_name": "Office de tourisme de Bormes-les-Mimosas",
+      "domain": "www.bormeslesmimosas.com",
+      "page_url": "https://www.bormeslesmimosas.com/",
+      "cities_covered": [
+        "Bormes-les-Mimosas"
+      ],
+      "source_type": "HTML",
+      "status": "limited",
+      "recommendation": "integrate_second",
+      "notes": "La page d'accueil expose des liens 'Cette semaine', 'Ce week-end' et 'Tout l'agenda'. URL exacte de l'agenda complet à confirmer."
+    },
+    {
+      "source_name": "Ville de La Farlède - Agenda",
+      "domain": "www.lafarlede.fr",
+      "page_url": "https://www.lafarlede.fr/mes-loisirs/agenda/",
+      "cities_covered": [
+        "La Farlède"
+      ],
+      "source_type": "HTML",
+      "status": "usable",
+      "recommendation": "integrate_second",
+      "notes": "Agenda municipal HTML avec cartes d'événements et fiches de détail."
+    },
+    {
+      "source_name": "Ville de Pierrefeu-du-Var - Agenda",
+      "domain": "www.pierrefeu-du-var.fr",
+      "page_url": "https://www.pierrefeu-du-var.fr/",
+      "cities_covered": [
+        "Pierrefeu-du-Var"
+      ],
+      "source_type": "HTML",
+      "status": "limited",
+      "recommendation": "integrate_second",
+      "notes": "La page d'accueil expose un agenda riche et un lien 'Voir tous les événements'. URL exacte de l'agenda complet à confirmer."
+    },
+    {
+      "source_name": "Mairie de Solliès-Ville - Agenda et manifestations",
+      "domain": "solliesville.fr",
+      "page_url": "https://solliesville.fr/",
+      "cities_covered": [
+        "Solliès-Ville"
+      ],
+      "source_type": "HTML",
+      "status": "limited",
+      "recommendation": "integrate_later",
+      "notes": "Agenda visible sur la page d'accueil ; volume plus faible."
+    }
+  ]
+}
