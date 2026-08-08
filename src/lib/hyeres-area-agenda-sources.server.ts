@@ -6,6 +6,7 @@ const HTML_DETAIL_TIMEOUT_MS = 8_000;
 const MAX_RESPONSE_BYTES = 5_000_000;
 const MAX_RANGE_DAYS = 120;
 const HTML_DETAIL_CONCURRENCY = 6;
+const HTML_DETAIL_LINK_LIMIT = 8;
 
 export const HYERES_AREA_CITIES = [
   "La Londe-les-Maures",
@@ -550,7 +551,10 @@ async function collectHtmlLinkSource(
   rangeEnd: string,
 ): Promise<AreaAgendaEvent[]> {
   const listHtml = await fetchTextWithTimeout(source.pageUrl, undefined, HTML_LIST_TIMEOUT_MS);
-  const links = linksFromHtml(listHtml, source.pageUrl, source.linkPattern, source.maxLinks);
+  const links = linksFromHtml(listHtml, source.pageUrl, source.linkPattern, source.maxLinks).slice(
+    0,
+    HTML_DETAIL_LINK_LIMIT,
+  );
   const yearHint = Number(rangeStart.slice(0, 4));
   const events = await mapWithConcurrency(links, HTML_DETAIL_CONCURRENCY, async (sourceUrl) => {
     try {
