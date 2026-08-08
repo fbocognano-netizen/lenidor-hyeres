@@ -159,7 +159,7 @@ function AgendaCard({ event }: { event: PublicAgendaEvent }) {
         <span className="text-xs font-medium uppercase tracking-[0.14em] text-primary">
           {labelForCategory(event.category)}
         </span>
-        {event.editorialPriority === "high" ? (
+        {event.editorialPriority === "haute" ? (
           <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
             <Sparkles className="h-3.5 w-3.5" /> À ne pas manquer
           </span>
@@ -173,8 +173,11 @@ function AgendaCard({ event }: { event: PublicAgendaEvent }) {
       {event.locationLabel ? (
         <p className="mt-2 inline-flex items-start gap-2 text-sm text-muted-foreground">
           <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
-          <span>{event.locationLabel}</span>
+          <span>{[event.locationLabel, event.city].filter(Boolean).join(" · ")}</span>
         </p>
+      ) : null}
+      {event.sourceName ? (
+        <p className="mt-2 text-xs text-muted-foreground">Source : {event.sourceName}</p>
       ) : null}
       {shortSchedule(event.scheduleText) ? (
         <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
@@ -220,6 +223,8 @@ function AgendaPage() {
         event.category,
         event.travelerCategory,
         event.locationLabel,
+        event.city,
+        event.sourceName,
         ...event.editorialTags,
       ]
         .filter(Boolean)

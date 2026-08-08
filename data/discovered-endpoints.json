@@ -1,0 +1,172 @@
+{
+  "tested_at": "2026-08-06T00:00:00+02:00",
+  "confirmed_endpoints": [
+    {
+      "source_name": "Métropole Toulon Provence Méditerranée - Agenda",
+      "endpoint_url": "https://metropoletpm.fr/agenda",
+      "http_method": "GET",
+      "authentication": "Aucune",
+      "response_format": "HTML",
+      "source_type": "HTML",
+      "status": "limited",
+      "notes": "Page publique confirmée. Ne pas automatiser les URLs `https://metropoletpm.fr/agenda?*` sans vérification complémentaire car robots.txt les interdit."
+    },
+    {
+      "source_name": "Métropole Toulon Provence Méditerranée - Sitemap",
+      "endpoint_url": "https://metropoletpm.fr/sitemap.xml",
+      "http_method": "GET",
+      "authentication": "Aucune",
+      "response_format": "XML",
+      "source_type": "sitemap",
+      "status": "usable",
+      "notes": "Sitemap déclaré par robots.txt et ouvert pendant l'audit."
+    },
+    {
+      "source_name": "Office de tourisme Provence Méditerranée - Agenda général",
+      "endpoint_url": "https://www.provencemed.com/preparer-ma-venue/agenda/",
+      "http_method": "GET",
+      "authentication": "Aucune",
+      "response_format": "HTML",
+      "source_type": "HTML",
+      "status": "limited",
+      "notes": "Agenda général confirmé en HTML."
+    },
+    {
+      "source_name": "Provence Méditerranée - Agenda Carqueiranne",
+      "endpoint_url": "https://www.provencemed.com/preparer-ma-venue/agenda/agenda-carqueiranne/",
+      "http_method": "GET",
+      "authentication": "Aucune",
+      "response_format": "HTML",
+      "source_type": "HTML",
+      "status": "usable",
+      "notes": "Page communale confirmée en HTML."
+    },
+    {
+      "source_name": "Ville de Toulon - Agenda",
+      "endpoint_url": "http://toulon.fr/agenda",
+      "http_method": "GET",
+      "authentication": "Aucune",
+      "response_format": "HTML",
+      "source_type": "HTML",
+      "status": "limited",
+      "notes": "Agenda public confirmé, avec filtres et bouton de chargement additionnel."
+    },
+    {
+      "source_name": "Ville de La Garde - Agenda",
+      "endpoint_url": "https://www.ville-lagarde.fr/agenda",
+      "http_method": "GET",
+      "authentication": "Aucune",
+      "response_format": "HTML",
+      "source_type": "HTML",
+      "status": "limited",
+      "notes": "Agenda public confirmé. Site réalisé par IntraMuros SAS ; conditions de réutilisation à valider avant automatisation."
+    },
+    {
+      "source_name": "Ville de La Garde - Fiche événement exemple",
+      "endpoint_url": "https://www.ville-lagarde.fr/agenda/578504",
+      "http_method": "GET",
+      "authentication": "Aucune",
+      "response_format": "HTML",
+      "source_type": "HTML",
+      "status": "usable",
+      "notes": "Fiche événement publique confirmée."
+    },
+    {
+      "source_name": "Ville de La Crau - Loisirs et Sorties",
+      "endpoint_url": "https://www.villedelacrau.fr/laville_loisirssorties.html",
+      "http_method": "GET",
+      "authentication": "Aucune",
+      "response_format": "HTML",
+      "source_type": "HTML",
+      "status": "limited",
+      "notes": "Page officielle confirmée."
+    },
+    {
+      "source_name": "Ville de La Crau - Agenda du mois PDF",
+      "endpoint_url": "https://www.villedelacrau.fr/telechargements/docs/agenda_du_mois.pdf",
+      "http_method": "GET",
+      "authentication": "Aucune",
+      "response_format": "PDF",
+      "source_type": "PDF",
+      "status": "limited",
+      "notes": "PDF officiel mensuel. Extraction fragile ; conserver comme source de secours."
+    },
+    {
+      "source_name": "Ville de Carqueiranne - Agenda",
+      "endpoint_url": "https://www.carqueiranne.fr/agenda-133.html",
+      "http_method": "GET",
+      "authentication": "Aucune",
+      "response_format": "HTML",
+      "source_type": "HTML",
+      "status": "usable",
+      "notes": "Agenda HTML public confirmé, avec pagination et filtres."
+    },
+    {
+      "source_name": "Ville de Carqueiranne - Flux RSS agenda",
+      "endpoint_url": "https://www.carqueiranne.fr/agenda-133/flux-rss.xml",
+      "http_method": "GET",
+      "authentication": "Aucune",
+      "response_format": "XML RSS",
+      "source_type": "RSS",
+      "status": "usable",
+      "notes": "Flux agenda confirmé par `python -m tools.discover_feeds https://www.carqueiranne.fr/ --max-pages 6`."
+    },
+    {
+      "source_name": "Ville du Pradet - Agenda",
+      "endpoint_url": "https://www.le-pradet.fr/lagenda/",
+      "http_method": "GET",
+      "authentication": "Aucune",
+      "response_format": "HTML",
+      "source_type": "HTML",
+      "status": "usable",
+      "notes": "Agenda HTML public confirmé."
+    },
+    {
+      "source_name": "Ville du Pradet - Archive événements",
+      "endpoint_url": "https://www.le-pradet.fr/evenement/",
+      "http_method": "GET",
+      "authentication": "Aucune",
+      "response_format": "HTML",
+      "source_type": "HTML",
+      "status": "usable",
+      "notes": "Archive HTML liée à l'agenda."
+    },
+    {
+      "source_name": "Ville du Pradet - Flux RSS général",
+      "endpoint_url": "https://www.le-pradet.fr/feed/",
+      "http_method": "GET",
+      "authentication": "Aucune",
+      "response_format": "XML RSS",
+      "source_type": "RSS",
+      "status": "limited",
+      "notes": "Flux RSS général confirmé, contenant des événements. À filtrer par type/catégorie avant prototype."
+    },
+    {
+      "source_name": "Conservatoire TPM - Agenda culturel",
+      "endpoint_url": "https://www.conservatoire-tpm.fr/agenda",
+      "http_method": "GET",
+      "authentication": "Aucune",
+      "response_format": "HTML",
+      "source_type": "HTML",
+      "status": "limited",
+      "notes": "Agenda public confirmé avec filtres et bouton 'Afficher plus'."
+    }
+  ],
+  "unconfirmed_candidates": [
+    {
+      "source_name": "Conservatoire TPM - Load more endpoint",
+      "candidate": "Network request behind the 'Afficher plus' control",
+      "reason_not_confirmed": "Requires browser network capture; no endpoint confirmed."
+    },
+    {
+      "source_name": "Ville de Toulon - Load more endpoint",
+      "candidate": "Network request behind the 'Voir plus d'événements' control",
+      "reason_not_confirmed": "Requires browser network capture; no endpoint confirmed."
+    },
+    {
+      "source_name": "Ville de La Garde - IntraMuros API",
+      "candidate": "Potential IntraMuros platform endpoint",
+      "reason_not_confirmed": "No public API endpoint or reuse terms confirmed. Do not automate until verified."
+    }
+  ]
+}

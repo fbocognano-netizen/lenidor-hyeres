@@ -1,0 +1,86 @@
+{
+  "tested_at": "2026-08-06T00:00:00+02:00",
+  "feeds": [
+    {
+      "source_name": "Ville de Carqueiranne - Agenda",
+      "domain": "www.carqueiranne.fr",
+      "page_url": "https://www.carqueiranne.fr/agenda-133.html",
+      "url": "https://www.carqueiranne.fr/agenda-133/flux-rss.xml",
+      "format": "rss",
+      "http_status": 200,
+      "content_type": "text/xml;charset=utf-8",
+      "contains_events": true,
+      "last_item_date": null,
+      "status": "confirmed",
+      "evidence": "Confirmed with `python -m tools.discover_feeds https://www.carqueiranne.fr/ --max-pages 6`."
+    },
+    {
+      "source_name": "Ville du Pradet - Flux général",
+      "domain": "www.le-pradet.fr",
+      "page_url": "https://www.le-pradet.fr/lagenda/",
+      "url": "https://www.le-pradet.fr/feed/",
+      "format": "rss",
+      "http_status": 200,
+      "content_type": "application/rss+xml; charset=UTF-8",
+      "contains_events": true,
+      "last_item_date": null,
+      "status": "confirmed_general_feed",
+      "evidence": "Confirmed with `python -m tools.discover_feeds https://www.le-pradet.fr/lagenda/ --max-pages 8`. Treat as a general site feed containing events until item taxonomy is parsed."
+    }
+  ],
+  "rejected_or_not_confirmed": [
+    {
+      "domain": "metropoletpm.fr",
+      "tested_or_inspected": [
+        "https://metropoletpm.fr/agenda",
+        "https://metropoletpm.fr/robots.txt"
+      ],
+      "reason": "No RSS/Atom/ICS endpoint confirmed during the web audit."
+    },
+    {
+      "domain": "www.provencemed.com",
+      "tested_or_inspected": [
+        "https://www.provencemed.com/preparer-ma-venue/agenda/",
+        "https://www.provencemed.com/preparer-ma-venue/agenda/agenda-carqueiranne/"
+      ],
+      "reason": "No RSS/Atom/ICS endpoint confirmed during the web audit."
+    },
+    {
+      "domain": "toulon.fr",
+      "tested_or_inspected": [
+        "http://toulon.fr/agenda"
+      ],
+      "reason": "No RSS/Atom/ICS endpoint confirmed during the web audit."
+    },
+    {
+      "domain": "www.ville-lagarde.fr",
+      "tested_or_inspected": [
+        "https://www.ville-lagarde.fr/agenda"
+      ],
+      "reason": "No RSS/Atom/ICS endpoint confirmed during the web audit."
+    },
+    {
+      "domain": "www.villedelacrau.fr",
+      "tested_or_inspected": [
+        "https://www.villedelacrau.fr/",
+        "https://www.villedelacrau.fr/laville_loisirssorties.html"
+      ],
+      "reason": "No RSS/Atom/ICS endpoint confirmed; the usable official fallback is a PDF agenda."
+    },
+    {
+      "domain": "www.le-pradet.fr",
+      "tested_or_inspected": [
+        "https://www.le-pradet.fr/lagenda/"
+      ],
+      "reason": "A general RSS feed is confirmed, but no dedicated event-only feed is confirmed."
+    },
+    {
+      "domain": "www.conservatoire-tpm.fr",
+      "tested_or_inspected": [
+        "https://www.conservatoire-tpm.fr/agenda"
+      ],
+      "reason": "No RSS/Atom/ICS endpoint confirmed during the web audit."
+    }
+  ],
+  "replay_command": "python -m tools.discover_feeds https://www.carqueiranne.fr/ && python -m tools.discover_feeds https://www.le-pradet.fr/lagenda/"
+}

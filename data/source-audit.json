@@ -1,0 +1,141 @@
+{
+  "tested_at": "2026-08-06T00:00:00+02:00",
+  "target_cities": [
+    "Toulon",
+    "Le Pradet",
+    "La Garde",
+    "La Crau",
+    "Carqueiranne"
+  ],
+  "method": "Manual web audit plus reproducible local audit commands in tools/.",
+  "sources": [
+    {
+      "source_name": "Métropole Toulon Provence Méditerranée - Agenda",
+      "page_url": "https://metropoletpm.fr/agenda",
+      "tested_urls": [
+        "https://metropoletpm.fr/robots.txt",
+        "https://metropoletpm.fr/agenda",
+        "https://metropoletpm.fr/sitemap.xml"
+      ],
+      "observations": [
+        "Drupal-style robots.txt was available.",
+        "robots.txt declares Sitemap: https://metropoletpm.fr/sitemap.xml.",
+        "robots.txt contains Disallow: /agenda?*.",
+        "The agenda page exposes visible filters for time, category and place.",
+        "The agenda page showed 80 events and event cards including target cities such as Toulon."
+      ],
+      "status": "limited",
+      "recommendation": "intégrer avec réserve"
+    },
+    {
+      "source_name": "Office de tourisme Provence Méditerranée - Agenda",
+      "page_url": "https://www.provencemed.com/preparer-ma-venue/agenda/",
+      "tested_urls": [
+        "https://www.provencemed.com/preparer-ma-venue/agenda/",
+        "https://www.provencemed.com/preparer-ma-venue/agenda/agenda-carqueiranne/"
+      ],
+      "observations": [
+        "Agenda général and Carqueiranne commune agenda pages were reachable as HTML.",
+        "No RSS/API endpoint was confirmed in the audited HTML.",
+        "Commune navigation confirms pages for the TPM communes."
+      ],
+      "status": "limited",
+      "recommendation": "intégrer avec réserve"
+    },
+    {
+      "source_name": "Ville de Toulon - Agenda",
+      "page_url": "https://www.toulon.fr/agenda",
+      "tested_urls": [
+        "https://www.toulon.fr/agenda",
+        "http://toulon.fr/agenda"
+      ],
+      "observations": [
+        "The agenda redirects/serves at http://toulon.fr/agenda in the tested view.",
+        "The page showed 56 results.",
+        "Visible filters include theme, event type, start date and end date.",
+        "A 'Voir plus d'événements' control is visible, but no endpoint was confirmed."
+      ],
+      "status": "limited",
+      "recommendation": "intégrer avec réserve"
+    },
+    {
+      "source_name": "Ville de La Garde - Agenda",
+      "page_url": "https://www.ville-lagarde.fr/agenda",
+      "tested_urls": [
+        "https://www.ville-lagarde.fr/agenda",
+        "https://www.ville-lagarde.fr/agenda/578504",
+        "https://www.intramuros.org/la-garde04"
+      ],
+      "observations": [
+        "The agenda page is public HTML and shows 10 events out of 61.",
+        "The site footer identifies IntraMuros SAS.",
+        "The public IntraMuros page for La Garde exists, but reuse terms/API were not validated."
+      ],
+      "status": "limited",
+      "recommendation": "investigation complémentaire"
+    },
+    {
+      "source_name": "Ville de La Crau - Loisirs et Sorties",
+      "page_url": "https://www.villedelacrau.fr/laville_loisirssorties.html",
+      "tested_urls": [
+        "https://www.villedelacrau.fr/",
+        "https://www.villedelacrau.fr/laville_loisirssorties.html",
+        "https://www.villedelacrau.fr/telechargements/docs/agenda_du_mois.pdf"
+      ],
+      "observations": [
+        "Homepage exposes an 'Agenda des sorties' section.",
+        "The Loisirs et Sorties page points to a monthly agenda PDF.",
+        "No structured API/RSS/ICS endpoint was confirmed."
+      ],
+      "status": "limited",
+      "recommendation": "intégrer avec forte réserve"
+    },
+    {
+      "source_name": "Ville de Carqueiranne - Agenda",
+      "page_url": "https://www.carqueiranne.fr/agenda-133.html",
+      "tested_urls": [
+        "https://www.carqueiranne.fr/",
+        "https://www.carqueiranne.fr/agenda-133.html",
+        "https://www.carqueiranne.fr/agenda-133/page-2.html?cHash=3670066c7dc7abb8ab0289a4650fd63b"
+      ],
+      "observations": [
+        "The agenda page is public HTML and paginated.",
+        "The page displays 'Flux RSS de l'agenda'.",
+        "The exact RSS URL was not resolved by the web audit and must be replayed locally."
+      ],
+      "status": "usable",
+      "recommendation": "intégrer"
+    },
+    {
+      "source_name": "Ville du Pradet - Agenda",
+      "page_url": "https://www.le-pradet.fr/lagenda/",
+      "tested_urls": [
+        "https://www.le-pradet.fr/",
+        "https://www.le-pradet.fr/lagenda/",
+        "https://www.le-pradet.fr/evenement/"
+      ],
+      "observations": [
+        "The agenda page is public HTML and shows 24 results.",
+        "Pagination and category filters are visible.",
+        "WordPress paths should be tested locally before prototype integration."
+      ],
+      "status": "usable",
+      "recommendation": "intégrer"
+    },
+    {
+      "source_name": "Conservatoire TPM - Agenda culturel",
+      "page_url": "https://www.conservatoire-tpm.fr/agenda",
+      "tested_urls": [
+        "https://www.conservatoire-tpm.fr/",
+        "https://www.conservatoire-tpm.fr/agenda"
+      ],
+      "observations": [
+        "The agenda page is public HTML.",
+        "Visible filters include date range, discipline and places covering target communes.",
+        "An 'Afficher plus' control is visible, but no endpoint was confirmed."
+      ],
+      "status": "limited",
+      "recommendation": "intégrer avec réserve"
+    }
+  ]
+}

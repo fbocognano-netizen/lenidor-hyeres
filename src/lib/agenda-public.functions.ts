@@ -9,6 +9,8 @@ export type PublicAgendaEvent = {
   editorialScore: number;
   editorialTags: string[];
   locationLabel: string | null;
+  city: string | null;
+  sourceName: string | null;
   scheduleText: string | null;
   sourceUrl: string;
   coteAzurSourceUrl: string | null;
@@ -29,7 +31,7 @@ export const getPublicAgenda = createServerFn({ method: "GET" }).handler(async (
   const { data, error } = await supabaseAdmin
     .from("agenda_events")
     .select(
-      "id, title, category, traveler_category, editorial_priority, editorial_score, editorial_tags, location_label, schedule_text, source_url, cote_azur_source_url, agenda_occurrences!inner(occurrence_date)",
+      "id, title, category, traveler_category, editorial_priority, editorial_score, editorial_tags, location_label, city, source_name, schedule_text, source_url, cote_azur_source_url, agenda_occurrences!inner(occurrence_date)",
     )
     .gte("agenda_occurrences.occurrence_date", rangeStart)
     .lte("agenda_occurrences.occurrence_date", rangeEnd)
@@ -49,6 +51,8 @@ export const getPublicAgenda = createServerFn({ method: "GET" }).handler(async (
         editorialScore: event.editorial_score,
         editorialTags: event.editorial_tags ?? [],
         locationLabel: event.location_label,
+        city: event.city,
+        sourceName: event.source_name,
         scheduleText: event.schedule_text,
         sourceUrl: event.source_url,
         coteAzurSourceUrl: event.cote_azur_source_url,
