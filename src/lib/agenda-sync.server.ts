@@ -3,10 +3,16 @@
 
 import { annotateEvent } from "./agenda-editorial.server";
 import {
+  getCoteAzurAgendaEvents,
+  type CoteAzurAgendaEvent,
+} from "./cote-azur-agenda-source.server";
+import {
   agendaEventFingerprint,
-  collectHyeresAreaAgendaEvents,
+  collectNearbyAgendaEvents,
   normalizeCategory,
+  type AreaAgendaEvent,
 } from "./hyeres-area-agenda-sources.server";
+import { getCityAgendaPreview, locationLabel, type CityAgendaEvent } from "./hyeres-agenda.server";
 import { errorDetails, logAppEvent } from "./logging.server";
 
 export type AgendaSyncResult = {
@@ -34,6 +40,83 @@ function normalizeMatchValue(value: string): string {
     .replace(/\s+/g, " ");
 }
 
+function normalizeSourceCategory(value: string | null): string | null {
+  if (!value) return null;
+  const normalized = normalizeMatchValue(value).replace(/\s+/g, "_");
+  if (["projection", "cinema", "film", "cinema_projection"].includes(normalized)) return "cinema";
+  if (["concert", "musique", "live", "dj"].includes(normalized)) return "musique";
+  if (["exposition", "expo"].includes(normalized)) return "exposition";
+  if (["visite", "visites", "sortie", "visites_sorties"].includes(normalized))
+    return "visites_sorties";
+  if (["spectacle", "theatre", "theatre_spectacle"].includes(normalized)) return "spectacle";
+  if (normalized === "sport") return "sport";
+  return normalized || null;
+}
+
+function findCoteAzurMatch(
+  title: string,
+  date: string,
+  events: CoteAzurAgendaEvent[],
+): CoteAzurAgendaEvent | null {
+  const normalizedTitle = normalizeMatchValue(title);
+  return (
+    events.find((event) => {
+      const normalizedCandidate = normalizeMatchValue(event.title);
+      const matchingTitle =
+        normalizedCandidate === normalizedTitle ||
+        (normalizedCandidate.length > 8 && normalizedTitle.includes(normalizedCandidate)) ||
+        (normalizedTitle.length > 8 && normalizedCandidate.includes(normalizedTitle));
+      return (
+        matchingTitle &&
+        event.startsAt !== null &&
+        event.startsAt <= date &&
+        (event.endsAt ?? event.startsAt) >= date
+      );
+    }) ?? null
+  );
+}
+
+function rowForNearbyEvent(event: AreaAgendaEvent, nowIso: string) {
+  const annotation = annotateEvent({
+    title: event.title,
+    category: event.category,
+    locationSlug: event.locationSlug,
+    scheduleText: [event.scheduleText, event.city, event.locationLabel].filter(Boolean).join(" "),
+  });
+  return {
+    source: event.source,
+    source_name: event.sourceName,
+    source_event_id: event.sourceEventId,
+    source_url: event.sourceUrl,
+    canonical_url: event.canonicalUrl,
+    title: event.title,
+    category: normalizeCategory(event.category),
+    source_category: event.sourceCategory,
+    city: event.city,
+    location_slug: event.locationSlug,
+    location_label: event.locationLabel,
+    address: event.address,
+    schedule_text: event.scheduleText,
+    image_url: event.imageUrl,
+    price_text: event.priceText,
+    timezone: "Europe/Paris",
+    source_published_at: event.sourcePublishedAt,
+    source_updated_at: event.sourceUpdatedAt,
+    raw_payload_hash: event.rawPayloadHash,
+    event_fingerprint: normalizeMatchValue(agendaEventFingerprint(event)),
+    status: "active",
+    last_seen_at: nowIso,
+    last_synced_at: nowIso,
+    traveler_category: annotation.travelerCategory,
+    editorial_priority: annotation.editorialPriority,
+    editorial_rhythm: annotation.editorialRhythm,
+    editorial_score: annotation.editorialScore,
+    editorial_tags: annotation.editorialTags,
+    cote_azur_source_url: null,
+    cote_azur_type: null,
+  };
+}
+
 export async function runAgendaSync(options: { days?: number } = {}): Promise<AgendaSyncResult> {
   const days = Math.min(Math.max(options.days ?? DEFAULT_DAYS, 1), 120);
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
@@ -47,7 +130,7 @@ export async function runAgendaSync(options: { days?: number } = {}): Promise<Ag
   const { data: runRow } = await supabaseAdmin
     .from("agenda_sync_runs")
     .insert({
-      source: "hyeres_area",
+      source: "hyeres",
       range_start: rangeStart,
       range_end: rangeEnd,
       status: "running",
@@ -58,55 +141,83 @@ export async function runAgendaSync(options: { days?: number } = {}): Promise<Ag
   const runId = runRow?.id ?? null;
 
   try {
-    const collected = await collectHyeresAreaAgendaEvents({ days, start: startedAt });
-    const occurrencesSeen = collected.events.reduce(
+    const preview = await getCityAgendaPreview(days, startedAt);
+    const coteAzurEvents = await getCoteAzurAgendaEvents(preview.startDate, preview.endDate);
+    const nearby = await collectNearbyAgendaEvents({ days, start: startedAt });
+
+    const matched = new Map<
+      string,
+      {
+        event: CityAgendaEvent;
+        dates: Set<string>;
+        coteAzurEvent: CoteAzurAgendaEvent | null;
+      }
+    >();
+    let unmatchedEvents = 0;
+    let occurrencesSeen = 0;
+    let crossCheckedEvents = 0;
+
+    for (const day of preview.days) {
+      for (const card of day.cards) {
+        occurrencesSeen += 1;
+        const event = preview.eventsByUrl.get(card.sourceUrl);
+        if (!event) {
+          unmatchedEvents += 1;
+          continue;
+        }
+        const coteAzurEvent = findCoteAzurMatch(event.title, day.date, coteAzurEvents);
+        if (coteAzurEvent) crossCheckedEvents += 1;
+        const entry = matched.get(event.sourceEventId) ?? {
+          event,
+          dates: new Set<string>(),
+          coteAzurEvent,
+        };
+        if (!entry.coteAzurEvent && coteAzurEvent) entry.coteAzurEvent = coteAzurEvent;
+        entry.dates.add(day.date);
+        matched.set(event.sourceEventId, entry);
+      }
+    }
+
+    const failedSources = nearby.stats.filter((source) => source.status === "failed");
+    const nearbyOccurrencesSeen = nearby.events.reduce(
       (total, event) => total + event.occurrenceDates.length,
       0,
     );
-    const failedSources = collected.stats.filter((source) => source.status === "failed");
     const nowIso = new Date().toISOString();
-    const rows = collected.events.map((event) => {
+    const hyeresRows = Array.from(matched.values()).map(({ event, coteAzurEvent }) => {
       const annotation = annotateEvent({
         title: event.title,
         category: event.category,
         locationSlug: event.locationSlug,
-        scheduleText: [event.scheduleText, event.city, event.locationLabel]
-          .filter(Boolean)
-          .join(" "),
+        scheduleText:
+          [event.scheduleText, coteAzurEvent?.description, coteAzurEvent?.type]
+            .filter(Boolean)
+            .join(" ") || null,
       });
       return {
-        source: event.source,
-        source_name: event.sourceName,
+        source: "hyeres",
         source_event_id: event.sourceEventId,
         source_url: event.sourceUrl,
-        canonical_url: event.canonicalUrl,
         title: event.title,
-        category: normalizeCategory(event.category),
-        source_category: event.sourceCategory,
-        city: event.city,
+        category: normalizeSourceCategory(event.category),
+        source_category: event.category,
         location_slug: event.locationSlug,
-        location_label: event.locationLabel,
-        address: event.address,
+        location_label: locationLabel(event.locationSlug),
         schedule_text: event.scheduleText,
-        image_url: event.imageUrl,
-        price_text: event.priceText,
-        timezone: "Europe/Paris",
         source_published_at: event.sourcePublishedAt,
         source_updated_at: event.sourceUpdatedAt,
-        raw_payload_hash: event.rawPayloadHash,
-        event_fingerprint: normalizeMatchValue(agendaEventFingerprint(event)),
-        status: "active",
-        last_seen_at: nowIso,
         last_synced_at: nowIso,
         traveler_category: annotation.travelerCategory,
         editorial_priority: annotation.editorialPriority,
         editorial_rhythm: annotation.editorialRhythm,
         editorial_score: annotation.editorialScore,
         editorial_tags: annotation.editorialTags,
-        cote_azur_source_url: null,
-        cote_azur_type: null,
+        cote_azur_source_url: coteAzurEvent?.sourceUrl ?? null,
+        cote_azur_type: coteAzurEvent?.type ?? null,
       };
     });
+    const nearbyRows = nearby.events.map((event) => rowForNearbyEvent(event, nowIso));
+    const rows = [...hyeresRows, ...nearbyRows];
 
     if (rows.length > 0) {
       const { data: upserted, error: upsertError } = await supabaseAdmin
@@ -124,7 +235,18 @@ export async function runAgendaSync(options: { days?: number } = {}): Promise<Ag
         source_checked_at: string;
       }> = [];
 
-      for (const event of collected.events) {
+      for (const [sourceEventId, entry] of matched) {
+        const eventId = idBySourceKey.get(`hyeres:${sourceEventId}`);
+        if (!eventId) continue;
+        for (const date of entry.dates) {
+          occurrenceRows.push({
+            event_id: eventId,
+            occurrence_date: date,
+            source_checked_at: nowIso,
+          });
+        }
+      }
+      for (const event of nearby.events) {
         const eventId = idBySourceKey.get(`${event.source}:${event.sourceEventId}`);
         if (!eventId) continue;
         for (const date of event.occurrenceDates) {
@@ -160,12 +282,12 @@ export async function runAgendaSync(options: { days?: number } = {}): Promise<Ag
       rangeStart,
       rangeEnd,
       eventsSeen: rows.length,
-      occurrencesSeen,
-      unmatchedEvents: failedSources.length,
-      crossCheckedEvents: 0,
+      occurrencesSeen: occurrencesSeen + nearbyOccurrencesSeen,
+      unmatchedEvents: unmatchedEvents + failedSources.length,
+      crossCheckedEvents,
       errorMessage:
         failedSources.length > 0
-          ? `${failedSources.length} source(s) en erreur pendant la synchronisation.`
+          ? `${failedSources.length} source(s) voisine(s) en erreur pendant la synchronisation.`
           : undefined,
     };
 
@@ -177,7 +299,7 @@ export async function runAgendaSync(options: { days?: number } = {}): Promise<Ag
           events_seen: result.eventsSeen,
           occurrences_seen: result.occurrencesSeen,
           unmatched_events: result.unmatchedEvents,
-          source_stats: collected.stats,
+          source_stats: nearby.stats,
           completed_at: new Date().toISOString(),
         })
         .eq("id", runId);
@@ -188,8 +310,8 @@ export async function runAgendaSync(options: { days?: number } = {}): Promise<Ag
       level: "info",
       event: "agenda_sync_success",
       area: "agenda",
-      message: `Agenda multi-villes synchronisé : ${result.eventsSeen} événements, ${result.occurrencesSeen} occurrences.`,
-      details: { ...result, sourceStats: collected.stats },
+      message: `Agenda synchronisé : ${result.eventsSeen} événements, ${result.occurrencesSeen} occurrences.`,
+      details: { ...result, nearbySourceStats: nearby.stats },
     });
 
     return result;

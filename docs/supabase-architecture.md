@@ -108,9 +108,10 @@ Les valeurs réelles restent dans les environnements d’exécution :
 
 Le dépôt ne contient que les noms de variables et la documentation. Il ne contient jamais leurs valeurs.
 
-## Synchronisation agenda multi-villes
+## Synchronisation agenda et communes voisines
 
-La synchronisation de l'agenda couvre Hyères et les communes proches documentées dans `reports/hyeres-area-event-coverage.md`.
+La synchronisation Hyères reste assurée par le collecteur existant `hyeres-agenda.server.ts`.
+Les communes voisines documentées dans `reports/hyeres-area-event-coverage.md` sont ajoutées par `hyeres-area-agenda-sources.server.ts` sans remplacer ni dupliquer la source Hyères.
 
 Accès :
 

@@ -1,13 +1,10 @@
 import { createHash } from "node:crypto";
 
-import { type CityAgendaEvent, getCityAgendaPreview, locationLabel } from "./hyeres-agenda.server";
-
 const REQUEST_TIMEOUT_MS = 25_000;
 const MAX_RESPONSE_BYTES = 5_000_000;
 const MAX_RANGE_DAYS = 120;
 
 export const HYERES_AREA_CITIES = [
-  "Hyères",
   "La Londe-les-Maures",
   "Le Lavandou",
   "Bormes-les-Mimosas",
@@ -92,13 +89,6 @@ type RssItem = {
 };
 
 const RSS_SOURCES: RssSource[] = [
-  {
-    source: "hyeres_rss",
-    sourceName: "Ville d'Hyères - Flux agenda",
-    feedUrl: "https://hyeres.fr/agenda-hyeres/feed/",
-    defaultCity: "Hyères",
-    eventOnly: true,
-  },
   {
     source: "carqueiranne_rss",
     sourceName: "Ville de Carqueiranne - Flux agenda",
@@ -398,7 +388,6 @@ function cityFromText(text: string, fallback: SupportedCity): SupportedCity {
   if (/\blonde\b/.test(normalized)) return "La Londe-les-Maures";
   if (/\bpradet\b/.test(normalized)) return "Le Pradet";
   if (/\bcarqueiranne\b/.test(normalized)) return "Carqueiranne";
-  if (/\bhyeres\b/.test(normalized)) return "Hyères";
   return fallback;
 }
 
@@ -574,48 +563,7 @@ async function collectHtmlLinkSource(
   return events;
 }
 
-async function collectHyeresOfficial(days: number, start: Date): Promise<AreaAgendaEvent[]> {
-  const preview = await getCityAgendaPreview(days, start);
-  const bySourceId = new Map<
-    string,
-    {
-      event: CityAgendaEvent;
-      dates: Set<string>;
-    }
-  >();
-  for (const day of preview.days) {
-    for (const card of day.cards) {
-      const event = preview.eventsByUrl.get(card.sourceUrl);
-      if (!event) continue;
-      const entry = bySourceId.get(event.sourceEventId) ?? { event, dates: new Set<string>() };
-      entry.dates.add(day.date);
-      bySourceId.set(event.sourceEventId, entry);
-    }
-  }
-  return Array.from(bySourceId.values()).map(({ event, dates }) => ({
-    source: "hyeres",
-    sourceName: "Ville d'Hyères - Agenda officiel",
-    sourceEventId: event.sourceEventId,
-    sourceUrl: event.sourceUrl,
-    canonicalUrl: event.sourceUrl,
-    title: event.title,
-    category: normalizeCategory(event.category),
-    sourceCategory: event.category,
-    city: "Hyères",
-    locationSlug: event.locationSlug,
-    locationLabel: locationLabel(event.locationSlug) ?? "Hyères",
-    address: null,
-    scheduleText: shortText(event.scheduleText ?? ""),
-    imageUrl: null,
-    priceText: null,
-    sourcePublishedAt: event.sourcePublishedAt,
-    sourceUpdatedAt: event.sourceUpdatedAt,
-    occurrenceDates: Array.from(dates).sort(),
-    rawPayloadHash: hash(JSON.stringify(event)),
-  }));
-}
-
-export async function collectHyeresAreaAgendaEvents(options: {
+export async function collectNearbyAgendaEvents(options: {
   days: number;
   start: Date;
 }): Promise<AreaAgendaCollectionResult> {
@@ -635,12 +583,7 @@ export async function collectHyeresAreaAgendaEvents(options: {
     sourceName: string;
     collect: () => Promise<AreaAgendaEvent[]>;
   }> = [
-    {
-      source: "hyeres",
-      sourceName: "Ville d'Hyères - Agenda officiel",
-      collect: () => collectHyeresOfficial(options.days, options.start),
-    },
-    ...RSS_SOURCES.filter((source) => source.source !== "hyeres_rss").map((source) => ({
+    ...RSS_SOURCES.map((source) => ({
       source: source.source,
       sourceName: source.sourceName,
       collect: () => collectRssSource(source, rangeStart, rangeEnd),
@@ -650,11 +593,6 @@ export async function collectHyeresAreaAgendaEvents(options: {
       sourceName: source.sourceName,
       collect: () => collectHtmlLinkSource(source, rangeStart, rangeEnd),
     })),
-    {
-      source: "hyeres_rss",
-      sourceName: "Ville d'Hyères - Flux agenda",
-      collect: () => collectRssSource(RSS_SOURCES[0], rangeStart, rangeEnd),
-    },
   ];
 
   const events: AreaAgendaEvent[] = [];
