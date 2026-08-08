@@ -56,5 +56,5 @@ export const triggerAgendaSync = createServerFn({ method: "POST" })
   .handler(async ({ data }) => {
     await requireAdmin();
     const { runAgendaSync } = await import("./agenda-sync.server");
-    return runAgendaSync({ days: data.days ?? 45 });
+    return runAgendaSync({ days: data.days ?? 45, trigger: "admin-manual" });
   });

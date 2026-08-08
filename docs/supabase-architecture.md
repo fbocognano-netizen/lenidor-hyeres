@@ -14,7 +14,7 @@ flowchart LR
   B --> P[Client Supabase publishable]
   P --> R[RPC SQL publique contrôlée]
   R --> DB
-  S[Tâche planifiée future] --> H[Endpoint sécurisé]
+  S[Job Lovable agenda-sync-daily] --> H[Endpoint sécurisé]
   H --> F
 ```
 
@@ -104,7 +104,7 @@ Les valeurs réelles restent dans les environnements d’exécution :
 
 - local : `.env` non commité ;
 - Lovable Cloud : variables serveur du projet ;
-- tâche planifiée future : secrets du fournisseur de planification.
+- job Lovable existant : secret transmis par le fournisseur de planification.
 
 Le dépôt ne contient que les noms de variables et la documentation. Il ne contient jamais leurs valeurs.
 
@@ -116,6 +116,8 @@ Les communes voisines documentées dans `reports/hyeres-area-event-coverage.md` 
 Accès :
 
 - déclenchement admin : `triggerAgendaSync` dans `agenda-admin.functions.ts`, après session admin ;
-- déclenchement planifié : `POST /api/public/hooks/agenda-sync`, selon le mécanisme existant du projet.
+- déclenchement planifié : job Lovable `agenda-sync-daily`, tous les jours à 04:15, vers `POST /api/public/hooks/agenda-sync`.
 
 Le navigateur ne lit ni n'écrit directement les tables agenda. Les lectures publiques passent par `getPublicAgenda`, qui renvoie un DTO limité. L'écriture de synchronisation reste côté serveur via le client admin déjà prévu par l'architecture.
+
+Les jobs Lovable connus sont listés dans `docs/lovable-jobs.md`. Avant de proposer un cron ou un nouveau job, vérifier ce registre et l'écran Lovable **Jobs**.

@@ -18,6 +18,7 @@ import { errorDetails, logAppEvent } from "./logging.server";
 export type AgendaSyncResult = {
   runId: string | null;
   status: "success" | "error";
+  trigger: string;
   rangeStart: string;
   rangeEnd: string;
   eventsSeen: number;
@@ -28,6 +29,34 @@ export type AgendaSyncResult = {
 };
 
 const DEFAULT_DAYS = 45;
+const DEFAULT_TRIGGER = "unknown";
+
+async function logAgendaSyncStep(input: {
+  step: string;
+  message: string;
+  runId: string | null;
+  trigger: string;
+  rangeStart: string;
+  rangeEnd: string;
+  startedAt: Date;
+  details?: Record<string, unknown>;
+}) {
+  await logAppEvent({
+    level: "info",
+    event: "agenda_sync_step",
+    area: "agenda",
+    message: input.message,
+    details: {
+      step: input.step,
+      runId: input.runId,
+      trigger: input.trigger,
+      rangeStart: input.rangeStart,
+      rangeEnd: input.rangeEnd,
+      elapsedMs: Date.now() - input.startedAt.getTime(),
+      ...(input.details ?? {}),
+    },
+  });
+}
 
 function normalizeMatchValue(value: string): string {
   return value
@@ -117,8 +146,11 @@ function rowForNearbyEvent(event: AreaAgendaEvent, nowIso: string) {
   };
 }
 
-export async function runAgendaSync(options: { days?: number } = {}): Promise<AgendaSyncResult> {
+export async function runAgendaSync(
+  options: { days?: number; trigger?: string } = {},
+): Promise<AgendaSyncResult> {
   const days = Math.min(Math.max(options.days ?? DEFAULT_DAYS, 1), 120);
+  const trigger = options.trigger ?? DEFAULT_TRIGGER;
   const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
   const startedAt = new Date();
@@ -141,9 +173,77 @@ export async function runAgendaSync(options: { days?: number } = {}): Promise<Ag
   const runId = runRow?.id ?? null;
 
   try {
+    await logAgendaSyncStep({
+      step: "started",
+      message: "Synchronisation agenda démarrée.",
+      runId,
+      trigger,
+      rangeStart,
+      rangeEnd,
+      startedAt,
+      details: { days },
+    });
+
     const preview = await getCityAgendaPreview(days, startedAt);
+    await logAgendaSyncStep({
+      step: "hyeres_preview_collected",
+      message: "Agenda Hyères collecté.",
+      runId,
+      trigger,
+      rangeStart,
+      rangeEnd,
+      startedAt,
+      details: {
+        daysCollected: preview.days.length,
+        eventsByUrl: preview.eventsByUrl.size,
+        cardsSeen: preview.days.reduce((total, day) => total + day.cards.length, 0),
+      },
+    });
+
     const coteAzurEvents = await getCoteAzurAgendaEvents(preview.startDate, preview.endDate);
-    const nearby = await collectNearbyAgendaEvents({ days, start: startedAt });
+    await logAgendaSyncStep({
+      step: "cote_azur_collected",
+      message: "Contrôle Côte d'Azur collecté.",
+      runId,
+      trigger,
+      rangeStart,
+      rangeEnd,
+      startedAt,
+      details: { eventsSeen: coteAzurEvents.length },
+    });
+
+    const nearby = await collectNearbyAgendaEvents({
+      days,
+      start: startedAt,
+      onSourceCollected: (stat) =>
+        logAgendaSyncStep({
+          step: "nearby_source_collected",
+          message: `${stat.sourceName} : ${stat.status === "success" ? "collectée" : "en erreur"}.`,
+          runId,
+          trigger,
+          rangeStart,
+          rangeEnd,
+          startedAt,
+          details: stat,
+        }),
+    });
+    await logAgendaSyncStep({
+      step: "nearby_collected",
+      message: "Sources des communes voisines collectées.",
+      runId,
+      trigger,
+      rangeStart,
+      rangeEnd,
+      startedAt,
+      details: {
+        eventsSeen: nearby.events.length,
+        occurrencesSeen: nearby.events.reduce(
+          (total, event) => total + event.occurrenceDates.length,
+          0,
+        ),
+        sourceStats: nearby.stats,
+      },
+    });
 
     const matched = new Map<
       string,
@@ -177,6 +277,21 @@ export async function runAgendaSync(options: { days?: number } = {}): Promise<Ag
         matched.set(event.sourceEventId, entry);
       }
     }
+    await logAgendaSyncStep({
+      step: "hyeres_matched",
+      message: "Événements Hyères préparés et croisés.",
+      runId,
+      trigger,
+      rangeStart,
+      rangeEnd,
+      startedAt,
+      details: {
+        matchedEvents: matched.size,
+        occurrencesSeen,
+        unmatchedEvents,
+        crossCheckedEvents,
+      },
+    });
 
     const failedSources = nearby.stats.filter((source) => source.status === "failed");
     const nearbyOccurrencesSeen = nearby.events.reduce(
@@ -218,13 +333,48 @@ export async function runAgendaSync(options: { days?: number } = {}): Promise<Ag
     });
     const nearbyRows = nearby.events.map((event) => rowForNearbyEvent(event, nowIso));
     const rows = [...hyeresRows, ...nearbyRows];
+    await logAgendaSyncStep({
+      step: "rows_prepared",
+      message: "Lignes agenda préparées avant écriture.",
+      runId,
+      trigger,
+      rangeStart,
+      rangeEnd,
+      startedAt,
+      details: {
+        rows: rows.length,
+        hyeresRows: hyeresRows.length,
+        nearbyRows: nearbyRows.length,
+        failedNearbySources: failedSources.length,
+      },
+    });
 
     if (rows.length > 0) {
+      await logAgendaSyncStep({
+        step: "events_upsert_started",
+        message: "Écriture des événements agenda démarrée.",
+        runId,
+        trigger,
+        rangeStart,
+        rangeEnd,
+        startedAt,
+        details: { rows: rows.length },
+      });
       const { data: upserted, error: upsertError } = await supabaseAdmin
         .from("agenda_events")
         .upsert(rows, { onConflict: "source,source_event_id" })
         .select("id, source, source_event_id");
       if (upsertError) throw upsertError;
+      await logAgendaSyncStep({
+        step: "events_upsert_completed",
+        message: "Écriture des événements agenda terminée.",
+        runId,
+        trigger,
+        rangeStart,
+        rangeEnd,
+        startedAt,
+        details: { upsertedRows: upserted?.length ?? 0 },
+      });
 
       const idBySourceKey = new Map(
         (upserted ?? []).map((row) => [`${row.source}:${row.source_event_id}`, row.id]),
@@ -260,25 +410,67 @@ export async function runAgendaSync(options: { days?: number } = {}): Promise<Ag
 
       const eventIds = Array.from(idBySourceKey.values());
       if (eventIds.length > 0) {
-        await supabaseAdmin
+        await logAgendaSyncStep({
+          step: "occurrences_delete_started",
+          message: "Nettoyage des anciennes occurrences démarré.",
+          runId,
+          trigger,
+          rangeStart,
+          rangeEnd,
+          startedAt,
+          details: { eventIds: eventIds.length },
+        });
+        const { error: deleteOccurrencesError } = await supabaseAdmin
           .from("agenda_occurrences")
           .delete()
           .in("event_id", eventIds)
           .gte("occurrence_date", rangeStart)
           .lte("occurrence_date", rangeEnd);
+        if (deleteOccurrencesError) throw deleteOccurrencesError;
+        await logAgendaSyncStep({
+          step: "occurrences_delete_completed",
+          message: "Nettoyage des anciennes occurrences terminé.",
+          runId,
+          trigger,
+          rangeStart,
+          rangeEnd,
+          startedAt,
+          details: { eventIds: eventIds.length },
+        });
       }
 
       if (occurrenceRows.length > 0) {
+        await logAgendaSyncStep({
+          step: "occurrences_insert_started",
+          message: "Écriture des occurrences démarrée.",
+          runId,
+          trigger,
+          rangeStart,
+          rangeEnd,
+          startedAt,
+          details: { occurrenceRows: occurrenceRows.length },
+        });
         const { error: occError } = await supabaseAdmin
           .from("agenda_occurrences")
           .insert(occurrenceRows);
         if (occError) throw occError;
+        await logAgendaSyncStep({
+          step: "occurrences_insert_completed",
+          message: "Écriture des occurrences terminée.",
+          runId,
+          trigger,
+          rangeStart,
+          rangeEnd,
+          startedAt,
+          details: { occurrenceRows: occurrenceRows.length },
+        });
       }
     }
 
     const result: AgendaSyncResult = {
       runId,
       status: "success",
+      trigger,
       rangeStart,
       rangeEnd,
       eventsSeen: rows.length,
@@ -305,6 +497,17 @@ export async function runAgendaSync(options: { days?: number } = {}): Promise<Ag
         .eq("id", runId);
       if (completedRunError) throw completedRunError;
     }
+
+    await logAgendaSyncStep({
+      step: "completed",
+      message: "Synchronisation agenda terminée.",
+      runId,
+      trigger,
+      rangeStart,
+      rangeEnd,
+      startedAt,
+      details: result,
+    });
 
     await logAppEvent({
       level: "info",
@@ -343,12 +546,19 @@ export async function runAgendaSync(options: { days?: number } = {}): Promise<Ag
       event: "agenda_sync_failed",
       area: "agenda",
       message: "La synchronisation de l'agenda a échoué.",
-      details: errorDetails(error, { rangeStart, rangeEnd }),
+      details: errorDetails(error, {
+        runId,
+        trigger,
+        rangeStart,
+        rangeEnd,
+        elapsedMs: Date.now() - startedAt.getTime(),
+      }),
     });
 
     return {
       runId,
       status: "error",
+      trigger,
       rangeStart,
       rangeEnd,
       eventsSeen: 0,

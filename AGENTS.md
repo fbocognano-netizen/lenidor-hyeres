@@ -37,6 +37,8 @@ Ces documents définissent l'architecture et la procédure obligatoires. En cas 
 - Lovable est uniquement une surface de publication.
 - Ne jamais envoyer de demande de modification, de génération de code, de SQL, de secret ou de configuration à Lovable.
 - Publier uniquement un commit déjà validé et présent sur GitHub `main`, après accord explicite de production.
+- Avant de proposer ou créer un cron, une tâche planifiée ou un webhook récurrent, vérifier d'abord les jobs Lovable existants et `docs/lovable-jobs.md`.
+- Pour l'agenda, le job Lovable existant `agenda-sync-daily` déclenche `POST /api/public/hooks/agenda-sync` tous les jours à 04:15. Ne pas créer de second job sans décision explicite.
 
 ## Documentation
 

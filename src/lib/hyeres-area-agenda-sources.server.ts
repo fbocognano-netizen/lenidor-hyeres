@@ -1,8 +1,11 @@
 import { createHash } from "node:crypto";
 
 const REQUEST_TIMEOUT_MS = 25_000;
+const HTML_LIST_TIMEOUT_MS = 15_000;
+const HTML_DETAIL_TIMEOUT_MS = 8_000;
 const MAX_RESPONSE_BYTES = 5_000_000;
 const MAX_RANGE_DAYS = 120;
+const HTML_DETAIL_CONCURRENCY = 6;
 
 export const HYERES_AREA_CITIES = [
   "La Londe-les-Maures",
@@ -274,8 +277,16 @@ function parseRssItems(xml: string): RssItem[] {
 }
 
 async function fetchText(url: string, accept = "text/html,application/xml,application/rss+xml") {
+  return fetchTextWithTimeout(url, accept, REQUEST_TIMEOUT_MS);
+}
+
+async function fetchTextWithTimeout(
+  url: string,
+  accept = "text/html,application/xml,application/rss+xml",
+  timeoutMs = REQUEST_TIMEOUT_MS,
+) {
   const controller = new AbortController();
-  const timeout = setTimeout(() => controller.abort(), REQUEST_TIMEOUT_MS);
+  const timeout = setTimeout(() => controller.abort(), timeoutMs);
   try {
     const response = await fetch(url, {
       headers: { Accept: accept, "User-Agent": "LeNidOrAgenda/1.0" },
@@ -289,6 +300,28 @@ async function fetchText(url: string, accept = "text/html,application/xml,applic
   } finally {
     clearTimeout(timeout);
   }
+}
+
+async function mapWithConcurrency<T, R>(
+  items: T[],
+  concurrency: number,
+  mapper: (item: T) => Promise<R>,
+): Promise<R[]> {
+  const results: R[] = [];
+  let nextIndex = 0;
+
+  async function worker() {
+    while (nextIndex < items.length) {
+      const index = nextIndex;
+      nextIndex += 1;
+      results[index] = await mapper(items[index]);
+    }
+  }
+
+  await Promise.all(
+    Array.from({ length: Math.min(concurrency, items.length) }, () => worker()),
+  );
+  return results;
 }
 
 function isoDateFromAny(value: string | null): string | null {
@@ -516,25 +549,23 @@ async function collectHtmlLinkSource(
   rangeStart: string,
   rangeEnd: string,
 ): Promise<AreaAgendaEvent[]> {
-  const listHtml = await fetchText(source.pageUrl);
+  const listHtml = await fetchTextWithTimeout(source.pageUrl, undefined, HTML_LIST_TIMEOUT_MS);
   const links = linksFromHtml(listHtml, source.pageUrl, source.linkPattern, source.maxLinks);
   const yearHint = Number(rangeStart.slice(0, 4));
-  const events: AreaAgendaEvent[] = [];
-
-  for (const sourceUrl of links) {
+  const events = await mapWithConcurrency(links, HTML_DETAIL_CONCURRENCY, async (sourceUrl) => {
     try {
-      const html = await fetchText(sourceUrl);
+      const html = await fetchTextWithTimeout(sourceUrl, undefined, HTML_DETAIL_TIMEOUT_MS);
       const text = stripHtml(html);
       const occurrenceDates = inRange(extractFrenchDates(text, yearHint), rangeStart, rangeEnd);
-      if (occurrenceDates.length === 0) continue;
+      if (occurrenceDates.length === 0) return null;
       const title = titleFromHtml(html);
-      if (!title) continue;
+      if (!title) return null;
       const city = cityFromText(text, source.defaultCity);
       const category =
         html.match(/rel=["']category tag["'][^>]*>([\s\S]*?)<\/a>/i)?.[1] ??
         html.match(/class=["'][^"']*category[^"']*["'][^>]*>([\s\S]*?)<\/[^>]+>/i)?.[1] ??
         null;
-      events.push({
+      return {
         source: source.source,
         sourceName: source.sourceName,
         sourceEventId: sourceUrl,
@@ -554,18 +585,19 @@ async function collectHtmlLinkSource(
         sourceUpdatedAt: null,
         occurrenceDates,
         rawPayloadHash: hash(html),
-      });
+      };
     } catch {
-      continue;
+      return null;
     }
-  }
+  });
 
-  return events;
+  return events.filter((event): event is AreaAgendaEvent => event !== null);
 }
 
 export async function collectNearbyAgendaEvents(options: {
   days: number;
   start: Date;
+  onSourceCollected?: (stat: AreaAgendaSourceStats) => Promise<void> | void;
 }): Promise<AreaAgendaCollectionResult> {
   const startDate = new Date(
     Date.UTC(
@@ -596,27 +628,32 @@ export async function collectNearbyAgendaEvents(options: {
   ];
 
   const events: AreaAgendaEvent[] = [];
-  const stats: AreaAgendaSourceStats[] = [];
-  for (const collector of collectors) {
-    try {
-      const sourceEvents = await collector.collect();
-      events.push(...sourceEvents);
-      stats.push({
-        source: collector.source,
-        sourceName: collector.sourceName,
-        status: "success",
-        eventsSeen: sourceEvents.length,
-      });
-    } catch (error) {
-      stats.push({
-        source: collector.source,
-        sourceName: collector.sourceName,
-        status: "failed",
-        eventsSeen: 0,
-        errorMessage: error instanceof Error ? error.message.slice(0, 300) : "Erreur inconnue",
-      });
-    }
-  }
+  const stats = await Promise.all(
+    collectors.map(async (collector): Promise<AreaAgendaSourceStats> => {
+      try {
+        const sourceEvents = await collector.collect();
+        events.push(...sourceEvents);
+        const stat: AreaAgendaSourceStats = {
+          source: collector.source,
+          sourceName: collector.sourceName,
+          status: "success",
+          eventsSeen: sourceEvents.length,
+        };
+        await options.onSourceCollected?.(stat);
+        return stat;
+      } catch (error) {
+        const stat: AreaAgendaSourceStats = {
+          source: collector.source,
+          sourceName: collector.sourceName,
+          status: "failed",
+          eventsSeen: 0,
+          errorMessage: error instanceof Error ? error.message.slice(0, 300) : "Erreur inconnue",
+        };
+        await options.onSourceCollected?.(stat);
+        return stat;
+      }
+    }),
+  );
 
   return {
     events: Array.from(
