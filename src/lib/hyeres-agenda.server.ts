@@ -181,9 +181,15 @@ export async function getCityAgendaPreview(
   };
 }
 
+export function normalizeLocationSlug(value: string | null): string | null {
+  if (value === "port") return "airport";
+  return value;
+}
+
 export function locationLabel(value: string | null): string | null {
-  if (!value) return null;
-  return value
+  const normalized = normalizeLocationSlug(value);
+  if (!normalized) return null;
+  return normalized
     .split("_")
     .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     .join(" ");

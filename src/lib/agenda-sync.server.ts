@@ -12,7 +12,12 @@ import {
   normalizeCategory,
   type AreaAgendaEvent,
 } from "./hyeres-area-agenda-sources.server";
-import { getCityAgendaPreview, locationLabel, type CityAgendaEvent } from "./hyeres-agenda.server";
+import {
+  getCityAgendaPreview,
+  locationLabel,
+  normalizeLocationSlug,
+  type CityAgendaEvent,
+} from "./hyeres-agenda.server";
 import { errorDetails, logAppEvent } from "./logging.server";
 
 export type AgendaSyncResult = {
@@ -79,6 +84,7 @@ function normalizeSourceCategory(value: string | null): string | null {
     return "visites_sorties";
   if (["spectacle", "theatre", "theatre_spectacle"].includes(normalized)) return "spectacle";
   if (normalized === "sport") return "sport";
+  if (normalized === "port") return "airport";
   return normalized || null;
 }
 
@@ -300,10 +306,11 @@ export async function runAgendaSync(
     );
     const nowIso = new Date().toISOString();
     const hyeresRows = Array.from(matched.values()).map(({ event, coteAzurEvent }) => {
+      const normalizedLocationSlug = normalizeLocationSlug(event.locationSlug);
       const annotation = annotateEvent({
         title: event.title,
         category: event.category,
-        locationSlug: event.locationSlug,
+        locationSlug: normalizedLocationSlug,
         scheduleText:
           [event.scheduleText, coteAzurEvent?.description, coteAzurEvent?.type]
             .filter(Boolean)
@@ -316,8 +323,8 @@ export async function runAgendaSync(
         title: event.title,
         category: normalizeSourceCategory(event.category),
         source_category: event.category,
-        location_slug: event.locationSlug,
-        location_label: locationLabel(event.locationSlug),
+        location_slug: normalizedLocationSlug,
+        location_label: locationLabel(normalizedLocationSlug),
         schedule_text: event.scheduleText,
         source_published_at: event.sourcePublishedAt,
         source_updated_at: event.sourceUpdatedAt,
