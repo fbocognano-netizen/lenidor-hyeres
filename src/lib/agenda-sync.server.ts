@@ -210,6 +210,24 @@ export function rowForHyeresEvent(input: {
   };
 }
 
+export function dedupeAgendaRowsBySourceUrl<Row extends { source_url: string }>(
+  rows: Row[],
+): {
+  rows: Row[];
+  duplicateSourceUrls: number;
+} {
+  const rowsBySourceUrl = new Map<string, Row>();
+  let duplicateSourceUrls = 0;
+  for (const row of rows) {
+    if (rowsBySourceUrl.has(row.source_url)) duplicateSourceUrls += 1;
+    rowsBySourceUrl.set(row.source_url, row);
+  }
+  return {
+    rows: Array.from(rowsBySourceUrl.values()),
+    duplicateSourceUrls,
+  };
+}
+
 export async function runAgendaSync(
   options: { days?: number; trigger?: string } = {},
 ): Promise<AgendaSyncResult> {
@@ -410,6 +428,7 @@ export async function runAgendaSync(
     );
     const nearbyRows = nearby.events.map((event) => rowForNearbyEvent(event, nowIso));
     const rows = [...hyeresRows, ...nearbyRows];
+    const { rows: rowsForWrite, duplicateSourceUrls } = dedupeAgendaRowsBySourceUrl(rows);
     await logAgendaSyncStep({
       step: "rows_prepared",
       message: "Lignes agenda préparées avant écriture.",
@@ -419,14 +438,16 @@ export async function runAgendaSync(
       rangeEnd,
       startedAt,
       details: {
-        rows: rows.length,
+        rows: rowsForWrite.length,
+        rowsBeforeSourceUrlDedupe: rows.length,
+        duplicateSourceUrls,
         hyeresRows: hyeresRows.length,
         nearbyRows: nearbyRows.length,
         failedNearbySources: failedSources.length,
       },
     });
 
-    if (rows.length > 0) {
+    if (rowsForWrite.length > 0) {
       await logAgendaSyncStep({
         step: "events_upsert_started",
         message: "Écriture des événements agenda démarrée.",
@@ -435,12 +456,12 @@ export async function runAgendaSync(
         rangeStart,
         rangeEnd,
         startedAt,
-        details: { rows: rows.length },
+        details: { rows: rowsForWrite.length, onConflict: "source_url" },
       });
       const { data: upserted, error: upsertError } = await supabaseAdmin
         .from("agenda_events")
-        .upsert(rows, { onConflict: "source,source_event_id" })
-        .select("id, source, source_event_id");
+        .upsert(rowsForWrite, { onConflict: "source_url" })
+        .select("id, source, source_event_id, source_url");
       if (upsertError) throw upsertError;
       await logAgendaSyncStep({
         step: "events_upsert_completed",
@@ -456,7 +477,7 @@ export async function runAgendaSync(
       const idBySourceKey = new Map(
         (upserted ?? []).map((row) => [`${row.source}:${row.source_event_id}`, row.id]),
       );
-      const missingEventIds = rows
+      const missingEventIds = rowsForWrite
         .map((row) => `${row.source}:${row.source_event_id}`)
         .filter((sourceKey) => !idBySourceKey.has(sourceKey));
       if (missingEventIds.length > 0) {
@@ -561,7 +582,7 @@ export async function runAgendaSync(
       trigger,
       rangeStart,
       rangeEnd,
-      eventsSeen: rows.length,
+      eventsSeen: rowsForWrite.length,
       occurrencesSeen: occurrencesSeen + nearbyOccurrencesSeen,
       unmatchedEvents: unmatchedEvents + failedSources.length,
       crossCheckedEvents,

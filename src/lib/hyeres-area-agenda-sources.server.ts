@@ -54,6 +54,15 @@ export type AreaAgendaSourceStats = {
   sourceName: string;
   status: "success" | "failed" | "skipped";
   eventsSeen: number;
+  requestUrls?: string[];
+  rawItemsSeen?: number;
+  eventsRejected?: number;
+  rejectedInvalid?: number;
+  rejectedNoDate?: number;
+  rejectedOutOfRange?: number;
+  pagesFetched?: number;
+  linksDiscovered?: number;
+  linksFetched?: number;
   errorMessage?: string;
 };
 
@@ -108,6 +117,11 @@ type WordPressApiEvent = {
   title?: { rendered?: string };
   content?: { rendered?: string };
   excerpt?: { rendered?: string };
+};
+
+type SourceCollection = {
+  events: AreaAgendaEvent[];
+  stats: Omit<AreaAgendaSourceStats, "source" | "sourceName" | "status" | "eventsSeen">;
 };
 
 const RSS_SOURCES: RssSource[] = [
@@ -489,17 +503,26 @@ async function collectRssSource(
   source: RssSource,
   rangeStart: string,
   rangeEnd: string,
-): Promise<AreaAgendaEvent[]> {
+): Promise<SourceCollection> {
   const xml = await fetchText(source.feedUrl, "application/rss+xml,application/xml,text/xml");
   const yearHint = Number(rangeStart.slice(0, 4));
-  return parseRssItems(xml).flatMap((item) => {
-    if (!item.title || !item.link) return [];
+  const items = parseRssItems(xml);
+  let rejectedInvalid = 0;
+  let rejectedNoDate = 0;
+  let rejectedOutOfRange = 0;
+  const events = items.flatMap((item) => {
+    if (!item.title || !item.link) {
+      rejectedInvalid += 1;
+      return [];
+    }
     if (
       !source.eventOnly &&
       source.linkNeedle &&
       !new URL(item.link).pathname.includes(source.linkNeedle)
-    )
+    ) {
+      rejectedInvalid += 1;
       return [];
+    }
 
     const descriptionHtml = item.content ?? item.description ?? "";
     const descriptionText = stripHtml(descriptionHtml);
@@ -509,10 +532,17 @@ async function collectRssSource(
       ? datesBetween(start, end ?? start)
       : extractFrenchDates([item.title, descriptionText, item.pubDate ?? ""].join(" "), yearHint);
     const occurrenceDates = inRange(parsedDates, rangeStart, rangeEnd);
-    if (occurrenceDates.length === 0) return [];
+    if (occurrenceDates.length === 0) {
+      if (parsedDates.length === 0) rejectedNoDate += 1;
+      else rejectedOutOfRange += 1;
+      return [];
+    }
 
     const sourceUrl = canonicalLink(item.link, source.feedUrl);
-    if (!sourceUrl) return [];
+    if (!sourceUrl) {
+      rejectedInvalid += 1;
+      return [];
+    }
     const city = cityFromText(
       [item.title, descriptionText, source.defaultCity].join(" "),
       source.defaultCity,
@@ -541,6 +571,17 @@ async function collectRssSource(
     };
     return [event];
   });
+  return {
+    events,
+    stats: {
+      requestUrls: [source.feedUrl],
+      rawItemsSeen: items.length,
+      eventsRejected: items.length - events.length,
+      rejectedInvalid,
+      rejectedNoDate,
+      rejectedOutOfRange,
+    },
+  };
 }
 
 export function eventsFromWordPressApiItems(
@@ -600,18 +641,30 @@ async function collectWordPressApiSource(
   source: WordPressApiSource,
   rangeStart: string,
   rangeEnd: string,
-): Promise<AreaAgendaEvent[]> {
+): Promise<SourceCollection> {
   const pages: WordPressApiEvent[][] = [];
+  const requestUrls: string[] = [];
   for (let page = 1; page <= WP_API_PAGE_LIMIT; page += 1) {
     const url = new URL(source.endpointUrl);
     url.search = new URLSearchParams({ per_page: "100", page: String(page) }).toString();
+    requestUrls.push(url.href);
     const body = await fetchTextWithTimeout(url.href, "application/json", REQUEST_TIMEOUT_MS);
     const pageItems = JSON.parse(body) as WordPressApiEvent[];
     pages.push(pageItems);
     if (pageItems.length < 100) break;
   }
 
-  return eventsFromWordPressApiItems(source, pages.flat(), rangeStart, rangeEnd);
+  const items = pages.flat();
+  const events = eventsFromWordPressApiItems(source, items, rangeStart, rangeEnd);
+  return {
+    events,
+    stats: {
+      requestUrls,
+      rawItemsSeen: items.length,
+      eventsRejected: items.length - events.length,
+      pagesFetched: pages.length,
+    },
+  };
 }
 
 function titleFromHtml(html: string): string {
@@ -642,12 +695,15 @@ async function collectHtmlLinkSource(
   source: HtmlLinkSource,
   rangeStart: string,
   rangeEnd: string,
-): Promise<AreaAgendaEvent[]> {
+): Promise<SourceCollection> {
   const listHtml = await fetchTextWithTimeout(source.pageUrl, undefined, HTML_LIST_TIMEOUT_MS);
-  const links = linksFromHtml(listHtml, source.pageUrl, source.linkPattern, source.maxLinks).slice(
-    0,
-    HTML_DETAIL_LINK_LIMIT,
+  const discoveredLinks = linksFromHtml(
+    listHtml,
+    source.pageUrl,
+    source.linkPattern,
+    source.maxLinks,
   );
+  const links = discoveredLinks.slice(0, HTML_DETAIL_LINK_LIMIT);
   const yearHint = Number(rangeStart.slice(0, 4));
   const events = await mapWithConcurrency(links, HTML_DETAIL_CONCURRENCY, async (sourceUrl) => {
     try {
@@ -688,7 +744,17 @@ async function collectHtmlLinkSource(
     }
   });
 
-  return events.filter((event): event is AreaAgendaEvent => event !== null);
+  const collectedEvents = events.filter((event): event is AreaAgendaEvent => event !== null);
+  return {
+    events: collectedEvents,
+    stats: {
+      requestUrls: [source.pageUrl, ...links],
+      rawItemsSeen: links.length,
+      eventsRejected: links.length - collectedEvents.length,
+      linksDiscovered: discoveredLinks.length,
+      linksFetched: links.length,
+    },
+  };
 }
 
 export async function collectNearbyAgendaEvents(options: {
@@ -710,7 +776,7 @@ export async function collectNearbyAgendaEvents(options: {
   const collectors: Array<{
     source: string;
     sourceName: string;
-    collect: () => Promise<AreaAgendaEvent[]>;
+    collect: () => Promise<SourceCollection>;
   }> = [
     ...RSS_SOURCES.map((source) => ({
       source: source.source,
@@ -733,13 +799,14 @@ export async function collectNearbyAgendaEvents(options: {
   const stats = await Promise.all(
     collectors.map(async (collector): Promise<AreaAgendaSourceStats> => {
       try {
-        const sourceEvents = await collector.collect();
-        events.push(...sourceEvents);
+        const collection = await collector.collect();
+        events.push(...collection.events);
         const stat: AreaAgendaSourceStats = {
           source: collector.source,
           sourceName: collector.sourceName,
           status: "success",
-          eventsSeen: sourceEvents.length,
+          eventsSeen: collection.events.length,
+          ...collection.stats,
         };
         await options.onSourceCollected?.(stat);
         return stat;

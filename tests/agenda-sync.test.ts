@@ -2,6 +2,7 @@ import test from "node:test";
 import assert from "node:assert/strict";
 
 import {
+  dedupeAgendaRowsBySourceUrl,
   findCoteAzurMatch,
   normalizeMatchValue,
   normalizeSourceCategory,
@@ -91,4 +92,22 @@ test("keeps nearby source city and location labels explicit", () => {
   assert.equal(row.city, "Le Lavandou");
   assert.equal(row.location_label, "Le Lavandou");
   assert.equal(row.category, "marche");
+});
+
+test("deduplicates agenda rows by source URL before Supabase upsert", () => {
+  const oldPradetRow = {
+    source: "le_pradet_rss",
+    source_event_id: "old-feed-id",
+    source_url: "https://www.le-pradet.fr/evenement/en-septembre-au-cinema-francis-weber/",
+  };
+  const officialPradetRow = {
+    source: "le_pradet_wp_api",
+    source_event_id: "1234",
+    source_url: "https://www.le-pradet.fr/evenement/en-septembre-au-cinema-francis-weber/",
+  };
+
+  const result = dedupeAgendaRowsBySourceUrl([oldPradetRow, officialPradetRow]);
+
+  assert.equal(result.duplicateSourceUrls, 1);
+  assert.deepEqual(result.rows, [officialPradetRow]);
 });

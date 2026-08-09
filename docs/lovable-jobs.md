@@ -42,3 +42,24 @@ Chaque exécution agenda doit écrire des logs `agenda_sync_step` avec le même 
 - `completed`
 
 En cas d'échec, chercher `agenda_sync_failed` avec le même `runId`, puis remonter au dernier `agenda_sync_step` enregistré.
+
+## Détails attendus dans les logs
+
+Les logs `nearby_source_collected` doivent permettre de comprendre source par source :
+
+- `requestUrls` : URL réellement appelées.
+- `rawItemsSeen` : volume brut reçu depuis la source.
+- `eventsSeen` : événements gardés pour la période synchronisée.
+- `eventsRejected` : éléments ignorés.
+- `rejectedInvalid`, `rejectedNoDate`, `rejectedOutOfRange` : causes de rejet RSS quand elles sont disponibles.
+- `pagesFetched` : nombre de pages API appelées.
+- `linksDiscovered`, `linksFetched` : liens HTML trouvés puis explorés.
+- `errorMessage` : erreur limitée et sans secret si la source échoue.
+
+Le log `rows_prepared` doit indiquer :
+
+- `rowsBeforeSourceUrlDedupe` : lignes candidates avant dédoublonnage.
+- `duplicateSourceUrls` : lignes retirées car une autre ligne porte la même URL source.
+- `rows` : lignes réellement envoyées à Supabase.
+
+L'écriture agenda se fait par `source_url`, qui est la contrainte unique de `agenda_events`. Cela permet de remplacer proprement une ancienne source par une source officielle plus fiable lorsqu'elles pointent vers la même page d'événement, sans créer de doublon ni bloquer la synchronisation.
