@@ -7,11 +7,7 @@ import { useServerFn } from "@tanstack/react-start";
 import { SiteNav } from "@/components/site-nav";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import {
-  LOCATION_FILTERS,
-  SORTED_LOCATION_FILTERS,
-  normalizeAgendaLocationText,
-} from "@/lib/agenda-location-filters";
+import { buildAgendaLocationOptions } from "@/lib/agenda-location-filters";
 import { agendaTextMatches } from "@/lib/agenda-search";
 import { getPublicAgenda, type PublicAgendaEvent } from "@/lib/agenda-public.functions";
 import agendaConcertImage from "@/assets/agenda-concert-hyeres.png";
@@ -100,6 +96,7 @@ export const Route = createFileRoute("/agenda")({
 
 function AgendaCard({ event }: { event: PublicAgendaEvent }) {
   const dates = event.dates.map(formatDate).join(" · ");
+  const locationText = [event.locationLabel, event.city].filter(Boolean).join(" · ");
   return (
     <Card className="flex h-full flex-col border-border/60 p-5 shadow-none sm:p-6">
       <div className="flex items-start justify-between gap-3">
@@ -117,10 +114,10 @@ function AgendaCard({ event }: { event: PublicAgendaEvent }) {
         <CalendarDays className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
         <span>{dates}</span>
       </p>
-      {event.locationLabel ? (
+      {locationText ? (
         <p className="mt-2 inline-flex items-start gap-2 text-sm text-muted-foreground">
           <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
-          <span>{[event.locationLabel, event.city].filter(Boolean).join(" · ")}</span>
+          <span>{locationText}</span>
         </p>
       ) : null}
       {event.sourceName ? (
@@ -162,8 +159,13 @@ function AgendaPage() {
       ).sort(),
     [agendaQuery.data],
   );
+  const locationOptions = useMemo(
+    () => buildAgendaLocationOptions(agendaQuery.data ?? []),
+    [agendaQuery.data],
+  );
   const visibleEvents = useMemo(() => {
     const filtered = (agendaQuery.data ?? []).filter((event) => {
+      const locationFilter = locationOptions.find((item) => item.value === location);
       const haystack = [
         event.title,
         event.category,
@@ -178,9 +180,7 @@ function AgendaPage() {
       return (
         agendaTextMatches(haystack, search) &&
         (category === "all" || labelForCategory(event.category) === category) &&
-        LOCATION_FILTERS.find((item) => item.value === location)?.matches(
-          normalizeAgendaLocationText(event.locationLabel),
-        )
+        (locationFilter?.matches(event) ?? true)
       );
     });
     return [...filtered].sort((left, right) => {
@@ -196,7 +196,7 @@ function AgendaPage() {
         ? rightDate.localeCompare(leftDate)
         : leftDate.localeCompare(rightDate);
     });
-  }, [agendaQuery.data, category, location, search, sort]);
+  }, [agendaQuery.data, category, location, locationOptions, search, sort]);
 
   return (
     <div className="min-h-screen bg-background text-foreground">
@@ -270,7 +270,7 @@ function AgendaPage() {
                 onChange={(event) => setLocation(event.target.value)}
                 className="h-12 w-full rounded-full border border-input bg-background px-4 text-sm"
               >
-                {SORTED_LOCATION_FILTERS.map((item) => (
+                {locationOptions.map((item) => (
                   <option key={item.value} value={item.value}>
                     {item.label}
                   </option>
