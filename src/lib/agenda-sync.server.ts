@@ -84,7 +84,6 @@ function normalizeSourceCategory(value: string | null): string | null {
     return "visites_sorties";
   if (["spectacle", "theatre", "theatre_spectacle"].includes(normalized)) return "spectacle";
   if (normalized === "sport") return "sport";
-  if (normalized === "port") return "airport";
   return normalized || null;
 }
 

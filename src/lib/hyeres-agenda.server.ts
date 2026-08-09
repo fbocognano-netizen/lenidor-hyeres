@@ -182,7 +182,6 @@ export async function getCityAgendaPreview(
 }
 
 export function normalizeLocationSlug(value: string | null): string | null {
-  if (value === "port") return "airport";
   return value;
 }
 

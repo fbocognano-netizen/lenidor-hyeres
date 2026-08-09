@@ -37,7 +37,8 @@ const LOCATION_FILTERS = [
   {
     value: "hyeres-port",
     label: "Hyères port",
-    matches: (value: string) => /port de hyeres|port d'hyeres|hyeres les palmiers/i.test(value),
+    matches: (value: string) =>
+      /\bport\b|port de hyeres|port d'hyeres|hyeres les palmiers/i.test(value),
   },
   {
     value: "capte",

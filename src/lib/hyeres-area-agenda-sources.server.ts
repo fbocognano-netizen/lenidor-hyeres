@@ -215,7 +215,6 @@ export function normalizeCategory(value: string | null): string | null {
   if (["spectacle", "theatre", "theatre_spectacle"].includes(normalized)) return "spectacle";
   if (normalized.includes("sport")) return "sport";
   if (normalized.includes("marche")) return "marche";
-  if (normalized === "port") return "airport";
   return normalized;
 }
 
