@@ -124,7 +124,6 @@ export function buildAgendaLocationOptions(events: AgendaLocationEvent[]): Agend
 
   return [
     { value: "all", label: "Tous les lieux", matches: () => true },
-    ...Array.from(cityOptions.values()).sort(sortByLabel),
-    ...Array.from(neighborhoodOptions.values()).sort(sortByLabel),
+    ...[...cityOptions.values(), ...neighborhoodOptions.values()].sort(sortByLabel),
   ];
 }

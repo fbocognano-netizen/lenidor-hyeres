@@ -7,6 +7,7 @@ const MAX_RESPONSE_BYTES = 5_000_000;
 const MAX_RANGE_DAYS = 120;
 const HTML_DETAIL_CONCURRENCY = 6;
 const HTML_DETAIL_LINK_LIMIT = 8;
+const WP_API_PAGE_LIMIT = 4;
 
 export const HYERES_AREA_CITIES = [
   "La Londe-les-Maures",
@@ -79,6 +80,13 @@ type HtmlLinkSource = {
   maxLinks: number;
 };
 
+type WordPressApiSource = {
+  source: string;
+  sourceName: string;
+  endpointUrl: string;
+  defaultCity: SupportedCity;
+};
+
 type RssItem = {
   title: string;
   link: string;
@@ -90,6 +98,16 @@ type RssItem = {
   eventStart: string | null;
   eventEnd: string | null;
   raw: string;
+};
+
+type WordPressApiEvent = {
+  id?: number;
+  date?: string;
+  modified?: string;
+  link?: string;
+  title?: { rendered?: string };
+  content?: { rendered?: string };
+  excerpt?: { rendered?: string };
 };
 
 const RSS_SOURCES: RssSource[] = [
@@ -106,14 +124,6 @@ const RSS_SOURCES: RssSource[] = [
     feedUrl: "https://www.ville-lalondelesmaures.fr/culture-et-sport/agenda.feed?type=rss",
     defaultCity: "La Londe-les-Maures",
     eventOnly: true,
-  },
-  {
-    source: "le_pradet_rss",
-    sourceName: "Ville du Pradet - Flux général",
-    feedUrl: "https://www.le-pradet.fr/feed/",
-    defaultCity: "Le Pradet",
-    eventOnly: false,
-    linkNeedle: "/evenement/",
   },
   {
     source: "la_garde_rss",
@@ -135,6 +145,15 @@ const RSS_SOURCES: RssSource[] = [
     feedUrl: "https://www.bormeslesmimosas.com/agenda/feed/",
     defaultCity: "Bormes-les-Mimosas",
     eventOnly: true,
+  },
+];
+
+const WORDPRESS_API_SOURCES: WordPressApiSource[] = [
+  {
+    source: "le_pradet_wp_api",
+    sourceName: "Ville du Pradet - API agenda",
+    endpointUrl: "https://www.le-pradet.fr/wp-json/wp/v2/evenement",
+    defaultCity: "Le Pradet",
   },
 ];
 
@@ -524,6 +543,77 @@ async function collectRssSource(
   });
 }
 
+export function eventsFromWordPressApiItems(
+  source: WordPressApiSource,
+  items: WordPressApiEvent[],
+  rangeStart: string,
+  rangeEnd: string,
+): AreaAgendaEvent[] {
+  const yearHint = Number(rangeStart.slice(0, 4));
+  return items.flatMap((item) => {
+    const sourceUrl = item.link ? canonicalLink(item.link, source.endpointUrl) : null;
+    const title = stripHtml(item.title?.rendered);
+    if (!sourceUrl || !title || item.id == null) return [];
+    const publishedDate = isoDateFromAny(item.date ?? null);
+    if (publishedDate && publishedDate < `${yearHint}-01-01`) return [];
+
+    const contentHtml = [item.content?.rendered, item.excerpt?.rendered].filter(Boolean).join(" ");
+    const contentText = stripHtml(contentHtml);
+    const occurrenceDates = inRange(
+      extractFrenchDates([title, contentText].join(" "), yearHint),
+      rangeStart,
+      rangeEnd,
+    );
+    if (occurrenceDates.length === 0) return [];
+
+    const city = cityFromText(
+      [title, contentText, source.defaultCity].join(" "),
+      source.defaultCity,
+    );
+    return [
+      {
+        source: source.source,
+        sourceName: source.sourceName,
+        sourceEventId: String(item.id),
+        sourceUrl,
+        canonicalUrl: sourceUrl,
+        title,
+        category: null,
+        sourceCategory: null,
+        city,
+        locationSlug: null,
+        locationLabel: city,
+        address: null,
+        scheduleText: shortText(contentText),
+        imageUrl: firstImage(contentHtml),
+        priceText: null,
+        sourcePublishedAt: item.date ? new Date(item.date).toISOString() : null,
+        sourceUpdatedAt: item.modified ? new Date(item.modified).toISOString() : null,
+        occurrenceDates,
+        rawPayloadHash: hash(JSON.stringify(item)),
+      },
+    ];
+  });
+}
+
+async function collectWordPressApiSource(
+  source: WordPressApiSource,
+  rangeStart: string,
+  rangeEnd: string,
+): Promise<AreaAgendaEvent[]> {
+  const pages: WordPressApiEvent[][] = [];
+  for (let page = 1; page <= WP_API_PAGE_LIMIT; page += 1) {
+    const url = new URL(source.endpointUrl);
+    url.search = new URLSearchParams({ per_page: "100", page: String(page) }).toString();
+    const body = await fetchTextWithTimeout(url.href, "application/json", REQUEST_TIMEOUT_MS);
+    const pageItems = JSON.parse(body) as WordPressApiEvent[];
+    pages.push(pageItems);
+    if (pageItems.length < 100) break;
+  }
+
+  return eventsFromWordPressApiItems(source, pages.flat(), rangeStart, rangeEnd);
+}
+
 function titleFromHtml(html: string): string {
   const h1 = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i)?.[1];
   const title = h1 ?? html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1] ?? "";
@@ -626,6 +716,11 @@ export async function collectNearbyAgendaEvents(options: {
       source: source.source,
       sourceName: source.sourceName,
       collect: () => collectRssSource(source, rangeStart, rangeEnd),
+    })),
+    ...WORDPRESS_API_SOURCES.map((source) => ({
+      source: source.source,
+      sourceName: source.sourceName,
+      collect: () => collectWordPressApiSource(source, rangeStart, rangeEnd),
     })),
     ...HTML_LINK_SOURCES.map((source) => ({
       source: source.source,

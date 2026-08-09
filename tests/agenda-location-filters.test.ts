@@ -39,9 +39,9 @@ test("builds sorted filters from all event cities and neighborhoods", () => {
       "Tous les lieux",
       "Bormes-les-Mimosas",
       "Hyères",
-      "Toulon",
       "Hyères - Port",
       "Hyères - Port-Cros",
+      "Toulon",
       "Toulon - Centre-ville",
     ],
   );

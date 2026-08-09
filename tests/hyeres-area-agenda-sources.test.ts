@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 
 import {
   cityFromText,
+  eventsFromWordPressApiItems,
   extractFrenchDates,
   linksFromHtml,
   normalizeCategory,
@@ -57,4 +58,54 @@ test("extracts canonical links with source limits", () => {
   );
 
   assert.deepEqual(links, ["https://example.test/agenda/un"]);
+});
+
+test("collects Le Pradet official WordPress agenda events", () => {
+  const events = eventsFromWordPressApiItems(
+    {
+      source: "le_pradet_wp_api",
+      sourceName: "Ville du Pradet - API agenda",
+      endpointUrl: "https://www.le-pradet.fr/wp-json/wp/v2/evenement",
+      defaultCity: "Le Pradet",
+    },
+    [
+      {
+        id: 28265,
+        date: "2026-06-25T15:39:37",
+        modified: "2026-06-25T15:39:37",
+        link: "https://www.le-pradet.fr/evenement/cinema-plein-air-12-aout/",
+        title: { rendered: "Cinéma plein air &#8211; 12 août" },
+        content: {
+          rendered:
+            "La Ville du Pradet vous donne rendez-vous le mardi 12 août à 21h au Parc Cravéro.",
+        },
+      },
+      {
+        id: 28267,
+        link: "https://www.le-pradet.fr/evenement/bal-du-15-aout-2/",
+        title: { rendered: "Bal du 15 août" },
+        content: {
+          rendered:
+            "Les commerçants vous invitent au traditionnel bal, le samedi 15 août 2026 à partir de 18h30.",
+        },
+      },
+      {
+        id: 28280,
+        link: "https://www.le-pradet.fr/evenement/baleti-des-commercants-25-aout/",
+        title: { rendered: "Balèti des commerçants – 25 août" },
+        content: { rendered: "Musique, danse et convivialité." },
+      },
+    ],
+    "2026-08-09",
+    "2026-09-22",
+  );
+
+  assert.deepEqual(
+    events.map((event) => [event.title, event.city, event.occurrenceDates]),
+    [
+      ["Cinéma plein air – 12 août", "Le Pradet", ["2026-08-12"]],
+      ["Bal du 15 août", "Le Pradet", ["2026-08-15"]],
+      ["Balèti des commerçants – 25 août", "Le Pradet", ["2026-08-25"]],
+    ],
+  );
 });
