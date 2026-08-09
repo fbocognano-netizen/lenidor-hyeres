@@ -1,6 +1,10 @@
 // Moteur de synchronisation de l'agenda (Lovable Cloud).
 // Utilisé par la tâche planifiée quotidienne et par le déclenchement manuel admin.
 
+import type { SupabaseClient } from "@supabase/supabase-js";
+
+import type { Database } from "@/integrations/supabase/types";
+
 import { annotateEvent } from "./agenda-editorial.server";
 import {
   getCoteAzurAgendaEvents,
@@ -37,6 +41,13 @@ const DEFAULT_DAYS = 45;
 const DEFAULT_TRIGGER = "unknown";
 const HYERES_SOURCE_NAME = "Ville d'Hyères - Agenda";
 const HYERES_CITY = "Hyères";
+
+type AgendaEventInsert = Database["public"]["Tables"]["agenda_events"]["Insert"];
+type AgendaEventIdentity = Pick<
+  Database["public"]["Tables"]["agenda_events"]["Row"],
+  "id" | "source" | "source_event_id" | "source_url"
+>;
+type SupabaseAdminClient = SupabaseClient<Database>;
 
 async function logAgendaSyncStep(input: {
   level?: "info" | "warning" | "error";
@@ -226,6 +237,97 @@ export function dedupeAgendaRowsBySourceUrl<Row extends { source_url: string }>(
     rows: Array.from(rowsBySourceUrl.values()),
     duplicateSourceUrls,
   };
+}
+
+export function sourceKeyForAgendaRow(row: Pick<AgendaEventInsert, "source" | "source_event_id">) {
+  return `${row.source ?? "hyeres"}:${row.source_event_id}`;
+}
+
+async function findAgendaEventBySourceUrl(
+  supabaseAdmin: SupabaseAdminClient,
+  sourceUrl: string,
+): Promise<AgendaEventIdentity | null> {
+  const { data, error } = await supabaseAdmin
+    .from("agenda_events")
+    .select("id, source, source_event_id, source_url")
+    .eq("source_url", sourceUrl)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+async function findAgendaEventBySourceKey(
+  supabaseAdmin: SupabaseAdminClient,
+  row: Pick<AgendaEventInsert, "source" | "source_event_id">,
+): Promise<AgendaEventIdentity | null> {
+  const { data, error } = await supabaseAdmin
+    .from("agenda_events")
+    .select("id, source, source_event_id, source_url")
+    .eq("source", row.source ?? "hyeres")
+    .eq("source_event_id", row.source_event_id)
+    .maybeSingle();
+  if (error) throw error;
+  return data;
+}
+
+async function deleteObsoleteAgendaEvent(
+  supabaseAdmin: SupabaseAdminClient,
+  obsoleteEventId: string,
+) {
+  const { error } = await supabaseAdmin.from("agenda_events").delete().eq("id", obsoleteEventId);
+  if (error) throw error;
+}
+
+async function writeAgendaEventRows(
+  supabaseAdmin: SupabaseAdminClient,
+  rows: AgendaEventInsert[],
+): Promise<{
+  rows: AgendaEventIdentity[];
+  insertedRows: number;
+  updatedRows: number;
+  mergedDuplicateRows: number;
+}> {
+  const writtenRows: AgendaEventIdentity[] = [];
+  let insertedRows = 0;
+  let updatedRows = 0;
+  let mergedDuplicateRows = 0;
+
+  for (const row of rows) {
+    const [existingByUrl, existingBySourceKey] = await Promise.all([
+      findAgendaEventBySourceUrl(supabaseAdmin, row.source_url),
+      findAgendaEventBySourceKey(supabaseAdmin, row),
+    ]);
+
+    const target = existingByUrl ?? existingBySourceKey;
+    if (existingByUrl && existingBySourceKey && existingByUrl.id !== existingBySourceKey.id) {
+      await deleteObsoleteAgendaEvent(supabaseAdmin, existingBySourceKey.id);
+      mergedDuplicateRows += 1;
+    }
+
+    if (target) {
+      const { data, error } = await supabaseAdmin
+        .from("agenda_events")
+        .update(row)
+        .eq("id", target.id)
+        .select("id, source, source_event_id, source_url")
+        .single();
+      if (error) throw error;
+      writtenRows.push(data);
+      updatedRows += 1;
+      continue;
+    }
+
+    const { data, error } = await supabaseAdmin
+      .from("agenda_events")
+      .insert(row)
+      .select("id, source, source_event_id, source_url")
+      .single();
+    if (error) throw error;
+    writtenRows.push(data);
+    insertedRows += 1;
+  }
+
+  return { rows: writtenRows, insertedRows, updatedRows, mergedDuplicateRows };
 }
 
 export async function runAgendaSync(
@@ -456,13 +558,12 @@ export async function runAgendaSync(
         rangeStart,
         rangeEnd,
         startedAt,
-        details: { rows: rowsForWrite.length, onConflict: "source_url" },
+        details: {
+          rows: rowsForWrite.length,
+          identity: "source_url puis source/source_event_id",
+        },
       });
-      const { data: upserted, error: upsertError } = await supabaseAdmin
-        .from("agenda_events")
-        .upsert(rowsForWrite, { onConflict: "source_url" })
-        .select("id, source, source_event_id, source_url");
-      if (upsertError) throw upsertError;
+      const written = await writeAgendaEventRows(supabaseAdmin, rowsForWrite);
       await logAgendaSyncStep({
         step: "events_upsert_completed",
         message: "Écriture des événements agenda terminée.",
@@ -471,14 +572,19 @@ export async function runAgendaSync(
         rangeStart,
         rangeEnd,
         startedAt,
-        details: { upsertedRows: upserted?.length ?? 0 },
+        details: {
+          writtenRows: written.rows.length,
+          insertedRows: written.insertedRows,
+          updatedRows: written.updatedRows,
+          mergedDuplicateRows: written.mergedDuplicateRows,
+        },
       });
 
       const idBySourceKey = new Map(
-        (upserted ?? []).map((row) => [`${row.source}:${row.source_event_id}`, row.id]),
+        written.rows.map((row) => [sourceKeyForAgendaRow(row), row.id]),
       );
       const missingEventIds = rowsForWrite
-        .map((row) => `${row.source}:${row.source_event_id}`)
+        .map((row) => sourceKeyForAgendaRow(row))
         .filter((sourceKey) => !idBySourceKey.has(sourceKey));
       if (missingEventIds.length > 0) {
         throw new Error(
@@ -561,7 +667,7 @@ export async function runAgendaSync(
         });
         const { error: occError } = await supabaseAdmin
           .from("agenda_occurrences")
-          .insert(occurrenceRows);
+          .upsert(occurrenceRows, { onConflict: "event_id,occurrence_date" });
         if (occError) throw occError;
         await logAgendaSyncStep({
           step: "occurrences_insert_completed",
