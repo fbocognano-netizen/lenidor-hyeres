@@ -8,6 +8,7 @@
     "build": "node scripts/validate-blog.mjs && vite build",
     "build:dev": "node scripts/validate-blog.mjs && vite build --mode development",
     "preview": "vite preview",
+    "test": "node --experimental-strip-types --import ./tests/register-ts-loader.mjs --test \"tests/**/*.test.ts\"",
     "lint": "eslint .",
     "format": "prettier --write .",
     "validate:blog": "node scripts/validate-blog.mjs"

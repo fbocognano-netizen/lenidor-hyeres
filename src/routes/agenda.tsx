@@ -7,6 +7,12 @@ import { useServerFn } from "@tanstack/react-start";
 import { SiteNav } from "@/components/site-nav";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
+import {
+  LOCATION_FILTERS,
+  SORTED_LOCATION_FILTERS,
+  normalizeAgendaLocationText,
+} from "@/lib/agenda-location-filters";
+import { agendaTextMatches } from "@/lib/agenda-search";
 import { getPublicAgenda, type PublicAgendaEvent } from "@/lib/agenda-public.functions";
 import agendaConcertImage from "@/assets/agenda-concert-hyeres.png";
 
@@ -26,66 +32,6 @@ const CATEGORY_LABELS: Record<string, string> = {
   exposition: "Expositions",
   sport: "Sport",
 };
-
-const LOCATION_FILTERS = [
-  { value: "all", label: "Tous les lieux", matches: () => true },
-  {
-    value: "hyeres-centre",
-    label: "Hyères centre-ville",
-    matches: (value: string) => /centre|hyeres ville/i.test(value),
-  },
-  {
-    value: "hyeres-port",
-    label: "Hyères port",
-    matches: (value: string) =>
-      /\bport\b|port de hyeres|port d'hyeres|hyeres les palmiers/i.test(value),
-  },
-  {
-    value: "capte",
-    label: "La Capte",
-    matches: (value: string) => /capte|presqu'ile de giens|presquile de giens/i.test(value),
-  },
-  {
-    value: "giens",
-    label: "Presqu'île de Giens",
-    matches: (value: string) =>
-      /giens|tour fondue|plage d'almanarre|plage de l'almanarre|almanarre/i.test(value),
-  },
-  {
-    value: "porquerolles",
-    label: "Porquerolles",
-    matches: (value: string) => /porquerolles/i.test(value),
-  },
-  {
-    value: "port-cros",
-    label: "Port-Cros",
-    matches: (value: string) => /port[- ]cros/i.test(value),
-  },
-  {
-    value: "alentours",
-    label: "Hyères et alentours",
-    matches: (value: string) => /toulon|la londe|bormes|le lavandou|var|alentour/i.test(value),
-  },
-  {
-    value: "ayguade",
-    label: "L'Ayguade",
-    matches: (value: string) => /ayguade/i.test(value),
-  },
-] as const;
-
-const SORTED_LOCATION_FILTERS = [
-  LOCATION_FILTERS[0],
-  ...LOCATION_FILTERS.slice(1).sort((left, right) =>
-    left.label.localeCompare(right.label, "fr-FR"),
-  ),
-];
-
-function normalizeText(value: string | null) {
-  return (value ?? "")
-    .toLocaleLowerCase("fr-FR")
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "");
-}
 
 function labelForCategory(value: string | null) {
   if (!value) return "Autres sorties";
@@ -217,7 +163,6 @@ function AgendaPage() {
     [agendaQuery.data],
   );
   const visibleEvents = useMemo(() => {
-    const query = search.trim().toLowerCase();
     const filtered = (agendaQuery.data ?? []).filter((event) => {
       const haystack = [
         event.title,
@@ -229,13 +174,12 @@ function AgendaPage() {
         ...event.editorialTags,
       ]
         .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
+        .join(" ");
       return (
-        (!query || haystack.includes(query)) &&
+        agendaTextMatches(haystack, search) &&
         (category === "all" || labelForCategory(event.category) === category) &&
         LOCATION_FILTERS.find((item) => item.value === location)?.matches(
-          normalizeText(event.locationLabel),
+          normalizeAgendaLocationText(event.locationLabel),
         )
       );
     });

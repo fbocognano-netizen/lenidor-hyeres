@@ -35,8 +35,11 @@ export type AgendaSyncResult = {
 
 const DEFAULT_DAYS = 45;
 const DEFAULT_TRIGGER = "unknown";
+const HYERES_SOURCE_NAME = "Ville d'Hyères - Agenda";
+const HYERES_CITY = "Hyères";
 
 async function logAgendaSyncStep(input: {
+  level?: "info" | "warning" | "error";
   step: string;
   message: string;
   runId: string | null;
@@ -47,7 +50,7 @@ async function logAgendaSyncStep(input: {
   details?: Record<string, unknown>;
 }) {
   await logAppEvent({
-    level: "info",
+    level: input.level ?? "info",
     event: "agenda_sync_step",
     area: "agenda",
     message: input.message,
@@ -63,18 +66,19 @@ async function logAgendaSyncStep(input: {
   });
 }
 
-function normalizeMatchValue(value: string): string {
+export function normalizeMatchValue(value: string): string {
   return value
     .normalize("NFD")
     .replace(/[\u0300-\u036f]/g, "")
     .toLowerCase()
-    .replace(/\b(le|la|les|un|une|de|du|des|au|aux|a|et)\b/g, " ")
+    .replace(/['’]/g, " ")
+    .replace(/\b(le|la|les|un|une|de|du|des|au|aux|a|d|l|et)\b/g, " ")
     .replace(/[^a-z0-9]+/g, " ")
     .trim()
     .replace(/\s+/g, " ");
 }
 
-function normalizeSourceCategory(value: string | null): string | null {
+export function normalizeSourceCategory(value: string | null): string | null {
   if (!value) return null;
   const normalized = normalizeMatchValue(value).replace(/\s+/g, "_");
   if (["projection", "cinema", "film", "cinema_projection"].includes(normalized)) return "cinema";
@@ -87,7 +91,7 @@ function normalizeSourceCategory(value: string | null): string | null {
   return normalized || null;
 }
 
-function findCoteAzurMatch(
+export function findCoteAzurMatch(
   title: string,
   date: string,
   events: CoteAzurAgendaEvent[],
@@ -110,7 +114,7 @@ function findCoteAzurMatch(
   );
 }
 
-function rowForNearbyEvent(event: AreaAgendaEvent, nowIso: string) {
+export function rowForNearbyEvent(event: AreaAgendaEvent, nowIso: string) {
   const annotation = annotateEvent({
     title: event.title,
     category: event.category,
@@ -148,6 +152,61 @@ function rowForNearbyEvent(event: AreaAgendaEvent, nowIso: string) {
     editorial_tags: annotation.editorialTags,
     cote_azur_source_url: null,
     cote_azur_type: null,
+  };
+}
+
+export function rowForHyeresEvent(input: {
+  event: CityAgendaEvent;
+  dates: Set<string>;
+  coteAzurEvent: CoteAzurAgendaEvent | null;
+  nowIso: string;
+}) {
+  const normalizedLocationSlug = normalizeLocationSlug(input.event.locationSlug);
+  const normalizedLocationLabel = locationLabel(normalizedLocationSlug);
+  const firstDate = Array.from(input.dates).sort()[0] ?? "";
+  const annotation = annotateEvent({
+    title: input.event.title,
+    category: input.event.category,
+    locationSlug: normalizedLocationSlug,
+    scheduleText:
+      [input.event.scheduleText, input.coteAzurEvent?.description, input.coteAzurEvent?.type]
+        .filter(Boolean)
+        .join(" ") || null,
+  });
+
+  return {
+    source: "hyeres",
+    source_name: HYERES_SOURCE_NAME,
+    source_event_id: input.event.sourceEventId,
+    source_url: input.event.sourceUrl,
+    canonical_url: input.event.sourceUrl,
+    title: input.event.title,
+    category: normalizeSourceCategory(input.event.category),
+    source_category: input.event.category,
+    city: HYERES_CITY,
+    location_slug: normalizedLocationSlug,
+    location_label: normalizedLocationLabel,
+    address: null,
+    schedule_text: input.event.scheduleText,
+    image_url: null,
+    price_text: null,
+    timezone: "Europe/Paris",
+    source_published_at: input.event.sourcePublishedAt,
+    source_updated_at: input.event.sourceUpdatedAt,
+    raw_payload_hash: null,
+    event_fingerprint: normalizeMatchValue(
+      [input.event.title, firstDate, HYERES_CITY, normalizedLocationLabel ?? ""].join("|"),
+    ),
+    status: "active",
+    last_seen_at: input.nowIso,
+    last_synced_at: input.nowIso,
+    traveler_category: annotation.travelerCategory,
+    editorial_priority: annotation.editorialPriority,
+    editorial_rhythm: annotation.editorialRhythm,
+    editorial_score: annotation.editorialScore,
+    editorial_tags: annotation.editorialTags,
+    cote_azur_source_url: input.coteAzurEvent?.sourceUrl ?? null,
+    cote_azur_type: input.coteAzurEvent?.type ?? null,
   };
 }
 
@@ -189,7 +248,28 @@ export async function runAgendaSync(
       details: { days },
     });
 
-    const preview = await getCityAgendaPreview(days, startedAt);
+    let preview: Awaited<ReturnType<typeof getCityAgendaPreview>>;
+    try {
+      preview = await getCityAgendaPreview(days, startedAt);
+    } catch (error) {
+      await logAgendaSyncStep({
+        level: "warning",
+        step: "hyeres_preview_failed",
+        message: "Agenda Hyères indisponible, poursuite avec les sources voisines.",
+        runId,
+        trigger,
+        rangeStart,
+        rangeEnd,
+        startedAt,
+        details: errorDetails(error),
+      });
+      preview = {
+        startDate: rangeStart,
+        endDate: rangeEnd,
+        days: [],
+        eventsByUrl: new Map<string, CityAgendaEvent>(),
+      };
+    }
     await logAgendaSyncStep({
       step: "hyeres_preview_collected",
       message: "Agenda Hyères collecté.",
@@ -205,7 +285,22 @@ export async function runAgendaSync(
       },
     });
 
-    const coteAzurEvents = await getCoteAzurAgendaEvents(preview.startDate, preview.endDate);
+    let coteAzurEvents: CoteAzurAgendaEvent[] = [];
+    try {
+      coteAzurEvents = await getCoteAzurAgendaEvents(preview.startDate, preview.endDate);
+    } catch (error) {
+      await logAgendaSyncStep({
+        level: "warning",
+        step: "cote_azur_failed",
+        message: "Contrôle Côte d'Azur indisponible, poursuite sans recoupement.",
+        runId,
+        trigger,
+        rangeStart,
+        rangeEnd,
+        startedAt,
+        details: errorDetails(error),
+      });
+    }
     await logAgendaSyncStep({
       step: "cote_azur_collected",
       message: "Contrôle Côte d'Azur collecté.",
@@ -223,7 +318,13 @@ export async function runAgendaSync(
       onSourceCollected: (stat) =>
         logAgendaSyncStep({
           step: "nearby_source_collected",
-          message: `${stat.sourceName} : ${stat.status === "success" ? "collectée" : "en erreur"}.`,
+          message: `${stat.sourceName} : ${
+            stat.status === "success"
+              ? "collectée"
+              : stat.status === "skipped"
+                ? "ignorée"
+                : "en erreur"
+          }.`,
           runId,
           trigger,
           rangeStart,
@@ -304,39 +405,9 @@ export async function runAgendaSync(
       0,
     );
     const nowIso = new Date().toISOString();
-    const hyeresRows = Array.from(matched.values()).map(({ event, coteAzurEvent }) => {
-      const normalizedLocationSlug = normalizeLocationSlug(event.locationSlug);
-      const annotation = annotateEvent({
-        title: event.title,
-        category: event.category,
-        locationSlug: normalizedLocationSlug,
-        scheduleText:
-          [event.scheduleText, coteAzurEvent?.description, coteAzurEvent?.type]
-            .filter(Boolean)
-            .join(" ") || null,
-      });
-      return {
-        source: "hyeres",
-        source_event_id: event.sourceEventId,
-        source_url: event.sourceUrl,
-        title: event.title,
-        category: normalizeSourceCategory(event.category),
-        source_category: event.category,
-        location_slug: normalizedLocationSlug,
-        location_label: locationLabel(normalizedLocationSlug),
-        schedule_text: event.scheduleText,
-        source_published_at: event.sourcePublishedAt,
-        source_updated_at: event.sourceUpdatedAt,
-        last_synced_at: nowIso,
-        traveler_category: annotation.travelerCategory,
-        editorial_priority: annotation.editorialPriority,
-        editorial_rhythm: annotation.editorialRhythm,
-        editorial_score: annotation.editorialScore,
-        editorial_tags: annotation.editorialTags,
-        cote_azur_source_url: coteAzurEvent?.sourceUrl ?? null,
-        cote_azur_type: coteAzurEvent?.type ?? null,
-      };
-    });
+    const hyeresRows = Array.from(matched.values()).map((entry) =>
+      rowForHyeresEvent({ ...entry, nowIso }),
+    );
     const nearbyRows = nearby.events.map((event) => rowForNearbyEvent(event, nowIso));
     const rows = [...hyeresRows, ...nearbyRows];
     await logAgendaSyncStep({
@@ -385,32 +456,43 @@ export async function runAgendaSync(
       const idBySourceKey = new Map(
         (upserted ?? []).map((row) => [`${row.source}:${row.source_event_id}`, row.id]),
       );
+      const missingEventIds = rows
+        .map((row) => `${row.source}:${row.source_event_id}`)
+        .filter((sourceKey) => !idBySourceKey.has(sourceKey));
+      if (missingEventIds.length > 0) {
+        throw new Error(
+          `Écriture agenda incomplète : ${missingEventIds.length} événement(s) sans identifiant après upsert.`,
+        );
+      }
       const occurrenceRows: Array<{
         event_id: string;
         occurrence_date: string;
         source_checked_at: string;
       }> = [];
+      const occurrenceKeys = new Set<string>();
+      const addOccurrence = (eventId: string, date: string) => {
+        const key = `${eventId}:${date}`;
+        if (occurrenceKeys.has(key)) return;
+        occurrenceKeys.add(key);
+        occurrenceRows.push({
+          event_id: eventId,
+          occurrence_date: date,
+          source_checked_at: nowIso,
+        });
+      };
 
       for (const [sourceEventId, entry] of matched) {
         const eventId = idBySourceKey.get(`hyeres:${sourceEventId}`);
         if (!eventId) continue;
         for (const date of entry.dates) {
-          occurrenceRows.push({
-            event_id: eventId,
-            occurrence_date: date,
-            source_checked_at: nowIso,
-          });
+          addOccurrence(eventId, date);
         }
       }
       for (const event of nearby.events) {
         const eventId = idBySourceKey.get(`${event.source}:${event.sourceEventId}`);
         if (!eventId) continue;
         for (const date of event.occurrenceDates) {
-          occurrenceRows.push({
-            event_id: eventId,
-            occurrence_date: date,
-            source_checked_at: nowIso,
-          });
+          addOccurrence(eventId, date);
         }
       }
 

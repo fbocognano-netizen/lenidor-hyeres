@@ -51,7 +51,7 @@ export type AreaAgendaEvent = {
 export type AreaAgendaSourceStats = {
   source: string;
   sourceName: string;
-  status: "success" | "failed";
+  status: "success" | "failed" | "skipped";
   eventsSeen: number;
   errorMessage?: string;
 };
@@ -177,7 +177,7 @@ const UNSUPPORTED_SOURCES: AreaAgendaSourceStats[] = [
   {
     source: "la_crau_pdf",
     sourceName: "Ville de La Crau - Agenda PDF",
-    status: "failed",
+    status: "skipped",
     eventsSeen: 0,
     errorMessage:
       "Source officielle surtout PDF mensuel : extraction PDF non activée dans cette version.",
@@ -185,7 +185,7 @@ const UNSUPPORTED_SOURCES: AreaAgendaSourceStats[] = [
   {
     source: "sollies_area",
     sourceName: "Solliès-Pont, Solliès-Toucas, Solliès-Ville",
-    status: "failed",
+    status: "skipped",
     eventsSeen: 0,
     errorMessage: "Sources communales à confirmer avant automatisation.",
   },
@@ -259,7 +259,7 @@ function tagValue(xml: string, tag: string): string | null {
   return match?.[1]?.trim() ?? null;
 }
 
-function parseRssItems(xml: string): RssItem[] {
+export function parseRssItems(xml: string): RssItem[] {
   return Array.from(xml.matchAll(/<item\b[\s\S]*?<\/item>/gi)).map((match) => {
     const raw = match[0];
     return {
@@ -303,7 +303,7 @@ async function fetchTextWithTimeout(
   }
 }
 
-async function mapWithConcurrency<T, R>(
+export async function mapWithConcurrency<T, R>(
   items: T[],
   concurrency: number,
   mapper: (item: T) => Promise<R>,
@@ -319,9 +319,7 @@ async function mapWithConcurrency<T, R>(
     }
   }
 
-  await Promise.all(
-    Array.from({ length: Math.min(concurrency, items.length) }, () => worker()),
-  );
+  await Promise.all(Array.from({ length: Math.min(concurrency, items.length) }, () => worker()));
   return results;
 }
 
@@ -334,7 +332,7 @@ function isoDateFromAny(value: string | null): string | null {
   return null;
 }
 
-function datesBetween(start: string, end: string): string[] {
+export function datesBetween(start: string, end: string): string[] {
   const startDate = new Date(`${start}T12:00:00Z`);
   const endDate = new Date(`${end}T12:00:00Z`);
   if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime()) || endDate < startDate) {
@@ -350,7 +348,7 @@ function datesBetween(start: string, end: string): string[] {
   });
 }
 
-function extractFrenchDates(text: string, yearHint: number): string[] {
+export function extractFrenchDates(text: string, yearHint: number): string[] {
   const monthByName: Record<string, string> = {
     janvier: "01",
     fevrier: "02",
@@ -408,11 +406,11 @@ function extractFrenchDates(text: string, yearHint: number): string[] {
   return Array.from(dates).sort();
 }
 
-function inRange(dates: string[], rangeStart: string, rangeEnd: string): string[] {
+export function inRange(dates: string[], rangeStart: string, rangeEnd: string): string[] {
   return dates.filter((date) => date >= rangeStart && date <= rangeEnd);
 }
 
-function cityFromText(text: string, fallback: SupportedCity): SupportedCity {
+export function cityFromText(text: string, fallback: SupportedCity): SupportedCity {
   const normalized = normalizeText(text);
   for (const city of HYERES_AREA_CITIES) {
     const cityNeedle = normalizeText(city).replace(/-/g, " ");
@@ -443,7 +441,7 @@ function enclosureImage(value: string): string | null {
   return match?.[1] ?? firstImage(value);
 }
 
-function canonicalLink(value: string, baseUrl: string): string | null {
+export function canonicalLink(value: string, baseUrl: string): string | null {
   try {
     return new URL(value, baseUrl).href;
   } catch {
@@ -534,7 +532,12 @@ function titleFromHtml(html: string): string {
     .trim();
 }
 
-function linksFromHtml(html: string, pageUrl: string, pattern: RegExp, maxLinks: number): string[] {
+export function linksFromHtml(
+  html: string,
+  pageUrl: string,
+  pattern: RegExp,
+  maxLinks: number,
+): string[] {
   const urls = new Set<string>();
   for (const match of html.matchAll(/<a\b[^>]+href=["']([^"']+)["'][^>]*>/gi)) {
     const href = decodeHtml(match[1]);
