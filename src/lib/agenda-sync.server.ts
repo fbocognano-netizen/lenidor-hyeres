@@ -243,6 +243,18 @@ export function sourceKeyForAgendaRow(row: Pick<AgendaEventInsert, "source" | "s
   return `${row.source ?? "hyeres"}:${row.source_event_id}`;
 }
 
+export function isAgendaSourceUrlConflict(error: unknown) {
+  if (!error || typeof error !== "object") return false;
+  const details = "details" in error ? String(error.details ?? "") : "";
+  const message = "message" in error ? String(error.message ?? "") : "";
+  return (
+    details.includes("agenda_events_source_url_unique") ||
+    message.includes("agenda_events_source_url_unique") ||
+    details.includes("Key (source_url)=") ||
+    message.includes("Key (source_url)=")
+  );
+}
+
 async function findAgendaEventBySourceUrl(
   supabaseAdmin: SupabaseAdminClient,
   sourceUrl: string,
@@ -278,6 +290,34 @@ async function deleteObsoleteAgendaEvent(
   if (error) throw error;
 }
 
+async function updateAgendaEventById(
+  supabaseAdmin: SupabaseAdminClient,
+  eventId: string,
+  row: AgendaEventInsert,
+): Promise<AgendaEventIdentity> {
+  const { data, error } = await supabaseAdmin
+    .from("agenda_events")
+    .update(row)
+    .eq("id", eventId)
+    .select("id, source, source_event_id, source_url")
+    .single();
+  if (error) throw error;
+  return data;
+}
+
+async function insertAgendaEventRow(
+  supabaseAdmin: SupabaseAdminClient,
+  row: AgendaEventInsert,
+): Promise<AgendaEventIdentity> {
+  const { data, error } = await supabaseAdmin
+    .from("agenda_events")
+    .insert(row)
+    .select("id, source, source_event_id, source_url")
+    .single();
+  if (error) throw error;
+  return data;
+}
+
 async function writeAgendaEventRows(
   supabaseAdmin: SupabaseAdminClient,
   rows: AgendaEventInsert[],
@@ -305,26 +345,33 @@ async function writeAgendaEventRows(
     }
 
     if (target) {
-      const { data, error } = await supabaseAdmin
-        .from("agenda_events")
-        .update(row)
-        .eq("id", target.id)
-        .select("id, source, source_event_id, source_url")
-        .single();
-      if (error) throw error;
-      writtenRows.push(data);
+      try {
+        writtenRows.push(await updateAgendaEventById(supabaseAdmin, target.id, row));
+      } catch (error) {
+        if (!isAgendaSourceUrlConflict(error)) throw error;
+        const retryTarget = await findAgendaEventBySourceUrl(supabaseAdmin, row.source_url);
+        if (!retryTarget) throw error;
+        if (retryTarget.id !== target.id) {
+          await deleteObsoleteAgendaEvent(supabaseAdmin, target.id);
+          mergedDuplicateRows += 1;
+        }
+        writtenRows.push(await updateAgendaEventById(supabaseAdmin, retryTarget.id, row));
+      }
       updatedRows += 1;
       continue;
     }
 
-    const { data, error } = await supabaseAdmin
-      .from("agenda_events")
-      .insert(row)
-      .select("id, source, source_event_id, source_url")
-      .single();
-    if (error) throw error;
-    writtenRows.push(data);
-    insertedRows += 1;
+    try {
+      writtenRows.push(await insertAgendaEventRow(supabaseAdmin, row));
+      insertedRows += 1;
+    } catch (error) {
+      if (!isAgendaSourceUrlConflict(error)) throw error;
+      const retryTarget = await findAgendaEventBySourceUrl(supabaseAdmin, row.source_url);
+      if (!retryTarget) throw error;
+      writtenRows.push(await updateAgendaEventById(supabaseAdmin, retryTarget.id, row));
+      updatedRows += 1;
+      mergedDuplicateRows += 1;
+    }
   }
 
   return { rows: writtenRows, insertedRows, updatedRows, mergedDuplicateRows };

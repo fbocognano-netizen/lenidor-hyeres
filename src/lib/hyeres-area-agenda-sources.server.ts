@@ -224,6 +224,14 @@ const UNSUPPORTED_SOURCES: AreaAgendaSourceStats[] = [
   },
 ];
 
+export const HYERES_AREA_COLLECTIBLE_SOURCE_IDS = [
+  ...RSS_SOURCES.map((source) => source.source),
+  ...WORDPRESS_API_SOURCES.map((source) => source.source),
+  ...HTML_LINK_SOURCES.map((source) => source.source),
+] as const;
+
+export const HYERES_AREA_SKIPPED_SOURCE_IDS = UNSUPPORTED_SOURCES.map((source) => source.source);
+
 function normalizeText(value: string): string {
   return value
     .normalize("NFD")
@@ -548,6 +556,7 @@ async function collectRssSource(
       source.defaultCity,
     );
     const category = normalizeCategory(item.category);
+    const imageCandidate = enclosureImage(item.raw) ?? firstImage(descriptionHtml);
     const event: AreaAgendaEvent = {
       source: source.source,
       sourceName: source.sourceName,
@@ -562,7 +571,7 @@ async function collectRssSource(
       locationLabel: city,
       address: null,
       scheduleText: shortText(descriptionText),
-      imageUrl: enclosureImage(item.raw) ?? firstImage(descriptionHtml),
+      imageUrl: imageCandidate ? canonicalLink(imageCandidate, sourceUrl) : null,
       priceText: null,
       sourcePublishedAt: item.pubDate ? new Date(item.pubDate).toISOString() : null,
       sourceUpdatedAt: item.pubDate ? new Date(item.pubDate).toISOString() : null,
@@ -611,6 +620,7 @@ export function eventsFromWordPressApiItems(
       [title, contentText, source.defaultCity].join(" "),
       source.defaultCity,
     );
+    const imageCandidate = firstImage(contentHtml);
     return [
       {
         source: source.source,
@@ -626,7 +636,7 @@ export function eventsFromWordPressApiItems(
         locationLabel: city,
         address: null,
         scheduleText: shortText(contentText),
-        imageUrl: firstImage(contentHtml),
+        imageUrl: imageCandidate ? canonicalLink(imageCandidate, sourceUrl) : null,
         priceText: null,
         sourcePublishedAt: item.date ? new Date(item.date).toISOString() : null,
         sourceUpdatedAt: item.modified ? new Date(item.modified).toISOString() : null,
@@ -718,6 +728,7 @@ async function collectHtmlLinkSource(
         html.match(/rel=["']category tag["'][^>]*>([\s\S]*?)<\/a>/i)?.[1] ??
         html.match(/class=["'][^"']*category[^"']*["'][^>]*>([\s\S]*?)<\/[^>]+>/i)?.[1] ??
         null;
+      const imageCandidate = firstImage(html);
       return {
         source: source.source,
         sourceName: source.sourceName,
@@ -732,7 +743,7 @@ async function collectHtmlLinkSource(
         locationLabel: city,
         address: null,
         scheduleText: shortText(text),
-        imageUrl: firstImage(html),
+        imageUrl: imageCandidate ? canonicalLink(imageCandidate, sourceUrl) : null,
         priceText: null,
         sourcePublishedAt: null,
         sourceUpdatedAt: null,

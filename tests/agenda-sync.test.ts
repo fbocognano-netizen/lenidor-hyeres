@@ -4,6 +4,7 @@ import assert from "node:assert/strict";
 import {
   dedupeAgendaRowsBySourceUrl,
   findCoteAzurMatch,
+  isAgendaSourceUrlConflict,
   normalizeMatchValue,
   normalizeSourceCategory,
   rowForHyeresEvent,
@@ -110,4 +111,15 @@ test("deduplicates agenda rows by source URL before Supabase upsert", () => {
 
   assert.equal(result.duplicateSourceUrls, 1);
   assert.deepEqual(result.rows, [officialPradetRow]);
+});
+
+test("detects recoverable Supabase source URL conflicts", () => {
+  assert.equal(
+    isAgendaSourceUrlConflict({
+      details:
+        "Key (source_url)=(https://www.le-pradet.fr/evenement/en-septembre-au-cinema-francis-weber/) already exists.",
+      message: 'duplicate key value violates unique constraint "agenda_events_source_url_unique"',
+    }),
+    true,
+  );
 });
