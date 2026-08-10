@@ -8,8 +8,11 @@ const MAX_RANGE_DAYS = 120;
 const HTML_DETAIL_CONCURRENCY = 6;
 const HTML_DETAIL_LINK_LIMIT = 8;
 const WP_API_PAGE_LIMIT = 4;
+const PROVENCEMED_API_PAGE_LIMIT = 1;
+const PROVENCEMED_DETAIL_LINK_LIMIT = 100;
 
 export const HYERES_AREA_CITIES = [
+  "Hyères",
   "La Londe-les-Maures",
   "Le Lavandou",
   "Bormes-les-Mimosas",
@@ -20,6 +23,12 @@ export const HYERES_AREA_CITIES = [
   "Toulon",
   "La Farlède",
   "Pierrefeu-du-Var",
+  "La Seyne-sur-Mer",
+  "La Valette-du-Var",
+  "Le Revest-les-Eaux",
+  "Ollioules",
+  "Saint-Mandrier-sur-Mer",
+  "Six-Fours-les-Plages",
   "Solliès-Ville",
   "Solliès-Pont",
   "Solliès-Toucas",
@@ -171,6 +180,13 @@ const WORDPRESS_API_SOURCES: WordPressApiSource[] = [
   },
 ];
 
+const PROVENCEMED_SOURCE: WordPressApiSource = {
+  source: "provencemed_wp_api",
+  sourceName: "Office de tourisme Provence Méditerranée - API agenda",
+  endpointUrl: "https://www.provencemed.com/wp-json/wp/v2/agenda",
+  defaultCity: "Hyères",
+};
+
 const HTML_LINK_SOURCES: HtmlLinkSource[] = [
   {
     source: "lavandou_html",
@@ -227,6 +243,7 @@ const UNSUPPORTED_SOURCES: AreaAgendaSourceStats[] = [
 export const HYERES_AREA_COLLECTIBLE_SOURCE_IDS = [
   ...RSS_SOURCES.map((source) => source.source),
   ...WORDPRESS_API_SOURCES.map((source) => source.source),
+  PROVENCEMED_SOURCE.source,
   ...HTML_LINK_SOURCES.map((source) => source.source),
 ] as const;
 
@@ -250,12 +267,13 @@ export function normalizeCategory(value: string | null): string | null {
   if (["manifestation", "manifestations", "animation", "animations"].includes(normalized))
     return "animation";
   if (/(projection|cinema|film)/.test(normalized)) return "cinema";
-  if (/(concert|musique|live|dj)/.test(normalized)) return "musique";
+  if (/(concert|musique|live|dj|bal)/.test(normalized)) return "musique";
   if (/(exposition|expo)/.test(normalized)) return "exposition";
-  if (/(visite|sortie)/.test(normalized)) return "visites_sorties";
+  if (/(visite|sortie|guidee|commentee)/.test(normalized)) return "visites_sorties";
   if (/(spectacle|theatre)/.test(normalized)) return "spectacle";
   if (normalized.includes("sport")) return "sport";
   if (normalized.includes("marche")) return "marche";
+  if (/(foire|salon|brocante|puces|vide_greniers)/.test(normalized)) return "marche";
   if (normalized.includes("ceremonie")) return "ceremonie";
   if (normalized.includes("solidarite")) return "solidarite";
   if (normalized.includes("atelier")) return "atelier";
@@ -490,14 +508,20 @@ export function inRange(dates: string[], rangeStart: string, rangeEnd: string): 
 
 export function cityFromText(text: string, fallback: SupportedCity): SupportedCity {
   const normalized = normalizeText(text);
+  const normalizedWords = normalized.replace(/-/g, " ");
   for (const city of HYERES_AREA_CITIES) {
     const cityNeedle = normalizeText(city).replace(/-/g, " ");
-    if (normalized.includes(cityNeedle)) return city;
+    if (normalizedWords.includes(cityNeedle)) return city;
   }
-  if (/\blavandou\b/.test(normalized)) return "Le Lavandou";
-  if (/\blonde\b/.test(normalized)) return "La Londe-les-Maures";
-  if (/\bpradet\b/.test(normalized)) return "Le Pradet";
-  if (/\bcarqueiranne\b/.test(normalized)) return "Carqueiranne";
+  if (/\blavandou\b/.test(normalizedWords)) return "Le Lavandou";
+  if (/\blonde\b/.test(normalizedWords)) return "La Londe-les-Maures";
+  if (/\bpradet\b/.test(normalizedWords)) return "Le Pradet";
+  if (/\bcarqueiranne\b/.test(normalizedWords)) return "Carqueiranne";
+  if (/\bsix fours\b/.test(normalizedWords)) return "Six-Fours-les-Plages";
+  if (/\bseyne\b/.test(normalizedWords)) return "La Seyne-sur-Mer";
+  if (/\bvalette\b/.test(normalizedWords)) return "La Valette-du-Var";
+  if (/\brevest\b/.test(normalizedWords)) return "Le Revest-les-Eaux";
+  if (/\bs?aint mandrier\b/.test(normalizedWords)) return "Saint-Mandrier-sur-Mer";
   return fallback;
 }
 
@@ -510,6 +534,20 @@ function shortText(value: string, maxLength = 700): string | null {
 function firstImage(value: string): string | null {
   const match = value.match(/<img[^>]+src=["']([^"']+)["']/i);
   return match?.[1] ?? null;
+}
+
+function classBlockHtml(html: string, className: string, tagName: string): string | null {
+  const match = html.match(
+    new RegExp(
+      `<${tagName}\\b[^>]*class=["'][^"']*${className}[^"']*["'][^>]*>([\\s\\S]*?)<\\/${tagName}>`,
+      "i",
+    ),
+  );
+  return match?.[1] ?? null;
+}
+
+function textFromClass(html: string, className: string, tagName: string): string {
+  return stripHtml(classBlockHtml(html, className, tagName));
 }
 
 function enclosureImage(value: string): string | null {
@@ -717,6 +755,122 @@ async function collectWordPressApiSource(
   };
 }
 
+export function eventFromProvenceMedAgendaHtml(
+  source: WordPressApiSource,
+  item: WordPressApiEvent,
+  html: string,
+  rangeStart: string,
+  rangeEnd: string,
+): AreaAgendaEvent | null {
+  const sourceUrl = item.link ? canonicalLink(item.link, source.endpointUrl) : null;
+  const title = textFromClass(html, "hero__title", "h1") || stripHtml(item.title?.rendered);
+  if (!sourceUrl || !title || item.id == null) return null;
+
+  const yearHint = Number(rangeStart.slice(0, 4));
+  const sourceCategory = textFromClass(html, "hero__categories", "p") || null;
+  const cityText = textFromClass(html, "hero__location", "p");
+  const descriptionHtml = classBlockHtml(html, "hero__description", "div") ?? "";
+  const agendaInfoHtml = classBlockHtml(html, "infos-agenda", "section") ?? "";
+  const addressHtml = classBlockHtml(html, "contact-map__address", "p") ?? "";
+  const descriptionText = stripHtml(descriptionHtml);
+  const agendaInfoText = stripHtml(agendaInfoHtml);
+  const address = stripHtml(addressHtml) || null;
+  const occurrenceDates = inRange(
+    extractFrenchDates([title, agendaInfoText].join(" "), yearHint),
+    rangeStart,
+    rangeEnd,
+  );
+  if (occurrenceDates.length === 0) return null;
+
+  const city = cityFromText([cityText, address ?? "", title].join(" "), source.defaultCity);
+  const imageCandidate = firstImage(html);
+  return {
+    source: source.source,
+    sourceName: source.sourceName,
+    sourceEventId: String(item.id),
+    sourceUrl,
+    canonicalUrl: sourceUrl,
+    title,
+    category: normalizeAgendaCategory({ sourceCategory, title }),
+    sourceCategory,
+    city,
+    locationSlug: null,
+    locationLabel: address ? shortText(address, 140) : city,
+    address,
+    scheduleText: shortText([agendaInfoText, descriptionText].filter(Boolean).join(" ")),
+    imageUrl: imageCandidate ? canonicalLink(imageCandidate, sourceUrl) : null,
+    priceText: null,
+    sourcePublishedAt: item.date ? new Date(item.date).toISOString() : null,
+    sourceUpdatedAt: item.modified ? new Date(item.modified).toISOString() : null,
+    occurrenceDates,
+    rawPayloadHash: hash(html),
+  };
+}
+
+async function collectProvenceMedSource(
+  source: WordPressApiSource,
+  rangeStart: string,
+  rangeEnd: string,
+): Promise<SourceCollection> {
+  const pages: WordPressApiEvent[][] = [];
+  const requestUrls: string[] = [];
+  for (let page = 1; page <= PROVENCEMED_API_PAGE_LIMIT; page += 1) {
+    const url = new URL(source.endpointUrl);
+    url.search = new URLSearchParams({ per_page: "100", page: String(page) }).toString();
+    requestUrls.push(url.href);
+    const body = await fetchTextWithTimeout(url.href, "application/json", REQUEST_TIMEOUT_MS);
+    const pageItems = JSON.parse(body) as WordPressApiEvent[];
+    pages.push(pageItems);
+    if (pageItems.length < 100) break;
+  }
+
+  const items = pages
+    .flat()
+    .filter((item) => item.link)
+    .slice(0, PROVENCEMED_DETAIL_LINK_LIMIT);
+  let rejectedInvalid = 0;
+  let rejectedNoDate = 0;
+  let rejectedOutOfRange = 0;
+  const events = await mapWithConcurrency(items, HTML_DETAIL_CONCURRENCY, async (item) => {
+    const sourceUrl = item.link ? canonicalLink(item.link, source.endpointUrl) : null;
+    if (!sourceUrl || item.id == null) {
+      rejectedInvalid += 1;
+      return null;
+    }
+    try {
+      requestUrls.push(sourceUrl);
+      const html = await fetchTextWithTimeout(sourceUrl, undefined, HTML_DETAIL_TIMEOUT_MS);
+      const event = eventFromProvenceMedAgendaHtml(source, item, html, rangeStart, rangeEnd);
+      if (!event) {
+        const text = stripHtml(html);
+        const parsedDates = extractFrenchDates(text, Number(rangeStart.slice(0, 4)));
+        if (parsedDates.length === 0) rejectedNoDate += 1;
+        else rejectedOutOfRange += 1;
+      }
+      return event;
+    } catch {
+      rejectedInvalid += 1;
+      return null;
+    }
+  });
+
+  const collectedEvents = events.filter((event): event is AreaAgendaEvent => event !== null);
+  return {
+    events: collectedEvents,
+    stats: {
+      requestUrls,
+      rawItemsSeen: pages.flat().length,
+      eventsRejected: items.length - collectedEvents.length,
+      rejectedInvalid,
+      rejectedNoDate,
+      rejectedOutOfRange,
+      pagesFetched: pages.length,
+      linksDiscovered: pages.flat().filter((item) => item.link).length,
+      linksFetched: items.length,
+    },
+  };
+}
+
 function titleFromHtml(html: string): string {
   const h1 = html.match(/<h1[^>]*>([\s\S]*?)<\/h1>/i)?.[1];
   const title = h1 ?? html.match(/<title[^>]*>([\s\S]*?)<\/title>/i)?.[1] ?? "";
@@ -842,6 +996,11 @@ export async function collectNearbyAgendaEvents(options: {
       sourceName: source.sourceName,
       collect: () => collectWordPressApiSource(source, rangeStart, rangeEnd),
     })),
+    {
+      source: PROVENCEMED_SOURCE.source,
+      sourceName: PROVENCEMED_SOURCE.sourceName,
+      collect: () => collectProvenceMedSource(PROVENCEMED_SOURCE, rangeStart, rangeEnd),
+    },
     ...HTML_LINK_SOURCES.map((source) => ({
       source: source.source,
       sourceName: source.sourceName,
