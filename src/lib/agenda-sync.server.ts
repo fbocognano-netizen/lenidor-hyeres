@@ -112,12 +112,18 @@ export function findCoteAzurMatch(
   );
 }
 
+function normalizedNearbyLocationLabel(event: AreaAgendaEvent) {
+  if (normalizeMatchValue(event.city) !== normalizeMatchValue(HYERES_CITY)) return event.city;
+  return event.locationLabel;
+}
+
 export function rowForNearbyEvent(event: AreaAgendaEvent, nowIso: string) {
+  const locationLabelForWrite = normalizedNearbyLocationLabel(event);
   const annotation = annotateEvent({
     title: event.title,
     category: event.category,
     locationSlug: event.locationSlug,
-    scheduleText: [event.scheduleText, event.city, event.locationLabel].filter(Boolean).join(" "),
+    scheduleText: [event.scheduleText, event.city, locationLabelForWrite].filter(Boolean).join(" "),
   });
   return {
     source: event.source,
@@ -133,7 +139,7 @@ export function rowForNearbyEvent(event: AreaAgendaEvent, nowIso: string) {
     source_category: event.sourceCategory,
     city: event.city,
     location_slug: event.locationSlug,
-    location_label: event.locationLabel,
+    location_label: locationLabelForWrite,
     address: event.address,
     schedule_text: event.scheduleText,
     image_url: event.imageUrl,

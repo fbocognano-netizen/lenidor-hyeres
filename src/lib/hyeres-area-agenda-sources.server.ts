@@ -550,6 +550,27 @@ function textFromClass(html: string, className: string, tagName: string): string
   return stripHtml(classBlockHtml(html, className, tagName));
 }
 
+function hyeresLocationLabelFromText(text: string): string {
+  const normalized = normalizeText(text).replace(/-/g, " ");
+  if (/\bport cros\b/.test(normalized)) return "Port Cros";
+  if (/\bporquerolles\b/.test(normalized)) return "Porquerolles";
+  if (/\bla capte\b|\bcapte\b/.test(normalized)) return "Capte";
+  if (/\balmanarre\b/.test(normalized)) return "Almanarre";
+  if (/\bgiens\b|\btour fondue\b|\bpresqu ile\b|\bpresquile\b/.test(normalized)) return "Giens";
+  if (/\bport saint pierre\b|\ble port\b|\bport d hyeres\b/.test(normalized)) return "Port";
+  if (/\bcentre ville\b|\bplace clemenceau\b|\bcours de strasbourg\b/.test(normalized))
+    return "Centre Ville";
+  if (/\bayguade\b/.test(normalized)) return "Ayguade";
+  if (/\bborrels?\b/.test(normalized)) return "Borrels";
+  if (/\bsauvebonne\b/.test(normalized)) return "Sauvebonne";
+  return "Hyères";
+}
+
+function normalizedLocationLabelForCity(city: SupportedCity, rawLocation: string | null) {
+  if (city !== "Hyères") return city;
+  return hyeresLocationLabelFromText(rawLocation ?? city);
+}
+
 function enclosureImage(value: string): string | null {
   const match = value.match(
     /<enclosure[^>]+url=["']([^"']+)["'][^>]*(?:type=["']image\/[^"']+["'])?[^>]*\/?>/i,
@@ -783,6 +804,10 @@ export function eventFromProvenceMedAgendaHtml(
   if (occurrenceDates.length === 0) return null;
 
   const city = cityFromText([cityText, address ?? "", title].join(" "), source.defaultCity);
+  const locationLabel = normalizedLocationLabelForCity(
+    city,
+    [cityText, address ?? "", title].join(" "),
+  );
   const imageCandidate = firstImage(html);
   return {
     source: source.source,
@@ -795,7 +820,7 @@ export function eventFromProvenceMedAgendaHtml(
     sourceCategory,
     city,
     locationSlug: null,
-    locationLabel: address ? shortText(address, 140) : city,
+    locationLabel,
     address,
     scheduleText: shortText([agendaInfoText, descriptionText].filter(Boolean).join(" ")),
     imageUrl: imageCandidate ? canonicalLink(imageCandidate, sourceUrl) : null,

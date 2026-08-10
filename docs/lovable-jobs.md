@@ -5,7 +5,8 @@ Ce fichier sert de registre des tâches planifiées connues pour le projet. Avan
 ## agenda-sync-daily
 
 - Statut connu : actif.
-- Horaire Lovable : tous les jours à 04:15.
+- Horaire Lovable actuel constaté : tous les jours à 04:15.
+- Horaire cible demandé le 2026-08-10 : tous les 2 jours à 04:15.
 - Rôle : lancer la synchronisation quotidienne de l'agenda.
 - Endpoint appelé : `POST /api/public/hooks/agenda-sync`.
 - Code appelé ensuite : `runAgendaSync({ days: 45, trigger: "lovable-job:agenda-sync-daily" })`.
@@ -19,6 +20,8 @@ Pour diagnostiquer l'agenda :
 2. Vérifier dans `/admin` -> **Logs** les événements `agenda_sync_hook_triggered`, `agenda_sync_success` ou `agenda_sync_failed`.
 3. Vérifier dans `/admin` -> **Agenda** le dernier run et le détail `source_stats`.
 4. Ne pas créer de nouveau cron si ce job existe déjà : corriger le job existant, son endpoint ou le code appelé.
+
+Si Lovable expose un champ cron, la cible opérationnelle est `15 4 */2 * *`.
 
 ## Logs d'étapes
 

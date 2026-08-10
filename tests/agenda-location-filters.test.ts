@@ -42,8 +42,29 @@ test("builds sorted filters from all event cities and neighborhoods", () => {
       "Hyères - Port",
       "Hyères - Port-Cros",
       "Toulon",
-      "Toulon - Centre-ville",
     ],
+  );
+});
+
+test("groups non-Hyeres places by city only", () => {
+  const options = buildAgendaLocationOptions([
+    {
+      city: "La Seyne-sur-Mer",
+      locationLabel: "Musée Balaguier 924 corniche Bonaparte 83500 La Seyne-sur-Mer",
+    },
+    {
+      city: "La Seyne-sur-Mer",
+      locationLabel: "Plage des Sablettes Allée Danielle Mitterrand 83500 La Seyne-sur-Mer",
+    },
+    {
+      city: "Ollioules",
+      locationLabel: "Office de Tourisme d'Ollioules 116 avenue Philippe de Hautecloque",
+    },
+  ]);
+
+  assert.deepEqual(
+    options.map((item) => item.label),
+    ["Tous les lieux", "La Seyne-sur-Mer", "Ollioules"],
   );
 });
 
