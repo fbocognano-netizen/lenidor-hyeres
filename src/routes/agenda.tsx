@@ -17,24 +17,6 @@ const PAGE_TITLE = "Agenda de Hyères : événements, sorties et activités à f
 const PAGE_DESCRIPTION =
   "Concerts, cinéma en plein air, sorties, spectacles et événements à Hyères : découvrez les idées à faire dans les deux prochaines semaines autour du Nid d'Or.";
 
-const LOCAL_AGENDA_EVENT: PublicAgendaEvent = {
-  id: "local-agenda-preview",
-  title: 'Visite guidée botanique "Circuit fleuri du Village" à Bormes-les-Mimosas',
-  category: "visites_sorties",
-  travelerCategory: "visites_sorties",
-  editorialPriority: "haute",
-  editorialScore: 100,
-  editorialTags: ["famille", "patrimoine"],
-  locationLabel: "Village de Bormes-les-Mimosas",
-  city: "Bormes-les-Mimosas",
-  sourceName: "Office de Tourisme de Bormes les Mimosas",
-  scheduleText:
-    "Une promenade commentée à la découverte des fleurs, des ruelles et du patrimoine du village. Réservation conseillée.",
-  sourceUrl: "https://www.bormeslesmimosas.com/",
-  coteAzurSourceUrl: null,
-  dates: ["2026-08-12", "2026-08-19", "2026-08-26"],
-};
-
 const CATEGORY_LABELS: Record<string, string> = {
   concert: "Musique / Concerts",
   musique: "Musique / Concerts",
@@ -185,20 +167,24 @@ function AgendaPage() {
     queryFn: () => fetchAgenda(),
     staleTime: 5 * 60 * 1000,
   });
-  const agendaEvents =
-    import.meta.env.DEV && agendaQuery.isError ? [LOCAL_AGENDA_EVENT] : (agendaQuery.data ?? []);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [location, setLocation] = useState("all");
   const [sort, setSort] = useState("relevance");
 
   const categories = useMemo(
-    () => Array.from(new Set(agendaEvents.map((event) => labelForCategory(event.category)))).sort(),
-    [agendaEvents],
+    () =>
+      Array.from(
+        new Set((agendaQuery.data ?? []).map((event) => labelForCategory(event.category))),
+      ).sort(),
+    [agendaQuery.data],
   );
-  const locationOptions = useMemo(() => buildAgendaLocationOptions(agendaEvents), [agendaEvents]);
+  const locationOptions = useMemo(
+    () => buildAgendaLocationOptions(agendaQuery.data ?? []),
+    [agendaQuery.data],
+  );
   const visibleEvents = useMemo(() => {
-    const filtered = agendaEvents.filter((event) => {
+    const filtered = (agendaQuery.data ?? []).filter((event) => {
       const locationFilter = locationOptions.find((item) => item.value === location);
       const haystack = [
         event.title,
@@ -230,7 +216,7 @@ function AgendaPage() {
         ? rightDate.localeCompare(leftDate)
         : leftDate.localeCompare(rightDate);
     });
-  }, [agendaEvents, category, location, locationOptions, search, sort]);
+  }, [agendaQuery.data, category, location, locationOptions, search, sort]);
 
   return (
     <div className="min-h-screen overflow-x-hidden bg-background text-foreground">
@@ -340,11 +326,6 @@ function AgendaPage() {
         {agendaQuery.isError && !import.meta.env.DEV ? (
           <p className="mt-8 text-destructive">
             L’agenda est momentanément indisponible. Revenez dans quelques instants.
-          </p>
-        ) : null}
-        {agendaQuery.isError && import.meta.env.DEV ? (
-          <p className="mt-8 text-sm text-muted-foreground">
-            Aperçu local : données de démonstration utilisées pour tester l’affichage.
           </p>
         ) : null}
         {!agendaQuery.isLoading && visibleEvents.length === 0 ? (
