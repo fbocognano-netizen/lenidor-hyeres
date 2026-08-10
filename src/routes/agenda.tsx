@@ -17,24 +17,6 @@ const PAGE_TITLE = "Agenda de Hyères : événements, sorties et activités à f
 const PAGE_DESCRIPTION =
   "Concerts, cinéma en plein air, sorties, spectacles et événements à Hyères : découvrez les idées à faire dans les deux prochaines semaines autour du Nid d'Or.";
 
-const LOCAL_AGENDA_EVENT: PublicAgendaEvent = {
-  id: "local-agenda-preview",
-  title: 'Visite guidée botanique "Circuit fleuri du Village" à Bormes-les-Mimosas',
-  category: "visites_sorties",
-  travelerCategory: "visites_sorties",
-  editorialPriority: "haute",
-  editorialScore: 100,
-  editorialTags: ["famille", "patrimoine"],
-  locationLabel: "Village de Bormes-les-Mimosas",
-  city: "Bormes-les-Mimosas",
-  sourceName: "Office de Tourisme de Bormes les Mimosas",
-  scheduleText:
-    "Une promenade commentée à la découverte des fleurs, des ruelles et du patrimoine du village. Réservation conseillée.",
-  sourceUrl: "https://www.bormeslesmimosas.com/",
-  coteAzurSourceUrl: null,
-  dates: ["2026-08-12", "2026-08-19", "2026-08-26"],
-};
-
 const CATEGORY_LABELS: Record<string, string> = {
   concert: "Musique / Concerts",
   musique: "Musique / Concerts",
@@ -132,9 +114,9 @@ function AgendaCard({ event }: { event: PublicAgendaEvent }) {
   const dates = formatDateSummary(event.dates);
   const locationText = [event.locationLabel, event.city].filter(Boolean).join(" · ");
   return (
-    <Card className="flex h-full min-w-0 flex-col overflow-hidden border-border/60 p-5 shadow-none sm:p-6">
+    <Card className="flex h-full min-w-0 w-full max-w-full flex-col overflow-hidden border-border/60 p-5 shadow-none sm:p-6">
       <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
-        <span className="min-w-0 break-words text-xs font-medium uppercase tracking-[0.14em] text-primary">
+        <span className="min-w-0 break-all text-xs font-medium uppercase tracking-[0.14em] text-primary">
           {labelForCategory(event.category)}
         </span>
         {event.editorialPriority === "haute" ? (
@@ -143,26 +125,24 @@ function AgendaCard({ event }: { event: PublicAgendaEvent }) {
           </span>
         ) : null}
       </div>
-      <h2 className="mt-3 min-w-0 break-words font-display text-2xl leading-tight">
-        {event.title}
-      </h2>
+      <h2 className="mt-3 min-w-0 break-all font-display text-2xl leading-tight">{event.title}</h2>
       <p className="mt-3 flex min-w-0 items-start gap-2 text-sm font-medium text-foreground">
         <CalendarDays className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-        <span className="min-w-0 break-words">{dates}</span>
+        <span className="min-w-0 break-all">{dates}</span>
       </p>
       {locationText ? (
         <p className="mt-2 flex min-w-0 items-start gap-2 text-sm text-muted-foreground">
           <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
-          <span className="min-w-0 break-words">{locationText}</span>
+          <span className="min-w-0 break-all">{locationText}</span>
         </p>
       ) : null}
       {event.sourceName ? (
-        <p className="mt-2 min-w-0 break-words text-xs text-muted-foreground">
+        <p className="mt-2 min-w-0 break-all text-xs text-muted-foreground">
           Source : {event.sourceName}
         </p>
       ) : null}
       {shortSchedule(event.scheduleText) ? (
-        <p className="mt-4 min-w-0 break-words text-sm leading-relaxed text-muted-foreground">
+        <p className="mt-4 min-w-0 break-all text-sm leading-relaxed text-muted-foreground">
           {shortSchedule(event.scheduleText)}
         </p>
       ) : null}
@@ -185,20 +165,24 @@ function AgendaPage() {
     queryFn: () => fetchAgenda(),
     staleTime: 5 * 60 * 1000,
   });
-  const agendaEvents =
-    import.meta.env.DEV && agendaQuery.isError ? [LOCAL_AGENDA_EVENT] : (agendaQuery.data ?? []);
   const [search, setSearch] = useState("");
   const [category, setCategory] = useState("all");
   const [location, setLocation] = useState("all");
   const [sort, setSort] = useState("relevance");
 
   const categories = useMemo(
-    () => Array.from(new Set(agendaEvents.map((event) => labelForCategory(event.category)))).sort(),
-    [agendaEvents],
+    () =>
+      Array.from(
+        new Set((agendaQuery.data ?? []).map((event) => labelForCategory(event.category))),
+      ).sort(),
+    [agendaQuery.data],
   );
-  const locationOptions = useMemo(() => buildAgendaLocationOptions(agendaEvents), [agendaEvents]);
+  const locationOptions = useMemo(
+    () => buildAgendaLocationOptions(agendaQuery.data ?? []),
+    [agendaQuery.data],
+  );
   const visibleEvents = useMemo(() => {
-    const filtered = agendaEvents.filter((event) => {
+    const filtered = (agendaQuery.data ?? []).filter((event) => {
       const locationFilter = locationOptions.find((item) => item.value === location);
       const haystack = [
         event.title,
@@ -230,12 +214,12 @@ function AgendaPage() {
         ? rightDate.localeCompare(leftDate)
         : leftDate.localeCompare(rightDate);
     });
-  }, [agendaEvents, category, location, locationOptions, search, sort]);
+  }, [agendaQuery.data, category, location, locationOptions, search, sort]);
 
   return (
-    <div className="min-h-screen overflow-x-hidden bg-background text-foreground">
+    <div className="min-h-screen min-w-0 overflow-x-hidden bg-background text-foreground">
       <SiteNav />
-      <main className="mx-auto max-w-6xl px-5 py-12 sm:py-20">
+      <main className="mx-auto min-w-0 w-full max-w-6xl px-5 py-12 sm:py-20">
         <nav aria-label="Fil d'Ariane" className="text-xs text-muted-foreground sm:text-sm">
           <ol className="flex flex-wrap items-center gap-2">
             <li>
@@ -342,17 +326,12 @@ function AgendaPage() {
             L’agenda est momentanément indisponible. Revenez dans quelques instants.
           </p>
         ) : null}
-        {agendaQuery.isError && import.meta.env.DEV ? (
-          <p className="mt-8 text-sm text-muted-foreground">
-            Aperçu local : données de démonstration utilisées pour tester l’affichage.
-          </p>
-        ) : null}
         {!agendaQuery.isLoading && visibleEvents.length === 0 ? (
           <p className="mt-8 text-muted-foreground">
             Aucun événement ne correspond à votre recherche.
           </p>
         ) : null}
-        <div className="mt-6 grid grid-cols-[minmax(0,1fr)] gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-6 grid min-w-0 grid-cols-[minmax(0,1fr)] gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {visibleEvents.map((event) => (
             <AgendaCard key={event.id} event={event} />
           ))}

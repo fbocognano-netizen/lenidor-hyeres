@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { Link } from "@tanstack/react-router";
-import { Menu, X } from "lucide-react";
+import { ChevronDown, Menu, X } from "lucide-react";
 
 import { Button } from "@/components/ui/button";
 import { GuideSearchButton } from "@/components/guide-search";
@@ -37,27 +37,51 @@ export function SiteNav({ home = false }: { home?: boolean }) {
 
         <nav
           aria-label="Navigation principale"
-          className="hidden lg:flex items-center gap-6 text-sm text-muted-foreground"
+          className="hidden lg:flex items-center gap-5 text-sm text-muted-foreground"
         >
-          {SITE_NAV_ITEMS.map((item) => (
-            <a key={item.hash} href={href(item.hash)} className="hover:text-foreground transition">
-              {item.label}
-            </a>
-          ))}
-          <Link
-            to="/guides-hyeres"
-            className="hover:text-foreground transition"
-            activeProps={{ className: "text-foreground font-medium" }}
-          >
-            Découvrir Hyères
-          </Link>
-          <Link
-            to="/agenda"
-            className="hover:text-foreground transition"
-            activeProps={{ className: "text-foreground font-medium" }}
-          >
-            Agenda
-          </Link>
+          <details className="group relative">
+            <summary className="flex cursor-pointer list-none items-center gap-1.5 whitespace-nowrap hover:text-foreground [&::-webkit-details-marker]:hidden">
+              Le lieu{" "}
+              <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" />
+            </summary>
+            <div className="absolute left-1/2 top-full z-20 mt-4 w-52 -translate-x-1/2 rounded-xl border border-border/70 bg-background p-2 text-sm shadow-xl">
+              {SITE_NAV_ITEMS.map((item) => (
+                <a
+                  key={item.hash}
+                  href={href(item.hash)}
+                  className="block rounded-lg px-3 py-2.5 hover:bg-muted hover:text-foreground"
+                >
+                  {item.label}
+                </a>
+              ))}
+            </div>
+          </details>
+          <details className="group relative">
+            <summary className="flex cursor-pointer list-none items-center gap-1.5 whitespace-nowrap hover:text-foreground [&::-webkit-details-marker]:hidden">
+              Hyères{" "}
+              <ChevronDown className="h-3.5 w-3.5 transition-transform group-open:rotate-180" />
+            </summary>
+            <div className="absolute left-1/2 top-full z-20 mt-4 w-52 -translate-x-1/2 rounded-xl border border-border/70 bg-background p-2 text-sm shadow-xl">
+              <Link
+                to="/guides-hyeres"
+                className="block rounded-lg px-3 py-2.5 hover:bg-muted hover:text-foreground"
+                activeProps={{
+                  className: "block rounded-lg bg-muted px-3 py-2.5 font-medium text-foreground",
+                }}
+              >
+                Découvrir Hyères
+              </Link>
+              <Link
+                to="/agenda"
+                className="block rounded-lg px-3 py-2.5 hover:bg-muted hover:text-foreground"
+                activeProps={{
+                  className: "block rounded-lg bg-muted px-3 py-2.5 font-medium text-foreground",
+                }}
+              >
+                Agenda des sorties
+              </Link>
+            </div>
+          </details>
           <GuideSearchButton className="border-0 px-0 py-0 hover:border-0" label="Rechercher" />
         </nav>
 
