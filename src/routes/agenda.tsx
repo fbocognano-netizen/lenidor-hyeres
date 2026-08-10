@@ -116,7 +116,7 @@ function AgendaCard({ event }: { event: PublicAgendaEvent }) {
   return (
     <Card className="flex h-full min-w-0 w-full max-w-full flex-col overflow-hidden border-border/60 p-5 shadow-none sm:p-6">
       <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
-        <span className="min-w-0 break-all text-xs font-medium uppercase tracking-[0.14em] text-primary">
+        <span className="min-w-0 break-words text-xs font-medium uppercase tracking-[0.14em] text-primary">
           {labelForCategory(event.category)}
         </span>
         {event.editorialPriority === "haute" ? (
@@ -125,24 +125,26 @@ function AgendaCard({ event }: { event: PublicAgendaEvent }) {
           </span>
         ) : null}
       </div>
-      <h2 className="mt-3 min-w-0 break-all font-display text-2xl leading-tight">{event.title}</h2>
+      <h2 className="mt-3 min-w-0 break-words font-display text-2xl leading-tight">
+        {event.title}
+      </h2>
       <p className="mt-3 flex min-w-0 items-start gap-2 text-sm font-medium text-foreground">
         <CalendarDays className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-        <span className="min-w-0 break-all">{dates}</span>
+        <span className="min-w-0 break-words">{dates}</span>
       </p>
       {locationText ? (
         <p className="mt-2 flex min-w-0 items-start gap-2 text-sm text-muted-foreground">
           <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
-          <span className="min-w-0 break-all">{locationText}</span>
+          <span className="min-w-0 break-words">{locationText}</span>
         </p>
       ) : null}
       {event.sourceName ? (
-        <p className="mt-2 min-w-0 break-all text-xs text-muted-foreground">
+        <p className="mt-2 min-w-0 break-words text-xs text-muted-foreground">
           Source : {event.sourceName}
         </p>
       ) : null}
       {shortSchedule(event.scheduleText) ? (
-        <p className="mt-4 min-w-0 break-all text-sm leading-relaxed text-muted-foreground">
+        <p className="mt-4 min-w-0 break-words text-sm leading-relaxed text-muted-foreground">
           {shortSchedule(event.scheduleText)}
         </p>
       ) : null}
