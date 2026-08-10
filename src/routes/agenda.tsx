@@ -44,9 +44,25 @@ function formatDate(value: string) {
   }).format(new Date(`${value}T12:00:00`));
 }
 
-function shortSchedule(value: string | null) {
+function formatDateSummary(values: string[]) {
+  const formattedDates = values.map(formatDate);
+  if (formattedDates.length <= 3) return formattedDates.join(" · ");
+  return `${formattedDates.slice(0, 3).join(" · ")} · + ${formattedDates.length - 3} dates`;
+}
+
+function cleanAgendaText(value: string | null) {
   if (!value) return null;
-  const clean = value.replace(/\s+/g, " ").trim();
+  const clean = value
+    .replace(/\s+/g, " ")
+    .replace(/https:\/\/schema\.org[^\s]*/g, "")
+    .replace(/\{?"?@(?:context|graph|type)"?:?[^.。!?]*[.。!?]?/g, "")
+    .trim();
+  return clean || null;
+}
+
+function shortSchedule(value: string | null) {
+  const clean = cleanAgendaText(value);
+  if (!clean) return null;
   return clean.length > 180 ? `${clean.slice(0, 177).trimEnd()}…` : clean;
 }
 
@@ -95,36 +111,40 @@ export const Route = createFileRoute("/agenda")({
 });
 
 function AgendaCard({ event }: { event: PublicAgendaEvent }) {
-  const dates = event.dates.map(formatDate).join(" · ");
+  const dates = formatDateSummary(event.dates);
   const locationText = [event.locationLabel, event.city].filter(Boolean).join(" · ");
   return (
-    <Card className="flex h-full flex-col border-border/60 p-5 shadow-none sm:p-6">
-      <div className="flex items-start justify-between gap-3">
-        <span className="text-xs font-medium uppercase tracking-[0.14em] text-primary">
+    <Card className="flex h-full min-w-0 flex-col overflow-hidden border-border/60 p-5 shadow-none sm:p-6">
+      <div className="flex min-w-0 flex-col gap-2 sm:flex-row sm:items-start sm:justify-between sm:gap-3">
+        <span className="min-w-0 break-words text-xs font-medium uppercase tracking-[0.14em] text-primary">
           {labelForCategory(event.category)}
         </span>
         {event.editorialPriority === "haute" ? (
-          <span className="inline-flex items-center gap-1 text-xs text-muted-foreground">
+          <span className="inline-flex min-w-0 items-center gap-1 text-xs text-muted-foreground">
             <Sparkles className="h-3.5 w-3.5" /> À ne pas manquer
           </span>
         ) : null}
       </div>
-      <h2 className="mt-3 font-display text-2xl leading-tight">{event.title}</h2>
-      <p className="mt-3 inline-flex items-start gap-2 text-sm font-medium text-foreground">
+      <h2 className="mt-3 min-w-0 break-words font-display text-2xl leading-tight">
+        {event.title}
+      </h2>
+      <p className="mt-3 flex min-w-0 items-start gap-2 text-sm font-medium text-foreground">
         <CalendarDays className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-        <span>{dates}</span>
+        <span className="min-w-0 break-words">{dates}</span>
       </p>
       {locationText ? (
-        <p className="mt-2 inline-flex items-start gap-2 text-sm text-muted-foreground">
+        <p className="mt-2 flex min-w-0 items-start gap-2 text-sm text-muted-foreground">
           <MapPin className="mt-0.5 h-4 w-4 shrink-0" />
-          <span>{locationText}</span>
+          <span className="min-w-0 break-words">{locationText}</span>
         </p>
       ) : null}
       {event.sourceName ? (
-        <p className="mt-2 text-xs text-muted-foreground">Source : {event.sourceName}</p>
+        <p className="mt-2 min-w-0 break-words text-xs text-muted-foreground">
+          Source : {event.sourceName}
+        </p>
       ) : null}
       {shortSchedule(event.scheduleText) ? (
-        <p className="mt-4 text-sm leading-relaxed text-muted-foreground">
+        <p className="mt-4 min-w-0 break-words text-sm leading-relaxed text-muted-foreground">
           {shortSchedule(event.scheduleText)}
         </p>
       ) : null}
@@ -132,7 +152,7 @@ function AgendaCard({ event }: { event: PublicAgendaEvent }) {
         href={event.sourceUrl}
         target="_blank"
         rel="noreferrer"
-        className="mt-auto inline-flex items-center gap-2 pt-6 text-sm font-medium text-primary hover:underline"
+        className="mt-auto inline-flex min-w-0 items-center gap-2 pt-6 text-sm font-medium text-primary hover:underline"
       >
         Voir les détails officiels <ExternalLink className="h-4 w-4" />
       </a>
@@ -199,7 +219,7 @@ function AgendaPage() {
   }, [agendaQuery.data, category, location, locationOptions, search, sort]);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen overflow-x-hidden bg-background text-foreground">
       <SiteNav />
       <main className="mx-auto max-w-6xl px-5 py-12 sm:py-20">
         <nav aria-label="Fil d'Ariane" className="text-xs text-muted-foreground sm:text-sm">
@@ -313,7 +333,7 @@ function AgendaPage() {
             Aucun événement ne correspond à votre recherche.
           </p>
         ) : null}
-        <div className="mt-6 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="mt-6 grid grid-cols-[minmax(0,1fr)] gap-5 sm:grid-cols-2 lg:grid-cols-3">
           {visibleEvents.map((event) => (
             <AgendaCard key={event.id} event={event} />
           ))}
