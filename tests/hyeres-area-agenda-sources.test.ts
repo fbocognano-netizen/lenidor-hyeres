@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 
 import {
   cityFromText,
+  eventFromProvenceMedAgendaHtml,
   eventsFromWordPressApiItems,
   extractFrenchDates,
   linksFromHtml,
@@ -76,6 +77,14 @@ test("normalizes agenda categories through source category then title fallback",
 
 test("detects canonical city names from source text", () => {
   assert.equal(cityFromText("Grand bal au Lavandou", "Toulon"), "Le Lavandou");
+  assert.equal(
+    cityFromText("Festival Théâtre Poquelin à La Seyne-sur-Mer", "Toulon"),
+    "La Seyne-sur-Mer",
+  );
+  assert.equal(
+    cityFromText("Balades naturalistes à Six-Fours-les-Plages", "Hyères"),
+    "Six-Fours-les-Plages",
+  );
 });
 
 test("extracts canonical links with source limits", () => {
@@ -145,4 +154,54 @@ test("collects Le Pradet official WordPress agenda events", () => {
     events.map((event) => event.category),
     ["cinema", "musique", "musique"],
   );
+});
+
+test("parses Provence Méditerranée agenda detail pages", () => {
+  const event = eventFromProvenceMedAgendaHtml(
+    {
+      source: "provencemed_wp_api",
+      sourceName: "Office de tourisme Provence Méditerranée - API agenda",
+      endpointUrl: "https://www.provencemed.com/wp-json/wp/v2/agenda",
+      defaultCity: "Hyères",
+    },
+    {
+      id: 7428608,
+      date: "2026-08-10T04:36:33",
+      modified: "2026-08-10T07:31:41",
+      link: "https://www.provencemed.com/agenda/cine-plein-air-terra-willy-planete-inconnue-7428608/",
+      title: { rendered: "Fallback title" },
+    },
+    `
+      <section class="hero agenda">
+        <p class="hero__categories">Projection</p>
+        <h1 class="hero__title" data-syndic-object-id="FMAPROV500OM7">
+          Ciné plein air – “Terra Willy – Planète inconnue”
+        </h1>
+        <p class="hero__location">Six-Fours-les-Plages</p>
+        <div class="hero__description">
+          <p>Séance en plein air.</p>
+        </div>
+      </section>
+      <section class="infos-agenda container">
+        <div class="date-sticker type-1">
+          <div class="start"><span class="day">10</span><span class="month">août</span><span class="year">2026</span></div>
+        </div>
+        Lundi 10 août 2026 à 21h.
+      </section>
+      <p class="contact-map__address">
+        <span>Place des Poilus</span>
+        <span>83140 Six-Fours-les-Plages</span>
+      </p>
+    `,
+    "2026-08-09",
+    "2026-09-22",
+  );
+
+  assert.ok(event);
+  assert.equal(event.title, "Ciné plein air – “Terra Willy – Planète inconnue”");
+  assert.equal(event.category, "cinema");
+  assert.equal(event.sourceCategory, "Projection");
+  assert.equal(event.city, "Six-Fours-les-Plages");
+  assert.deepEqual(event.occurrenceDates, ["2026-08-10"]);
+  assert.equal(event.address, "Place des Poilus 83140 Six-Fours-les-Plages");
 });
