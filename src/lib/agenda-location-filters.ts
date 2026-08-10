@@ -15,6 +15,8 @@ export type AgendaLocationOption = {
   matches: (event: AgendaLocationEvent) => boolean;
 };
 
+const HYERES_CITY_LABEL = "Hyères";
+
 export function normalizeAgendaLocationText(value: string | null) {
   return (value ?? "")
     .toLocaleLowerCase("fr-FR")
@@ -92,6 +94,7 @@ export function buildAgendaLocationOptions(events: AgendaLocationEvent[]): Agend
   for (const event of events) {
     const city = event.city?.trim() || null;
     const locationLabel = event.locationLabel?.trim() || null;
+    const isHyeres = sameAgendaLocation(city, HYERES_CITY_LABEL);
 
     if (city) {
       const cityKey = agendaLocationKey(city);
@@ -102,7 +105,7 @@ export function buildAgendaLocationOptions(events: AgendaLocationEvent[]): Agend
       });
     }
 
-    if (locationLabel) {
+    if (isHyeres && locationLabel) {
       const locationKey = agendaLocationKey(locationLabel);
       const cityKey = agendaLocationKey(city);
       const optionKey = cityKey ? `${cityKey}:${locationKey}` : locationKey;

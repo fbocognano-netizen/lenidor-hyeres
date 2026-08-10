@@ -202,6 +202,46 @@ test("parses Provence Méditerranée agenda detail pages", () => {
   assert.equal(event.category, "cinema");
   assert.equal(event.sourceCategory, "Projection");
   assert.equal(event.city, "Six-Fours-les-Plages");
+  assert.equal(event.locationLabel, "Six-Fours-les-Plages");
   assert.deepEqual(event.occurrenceDates, ["2026-08-10"]);
   assert.equal(event.address, "Place des Poilus 83140 Six-Fours-les-Plages");
+});
+
+test("keeps Provence Méditerranée Hyeres locations short", () => {
+  const event = eventFromProvenceMedAgendaHtml(
+    {
+      source: "provencemed_wp_api",
+      sourceName: "Office de tourisme Provence Méditerranée - API agenda",
+      endpointUrl: "https://www.provencemed.com/wp-json/wp/v2/agenda",
+      defaultCity: "Hyères",
+    },
+    {
+      id: 6916748,
+      link: "https://www.provencemed.com/agenda/marche-nocturne-du-port-dhyeres-6916748/",
+      title: { rendered: "Marché nocturne du port d'Hyères" },
+    },
+    `
+      <section class="hero agenda">
+        <p class="hero__categories">Marché</p>
+        <h1 class="hero__title">Marché nocturne du port d'Hyères</h1>
+        <p class="hero__location">Hyères</p>
+      </section>
+      <section class="infos-agenda container">
+        Samedi 15 août 2026 de 18h à minuit.
+      </section>
+      <p class="contact-map__address">
+        <span>Port Saint Pierre</span>
+        <span>Quai du docteur Robin</span>
+        <span>Le Port</span>
+        <span>83400 Hyères</span>
+      </p>
+    `,
+    "2026-08-09",
+    "2026-09-22",
+  );
+
+  assert.ok(event);
+  assert.equal(event.city, "Hyères");
+  assert.equal(event.locationLabel, "Port");
+  assert.equal(event.address, "Port Saint Pierre Quai du docteur Robin Le Port 83400 Hyères");
 });
