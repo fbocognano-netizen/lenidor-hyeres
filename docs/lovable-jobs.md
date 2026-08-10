@@ -12,14 +12,25 @@ Ce fichier sert de registre des tâches planifiées connues pour le projet. Avan
 - Code appelé ensuite : `runAgendaSync({ days: 45, trigger: "lovable-job:agenda-sync-daily" })`.
 - Données écrites : `agenda_sync_runs`, `agenda_events`, `agenda_occurrences`, puis logs dans `app_logs`.
 
+### Intervalle opérationnel
+
+Le 2026-08-10, l'outil Codex/Lovable disponible permet de publier le projet mais n'expose pas de commande de modification des Jobs Lovable. Tant que l'horaire Lovable ne peut pas être édité par API, le serveur protège donc l'exécution :
+
+- si une synchronisation agenda s'est terminée il y a moins de 47h, le hook renvoie `status: "skipped"` ;
+- le skip est logué dans `app_logs` avec l'événement `agenda_sync_hook_skipped` ;
+- si la vérification du dernier run échoue, le hook lance la synchronisation par sécurité et logue `agenda_sync_hook_skip_check_failed`.
+
+Cette protection évite que le traitement complet tourne tous les jours même si Lovable continue d'appeler l'endpoint quotidiennement. Elle ne crée aucun deuxième job.
+
 ## Vérification
 
 Pour diagnostiquer l'agenda :
 
 1. Vérifier dans Lovable **Jobs** que `agenda-sync-daily` est actif.
 2. Vérifier dans `/admin` -> **Logs** les événements `agenda_sync_hook_triggered`, `agenda_sync_success` ou `agenda_sync_failed`.
-3. Vérifier dans `/admin` -> **Agenda** le dernier run et le détail `source_stats`.
-4. Ne pas créer de nouveau cron si ce job existe déjà : corriger le job existant, son endpoint ou le code appelé.
+3. Si le job a été ignoré volontairement, vérifier `agenda_sync_hook_skipped`.
+4. Vérifier dans `/admin` -> **Agenda** le dernier run et le détail `source_stats`.
+5. Ne pas créer de nouveau cron si ce job existe déjà : corriger le job existant, son endpoint ou le code appelé.
 
 Si Lovable expose un champ cron, la cible opérationnelle est `15 4 */2 * *`.
 
