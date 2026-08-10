@@ -6,15 +6,9 @@ import {
   findCoteAzurMatch,
   isAgendaSourceUrlConflict,
   normalizeMatchValue,
-  normalizeSourceCategory,
   rowForHyeresEvent,
   rowForNearbyEvent,
 } from "../src/lib/agenda-sync.server.ts";
-
-test("normalizes source categories without treating port as airport", () => {
-  assert.equal(normalizeSourceCategory("Cinéma projection"), "cinema");
-  assert.equal(normalizeSourceCategory("Port"), "port");
-});
 
 test("normalizes values for matching", () => {
   assert.equal(
@@ -59,6 +53,7 @@ test("builds normalized Hyeres rows before Supabase write", () => {
   assert.equal(row.city, "Hyères");
   assert.equal(row.location_slug, "port");
   assert.equal(row.location_label, "Port");
+  assert.equal(row.category, "musique");
   assert.equal(row.timezone, "Europe/Paris");
   assert.equal(row.status, "active");
 });

@@ -6,6 +6,7 @@ import {
   eventsFromWordPressApiItems,
   extractFrenchDates,
   linksFromHtml,
+  normalizeAgendaCategory,
   normalizeCategory,
   parseRssItems,
 } from "../src/lib/hyeres-area-agenda-sources.server.ts";
@@ -38,7 +39,39 @@ test("parses RSS agenda items", () => {
 test("normalizes source categories without mapping port to airport", () => {
   assert.equal(normalizeCategory("Cinéma projection"), "cinema");
   assert.equal(normalizeCategory("Marchés"), "marche");
-  assert.equal(normalizeCategory("Port"), "port");
+  assert.equal(normalizeCategory("Port"), "animation");
+  assert.equal(normalizeCategory("Manifestations"), "animation");
+});
+
+test("normalizes agenda categories through source category then title fallback", () => {
+  assert.equal(
+    normalizeAgendaCategory({
+      sourceCategory: "Manifestations",
+      title: "En Septembre, au cinéma Francis Weber",
+    }),
+    "cinema",
+  );
+  assert.equal(
+    normalizeAgendaCategory({
+      sourceCategory: null,
+      title: "Concert hommage aux Beatles",
+    }),
+    "musique",
+  );
+  assert.equal(
+    normalizeAgendaCategory({
+      sourceCategory: "Manifestations",
+      title: "Grande animation d'été",
+    }),
+    "animation",
+  );
+  assert.equal(
+    normalizeAgendaCategory({
+      sourceCategory: "Port",
+      title: "Rendez-vous au port",
+    }),
+    "animation",
+  );
 });
 
 test("detects canonical city names from source text", () => {
@@ -107,5 +140,9 @@ test("collects Le Pradet official WordPress agenda events", () => {
       ["Bal du 15 août", "Le Pradet", ["2026-08-15"]],
       ["Balèti des commerçants – 25 août", "Le Pradet", ["2026-08-25"]],
     ],
+  );
+  assert.deepEqual(
+    events.map((event) => event.category),
+    ["cinema", "musique", "musique"],
   );
 });

@@ -247,16 +247,53 @@ export function normalizeCategory(value: string | null): string | null {
     .replace(/[^a-z0-9]+/g, "_")
     .replace(/^_+|_+$/g, "");
   if (!normalized) return null;
-  if (["projection", "cinema", "film", "cinema_projection"].includes(normalized)) return "cinema";
-  if (["concert", "musique", "live", "dj", "festival_musique"].includes(normalized))
-    return "musique";
-  if (["exposition", "expo", "culture"].includes(normalized)) return "exposition";
-  if (["visite", "visites", "sortie", "sorties", "visites_sorties"].includes(normalized))
-    return "visites_sorties";
-  if (["spectacle", "theatre", "theatre_spectacle"].includes(normalized)) return "spectacle";
+  if (["manifestation", "manifestations", "animation", "animations"].includes(normalized))
+    return "animation";
+  if (/(projection|cinema|film)/.test(normalized)) return "cinema";
+  if (/(concert|musique|live|dj)/.test(normalized)) return "musique";
+  if (/(exposition|expo)/.test(normalized)) return "exposition";
+  if (/(visite|sortie)/.test(normalized)) return "visites_sorties";
+  if (/(spectacle|theatre)/.test(normalized)) return "spectacle";
   if (normalized.includes("sport")) return "sport";
   if (normalized.includes("marche")) return "marche";
-  return normalized;
+  if (normalized.includes("ceremonie")) return "ceremonie";
+  if (normalized.includes("solidarite")) return "solidarite";
+  if (normalized.includes("atelier")) return "atelier";
+  if (normalized.includes("conference")) return "conference";
+  if (normalized.includes("famille")) return "famille";
+  return "animation";
+}
+
+function categoryFromTitle(title: string): string | null {
+  const normalized = normalizeText(title);
+  if (/\b(cinema|cine|film|projection)\b/.test(normalized)) return "cinema";
+  if (/\b(concert|musique|musical|musicales|dj|baleti|bal|beatles)\b/.test(normalized))
+    return "musique";
+  if (/\b(exposition|expo|oeuvre|oeuvres|artiste|artistes)\b/.test(normalized)) return "exposition";
+  if (/\b(theatre|spectacle|humour|comedie|danse)\b/.test(normalized)) return "spectacle";
+  if (/\b(marche|producteur|producteurs|artisanal|nocturne)\b/.test(normalized)) return "marche";
+  if (/\b(sport|fitness|yoga|petanque|trail|course|regate)\b/.test(normalized)) return "sport";
+  if (/\b(visite|balade|randonnee|sortie|decouverte)\b/.test(normalized)) return "visites_sorties";
+  if (/\b(atelier|stage|initiation)\b/.test(normalized)) return "atelier";
+  if (/\b(conference|rencontre|debat|lecture)\b/.test(normalized)) return "conference";
+  if (/\b(ceremonie|commemoration|liberation)\b/.test(normalized)) return "ceremonie";
+  if (/\b(sang|solidarite|collecte)\b/.test(normalized)) return "solidarite";
+  if (/\b(enfant|enfants|famille|conte)\b/.test(normalized)) return "famille";
+  return null;
+}
+
+function isGenericCategory(category: string | null): boolean {
+  return category === null || ["animation", "autre"].includes(category);
+}
+
+export function normalizeAgendaCategory(input: {
+  sourceCategory?: string | null;
+  title: string;
+}): string | null {
+  const sourceCategory = normalizeCategory(input.sourceCategory ?? null);
+  const titleCategory = categoryFromTitle(input.title);
+  if (isGenericCategory(sourceCategory) && titleCategory) return titleCategory;
+  return sourceCategory ?? titleCategory;
 }
 
 function hash(value: string): string {
@@ -555,7 +592,10 @@ async function collectRssSource(
       [item.title, descriptionText, source.defaultCity].join(" "),
       source.defaultCity,
     );
-    const category = normalizeCategory(item.category);
+    const category = normalizeAgendaCategory({
+      sourceCategory: item.category,
+      title: item.title,
+    });
     const imageCandidate = enclosureImage(item.raw) ?? firstImage(descriptionHtml);
     const event: AreaAgendaEvent = {
       source: source.source,
@@ -629,7 +669,7 @@ export function eventsFromWordPressApiItems(
         sourceUrl,
         canonicalUrl: sourceUrl,
         title,
-        category: null,
+        category: normalizeAgendaCategory({ title }),
         sourceCategory: null,
         city,
         locationSlug: null,
@@ -736,7 +776,10 @@ async function collectHtmlLinkSource(
         sourceUrl,
         canonicalUrl: sourceUrl,
         title,
-        category: normalizeCategory(stripHtml(category)),
+        category: normalizeAgendaCategory({
+          sourceCategory: stripHtml(category),
+          title,
+        }),
         sourceCategory: stripHtml(category) || null,
         city,
         locationSlug: null,

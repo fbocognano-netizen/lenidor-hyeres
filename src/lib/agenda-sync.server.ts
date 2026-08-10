@@ -13,7 +13,7 @@ import {
 import {
   agendaEventFingerprint,
   collectNearbyAgendaEvents,
-  normalizeCategory,
+  normalizeAgendaCategory,
   type AreaAgendaEvent,
 } from "./hyeres-area-agenda-sources.server";
 import {
@@ -89,19 +89,6 @@ export function normalizeMatchValue(value: string): string {
     .replace(/\s+/g, " ");
 }
 
-export function normalizeSourceCategory(value: string | null): string | null {
-  if (!value) return null;
-  const normalized = normalizeMatchValue(value).replace(/\s+/g, "_");
-  if (["projection", "cinema", "film", "cinema_projection"].includes(normalized)) return "cinema";
-  if (["concert", "musique", "live", "dj"].includes(normalized)) return "musique";
-  if (["exposition", "expo"].includes(normalized)) return "exposition";
-  if (["visite", "visites", "sortie", "visites_sorties"].includes(normalized))
-    return "visites_sorties";
-  if (["spectacle", "theatre", "theatre_spectacle"].includes(normalized)) return "spectacle";
-  if (normalized === "sport") return "sport";
-  return normalized || null;
-}
-
 export function findCoteAzurMatch(
   title: string,
   date: string,
@@ -139,7 +126,10 @@ export function rowForNearbyEvent(event: AreaAgendaEvent, nowIso: string) {
     source_url: event.sourceUrl,
     canonical_url: event.canonicalUrl,
     title: event.title,
-    category: normalizeCategory(event.category),
+    category: normalizeAgendaCategory({
+      sourceCategory: event.sourceCategory ?? event.category,
+      title: event.title,
+    }),
     source_category: event.sourceCategory,
     city: event.city,
     location_slug: event.locationSlug,
@@ -192,7 +182,10 @@ export function rowForHyeresEvent(input: {
     source_url: input.event.sourceUrl,
     canonical_url: input.event.sourceUrl,
     title: input.event.title,
-    category: normalizeSourceCategory(input.event.category),
+    category: normalizeAgendaCategory({
+      sourceCategory: input.event.category,
+      title: input.event.title,
+    }),
     source_category: input.event.category,
     city: HYERES_CITY,
     location_slug: normalizedLocationSlug,
