@@ -11,7 +11,7 @@ updatedAt: "2026-08-02"
 author: "Joëlle"
 category: "PORQUEROLLES"
 tags: ["aller à Porquerolles", "bateau Porquerolles", "Tour Fondue", "parking Porquerolles"]
-featuredImage: "/images/blog/bateau-porquerolles.jpg"
+featuredImage: "/images/blog/bateau-porquerolles-tour-fondue.jpg"
 featuredImageAlt: "Bateau navette reliant la Tour Fondue à Porquerolles"
 featuredImageCaption: "Illustration éditoriale de l’ambiance naturelle recherchée à Porquerolles."
 canonical: ""

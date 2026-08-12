@@ -11,7 +11,7 @@ updatedAt: "2026-08-02"
 author: "Joëlle"
 category: "PORQUEROLLES"
 tags: ["Porquerolles en une journée", "visiter Porquerolles", "Porquerolles à vélo", "couple"]
-featuredImage: "/images/blog/porquerolles-village.jpg"
+featuredImage: "/images/blog/porquerolles-une-journee-village-velos.jpg"
 featuredImageAlt: "Place du village de Porquerolles et ses vélos sous les pins"
 featuredImageCaption: ""
 canonical: ""

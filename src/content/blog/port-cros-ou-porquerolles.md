@@ -11,7 +11,7 @@ updatedAt: "2026-08-01"
 author: "Joëlle"
 category: "AUTOUR D’HYÈRES"
 tags: ["Port-Cros", "Porquerolles", "îles d’Hyères", "séjour en couple"]
-featuredImage: "/images/blog/porquerolles.webp"
+featuredImage: "/images/blog/port-cros-ou-porquerolles-eau-turquoise.webp"
 featuredImageAlt: "Eau turquoise et rochers clairs sur le littoral des îles d’Hyères"
 featuredImageCaption: "Les îles se choisissent d’abord selon le rythme que vous recherchez."
 canonical: ""

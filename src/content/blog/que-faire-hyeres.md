@@ -11,7 +11,7 @@ updatedAt: "2026-07-28"
 author: "Joëlle"
 category: "VISITER HYÈRES"
 tags: ["que faire à Hyères", "visiter Hyères", "séjour en couple", "Îles d'Or"]
-featuredImage: "/images/blog/visiter-hyeres.webp"
+featuredImage: "/images/blog/que-faire-hyeres-vieux-centre.webp"
 featuredImageAlt: "Ruelle méditerranéenne aux façades ocre et bougainvilliers au soleil couchant"
 featuredImageCaption: "Une illustration éditoriale de l’atmosphère méditerranéenne qui accompagne une escapade à Hyères."
 canonical: ""

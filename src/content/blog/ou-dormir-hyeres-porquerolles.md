@@ -11,7 +11,7 @@ updatedAt: "2026-08-02"
 author: "Joëlle"
 category: "PRÉPARER SON SÉJOUR"
 tags: ["où dormir à Hyères", "hébergement Porquerolles", "studio Hyères", "couple"]
-featuredImage: "/images/blog/porquerolles.webp"
+featuredImage: "/images/blog/ou-dormir-hyeres-porquerolles.webp"
 featuredImageAlt: "Crique méditerranéenne vue depuis un sentier ombragé"
 featuredImageCaption: ""
 canonical: ""

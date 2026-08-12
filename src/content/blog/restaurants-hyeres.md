@@ -11,7 +11,7 @@ updatedAt: "2026-08-06"
 author: "Joëlle"
 category: "SAVEURS & ADRESSES"
 tags: ["restaurant Hyères", "où manger à Hyères", "restaurant Giens", "couple"]
-featuredImage: "/images/blog/restaurants-hyeres.webp"
+featuredImage: "/images/blog/restaurants-hyeres-terrasse-vue-mer.webp"
 featuredImageAlt: "Table dressée pour deux sur une terrasse méditerranéenne face à la mer"
 featuredImageCaption: "Illustration éditoriale d’un dîner méditerranéen à deux."
 canonical: ""

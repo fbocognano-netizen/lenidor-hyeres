@@ -11,7 +11,7 @@ updatedAt: "2026-07-29"
 author: "Joëlle"
 category: "BALADES & NATURE"
 tags: ["sentier littoral Giens", "randonnée Giens", "presqu’île de Giens", "balade couple"]
-featuredImage: "/images/blog/sentier-littoral-giens.jpg"
+featuredImage: "/images/blog/sentier-littoral-giens-vue-mer.jpg"
 featuredImageAlt: "Sentier du littoral de Giens surplombant une eau turquoise"
 featuredImageCaption: ""
 canonical: ""

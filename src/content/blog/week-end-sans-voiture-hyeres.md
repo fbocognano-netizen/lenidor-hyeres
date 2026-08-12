@@ -11,7 +11,7 @@ updatedAt: "2026-08-03"
 author: "Joëlle"
 category: "PRÉPARER SON SÉJOUR"
 tags: ["Hyères sans voiture", "week-end Hyères", "train Hyères", "séjour en couple"]
-featuredImage: "/images/blog/week-end-sans-voiture.jpg"
+featuredImage: "/images/blog/week-end-sans-voiture-hyeres-velo.jpg"
 featuredImageAlt: "Personne avec un vélo dans une rue du vieux Hyères"
 featuredImageCaption: "Le centre ancien de Hyères se prête particulièrement bien à une découverte à pied."
 canonical: ""

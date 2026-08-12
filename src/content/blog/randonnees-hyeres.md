@@ -11,7 +11,7 @@ updatedAt: "2026-07-29"
 author: "Joëlle"
 category: "BALADES & NATURE"
 tags: ["randonnée Hyères", "balade Hyères", "sentier littoral Giens", "nature"]
-featuredImage: "/images/blog/randonnees-hyeres.webp"
+featuredImage: "/images/blog/randonnees-hyeres-sentier-littoral.webp"
 featuredImageAlt: "Sentier côtier rocheux dominant la Méditerranée au soleil levant"
 featuredImageCaption: "Illustration éditoriale d’un sentier méditerranéen de la presqu’île."
 canonical: ""

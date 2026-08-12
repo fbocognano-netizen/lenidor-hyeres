@@ -11,7 +11,7 @@ updatedAt: "2026-07-29"
 author: "Joëlle"
 category: "VISITER HYÈRES"
 tags: ["vieux Hyères", "vieille ville Hyères", "centre ancien Hyères", "visiter Hyères"]
-featuredImage: "/images/blog/vieux-hyeres.jpg"
+featuredImage: "/images/blog/vieux-hyeres-ruelles-provence.jpg"
 featuredImageAlt: "Ruelle méditerranéenne calme dans le centre ancien de Hyères"
 featuredImageCaption: "Le vieux Hyères se découvre surtout à pied, en prenant le temps de monter vers les jardins et les points de vue."
 canonical: ""

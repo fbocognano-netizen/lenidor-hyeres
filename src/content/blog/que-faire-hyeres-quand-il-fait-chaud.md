@@ -11,7 +11,7 @@ updatedAt: "2026-08-02"
 author: "Joëlle"
 category: "PRÉPARER SON SÉJOUR"
 tags: ["canicule à Hyères", "forte chaleur", "parcs d’Hyères", "séjour en été"]
-featuredImage: "/images/blog/vieux-hyeres.jpg"
+featuredImage: "/images/blog/hyeres-chaleur-vieux-centre-ombre.jpg"
 featuredImageAlt: "Ruelle ombragée du vieux Hyères entre des façades provençales"
 featuredImageCaption: "En été, le meilleur itinéraire est souvent celui qui laisse de la place à l’ombre et aux pauses."
 canonical: ""
