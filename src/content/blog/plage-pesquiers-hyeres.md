@@ -12,7 +12,7 @@ author: "Joëlle"
 category: "PLAGES & NATURE"
 tags: ["plage des Pesquiers", "plage Bona Hyères", "plage Hyères", "salins des Pesquiers"]
 featuredImage: "/images/blog/guide-plages-hyeres.jpg"
-featuredImageAlt: "Littoral méditerranéen à Hyères, avec mer et végétation en bord de plage"
+featuredImageAlt: "Vue sur la mer depuis une plage de galets à Hyères, avec le soleil au-dessus de l’eau"
 featuredImageCaption: "La côte hyéroise se prête aux journées où l’on laisse un peu de place au vent et à la lumière."
 canonical: ""
 focusKeyword: "plage Les Pesquiers"
