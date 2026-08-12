@@ -10,7 +10,7 @@ updatedAt: "2026-07-27"
 author: "Joëlle"
 category: "BROUILLON"
 tags: ["test", "modèle"]
-featuredImage: "/images/blog/guide-plages-hyeres.jpg"
+featuredImage: "/images/blog/exemple-article-test-hyeres.jpg"
 featuredImageAlt: "Vue sur les Îles d'Or depuis la terrasse du studio"
 featuredImageCaption: "Exemple de légende d'image principale."
 canonical: ""
@@ -50,6 +50,6 @@ Le sommaire, les identifiants d'ancre, le temps de lecture et les dates françai
 
 ---
 
-![Terrasse du studio](/images/blog/guide-plages-hyeres.jpg "Légende affichée sous l'image")
+![Terrasse du studio](/images/blog/exemple-article-test-hyeres.jpg "Légende affichée sous l'image")
 
 <script>alert('ce HTML est neutralisé et affiché comme du texte')</script>

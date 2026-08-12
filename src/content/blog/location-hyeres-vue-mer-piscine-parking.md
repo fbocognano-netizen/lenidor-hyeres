@@ -11,7 +11,7 @@ updatedAt: "2026-08-03"
 author: "Joëlle"
 category: "PRÉPARER SON SÉJOUR"
 tags: ["location Hyères vue mer", "location Hyères piscine", "parking privé Hyères", "séjour en couple"]
-featuredImage: "/images/blog/airbnb-hyeres-piscine.jpg"
+featuredImage: "/images/blog/location-hyeres-vue-mer-piscine-parking.jpg"
 featuredImageAlt: "Piscine extérieure avec vue sur la mer à Hyères"
 featuredImageCaption: "À Hyères, une vue, une piscine et une place de stationnement sont surtout précieux lorsqu’ils simplifient réellement le séjour."
 canonical: ""

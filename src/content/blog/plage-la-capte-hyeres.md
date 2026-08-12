@@ -11,9 +11,9 @@ updatedAt: "2026-08-08"
 author: "Joëlle"
 category: "PLAGES & NATURE"
 tags: ["plage de La Capte", "plage La Capte Hyères", "plage Hyères", "presqu’île de Giens"]
-featuredImage: "/images/blog/presquile-giens.jpg"
-featuredImageAlt: "Escalier en bois au bord des salins de la presqu’île de Giens"
-featuredImageCaption: "Le littoral de la presqu’île se découvre d’autant mieux lorsqu’on lui laisse le temps."
+featuredImage: "/images/blog/plage-la-capte-hyeres.jpg"
+featuredImageAlt: "Vue de la plage de La Capte depuis la mer, avec pins parasols et maisons du village"
+featuredImageCaption: "Plage de La Capte. Photo : Johnjohn83var, licence CC BY-SA 3.0, via Wikimedia Commons."
 canonical: ""
 focusKeyword: "plage La Capte"
 draft: false

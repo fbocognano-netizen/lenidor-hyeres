@@ -11,7 +11,7 @@ updatedAt: "2026-07-29"
 author: "Joëlle"
 category: "SAVEURS & ADRESSES"
 tags: ["restaurant romantique Hyères", "dîner amoureux Hyères", "couple Hyères", "vue mer"]
-featuredImage: "/images/blog/diner-amoureux.jpg"
+featuredImage: "/images/blog/restaurant-romantique-hyeres-diner.jpg"
 featuredImageAlt: "Dîner aux chandelles pour deux sur une terrasse avec vue sur la Méditerranée"
 featuredImageCaption: ""
 canonical: ""

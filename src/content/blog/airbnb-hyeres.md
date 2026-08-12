@@ -11,7 +11,7 @@ updatedAt: "2026-08-02"
 author: "Joëlle"
 category: "PRÉPARER SON SÉJOUR"
 tags: ["Airbnb Hyères", "location Hyères", "studio Hyères", "séjour couple"]
-featuredImage: "/images/blog/airbnb-hyeres.jpg"
+featuredImage: "/images/blog/airbnb-hyeres-studio-vue-mer.jpg"
 featuredImageAlt: "Studio lumineux à Hyères avec terrasse et vue sur la mer"
 featuredImageCaption: "À Hyères, la vue, le calme et l’emplacement comptent autant que les équipements affichés dans l’annonce."
 canonical: ""

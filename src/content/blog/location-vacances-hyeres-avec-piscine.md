@@ -11,7 +11,7 @@ updatedAt: "2026-07-29"
 author: "Joëlle"
 category: "PRÉPARER SON SÉJOUR"
 tags: ["location vacances Hyères avec piscine", "studio Hyères piscine", "location Hyères couple", "vacances Hyères"]
-featuredImage: "/images/blog/location-piscine.jpg"
+featuredImage: "/images/blog/location-vacances-hyeres-piscine.jpg"
 featuredImageAlt: "Piscine d'une résidence à Hyères entourée de végétation méditerranéenne"
 featuredImageCaption: "Au Nid d’Or, la piscine complète un séjour tourné vers la vue, le calme et la découverte de Hyères."
 canonical: ""

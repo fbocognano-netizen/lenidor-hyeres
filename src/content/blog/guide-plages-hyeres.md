@@ -11,7 +11,7 @@ updatedAt: "2026-08-02"
 author: "Joëlle"
 category: "GUIDE HYÈRES"
 tags: ["plage de l'almanarre", "hyeres vacances", "porquerolles", "presqu'ile de giens"]
-featuredImage: "/images/blog/guide-plages-hyeres.jpg"
+featuredImage: "/images/blog/plages-hyeres-vue-iles-or.jpg"
 featuredImageAlt: "Coucher de soleil sur les Îles d'Or depuis la terrasse du studio à Hyères"
 featuredImageCaption: ""
 canonical: ""

@@ -11,7 +11,7 @@ updatedAt: "2026-08-07"
 author: "Joëlle"
 category: "PRÉPARER SON SÉJOUR"
 tags: ["Hyères en septembre", "séjour à Hyères", "fin d'été", "vacances en couple"]
-featuredImage: "/images/blog/guide-plages-hyeres.jpg"
+featuredImage: "/images/blog/hyeres-septembre-terrasse-vue-mer.jpg"
 featuredImageAlt: "Terrasse du Nid d'Or face à la mer au coucher du soleil"
 featuredImageCaption: "La lumière de fin de journée invite naturellement à ralentir après une sortie sur le littoral."
 canonical: ""

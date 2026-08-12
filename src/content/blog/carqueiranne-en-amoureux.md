@@ -11,7 +11,7 @@ updatedAt: "2026-07-30"
 author: "Joëlle"
 category: "AUTOUR D’HYÈRES"
 tags: ["Carqueiranne", "Carqueiranne en amoureux", "séjour en couple", "plages du Var"]
-featuredImage: "/images/blog/carqueiranne.jpg"
+featuredImage: "/images/blog/carqueiranne-port-criques-couple.jpg"
 featuredImageAlt: "Petit port et criques de Carqueiranne au soleil"
 featuredImageCaption: "Le Nid d’Or : un point de départ calme pour alterner escapades et retour sur la terrasse."
 canonical: ""

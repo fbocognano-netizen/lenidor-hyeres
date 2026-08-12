@@ -11,7 +11,7 @@ updatedAt: "2026-08-02"
 author: "Joëlle"
 category: "VISITER HYÈRES"
 tags: ["visiter Hyères en 3 jours", "week-end Hyères", "séjour couple", "itinéraire Hyères"]
-featuredImage: "/images/blog/hyeres-3-jours.jpg"
+featuredImage: "/images/blog/visiter-hyeres-3-jours-plage.jpg"
 featuredImageAlt: "Plage de sable sur le littoral de Hyères, avec mer et collines au loin"
 featuredImageCaption: "Une pause au bord de l'eau trouve naturellement sa place dans un séjour de trois jours à Hyères."
 canonical: ""
