@@ -1,7 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-import { supabase } from "@/integrations/supabase/client";
 
 const CONSENT_VERSION = "club-nid-or-2026-07-31";
 
