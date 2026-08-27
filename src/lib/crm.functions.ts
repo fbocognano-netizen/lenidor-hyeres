@@ -21,7 +21,8 @@ const crmLeadSchema = z.object({
 export const captureCrmLead = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => crmLeadSchema.parse(data))
   .handler(async ({ data }) => {
-    const { error } = await supabase.rpc("capture_crm_lead", {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.rpc("capture_crm_lead", {
       p_first_name: data.first_name,
       p_email: data.email,
       p_phone: data.phone || null,
