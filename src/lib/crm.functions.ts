@@ -1,7 +1,6 @@
 import { createServerFn } from "@tanstack/react-start";
 import { z } from "zod";
 
-import { supabase } from "@/integrations/supabase/client";
 
 const CONSENT_VERSION = "club-nid-or-2026-07-31";
 
@@ -22,15 +21,16 @@ const crmLeadSchema = z.object({
 export const captureCrmLead = createServerFn({ method: "POST" })
   .inputValidator((data: unknown) => crmLeadSchema.parse(data))
   .handler(async ({ data }) => {
-    const { error } = await supabase.rpc("capture_crm_lead", {
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const { error } = await supabaseAdmin.rpc("capture_crm_lead", {
       p_first_name: data.first_name,
       p_email: data.email,
-      p_phone: data.phone || null,
+      p_phone: data.phone || "",
       p_source: data.source,
-      p_source_url: data.source_url || null,
-      p_stay_period: data.stay_period || null,
-      p_desired_dates: data.desired_dates || null,
-      p_message: data.message || null,
+      p_source_url: data.source_url || "",
+      p_stay_period: data.stay_period || "",
+      p_desired_dates: data.desired_dates || "",
+      p_message: data.message || "",
       p_newsletter_consent: data.newsletter_consent,
       p_consent_version: CONSENT_VERSION,
     });

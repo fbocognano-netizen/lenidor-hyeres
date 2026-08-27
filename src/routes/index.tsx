@@ -309,10 +309,10 @@ function Intro() {
             </p>
             <p>
               Pour choisir votre excursion, notre guide
-              <Link to="/port-cros-ou-porquerolles" className="text-primary underline underline-offset-4">
+              <a href="/port-cros-ou-porquerolles" className="text-primary underline underline-offset-4">
                 {" "}
                 Port-Cros ou Porquerolles
-              </Link>{" "}
+              </a>{" "}
               compare les deux îles selon le rythme recherché.
             </p>
             <p>
@@ -1196,9 +1196,9 @@ function Footer() {
               <Link to="/guides-hyeres" className="text-muted-foreground hover:text-foreground transition">
                 Découvrir Hyères
               </Link>
-              <Link to="/guide-plages-hyeres" className="text-muted-foreground hover:text-foreground transition">
+              <a href="/guide-plages-hyeres" className="text-muted-foreground hover:text-foreground transition">
                 Guide des plages de Hyères
-              </Link>
+              </a>
               <Link to="/offres-directes" className="text-muted-foreground hover:text-foreground transition">
                 Recevoir les offres directes
               </Link>

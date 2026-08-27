@@ -52,7 +52,7 @@ export function ThankYouPage({
           ) : null}
           <div className="mt-8 flex flex-col justify-center gap-3 sm:flex-row">
             <Button asChild className="rounded-full h-12 px-6">
-              <Link to="/#reserver">{primaryCtaLabel}</Link>
+              <a href="/#reserver">{primaryCtaLabel}</a>
             </Button>
             <Button asChild variant="outline" className="rounded-full h-12 px-6">
               <Link to="/">Retour au studio</Link>
