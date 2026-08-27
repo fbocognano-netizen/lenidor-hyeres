@@ -879,7 +879,7 @@ async function collectProvenceMedSource(
     }
   });
 
-  const collectedEvents = events.filter((event): event is AreaAgendaEvent => event !== null);
+  const collectedEvents: AreaAgendaEvent[] = events.flatMap((event) => (event ? [event] : []));
   return {
     events: collectedEvents,
     stats: {
@@ -977,7 +977,7 @@ async function collectHtmlLinkSource(
     }
   });
 
-  const collectedEvents = events.filter((event): event is AreaAgendaEvent => event !== null);
+  const collectedEvents: AreaAgendaEvent[] = events.flatMap((event) => (event ? [event] : []));
   return {
     events: collectedEvents,
     stats: {
