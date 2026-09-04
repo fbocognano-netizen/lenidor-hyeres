@@ -6,6 +6,7 @@ import { SiteNav } from "@/components/site-nav";
 import { GuideSearchButton } from "@/components/guide-search";
 import { AgencyCredit } from "@/components/agency-credit";
 import { SocialLinks } from "@/components/social-links";
+import { AgendaPreview } from "@/components/agenda-preview";
 import { Card } from "@/components/ui/card";
 import { absoluteUrl, formatFrenchDate, getPublishedPosts, SITE_URL } from "@/lib/blog";
 
@@ -219,6 +220,8 @@ function GuidesPage() {
         <div className="mt-6">
           <GuideSearchButton label="Rechercher un lieu, une plage, un restaurant..." />
         </div>
+
+        <AgendaPreview />
 
         {posts.length === 0 ? (
           <p className="mt-12 text-muted-foreground">Les premiers guides arrivent très bientôt.</p>

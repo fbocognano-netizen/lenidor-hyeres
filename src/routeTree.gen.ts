@@ -14,6 +14,7 @@ import { Route as SplatRouteImport } from './routes/$'
 import { Route as AdminRouteImport } from './routes/admin'
 import { Route as AgendaRouteImport } from './routes/agenda'
 import { Route as ClubNidOrRouteImport } from './routes/club-nid-or'
+import { Route as GuideRouteImport } from './routes/guide'
 import { Route as GuidesHyeresRouteImport } from './routes/guides-hyeres'
 import { Route as MerciClubNidOrRouteImport } from './routes/merci-club-nid-or'
 import { Route as MerciOffreDirecteRouteImport } from './routes/merci-offre-directe'
@@ -51,6 +52,11 @@ const AgendaRoute = AgendaRouteImport.update({
 const ClubNidOrRoute = ClubNidOrRouteImport.update({
   id: '/club-nid-or',
   path: '/club-nid-or',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const GuideRoute = GuideRouteImport.update({
+  id: '/guide',
+  path: '/guide',
   getParentRoute: () => rootRouteImport,
 } as any)
 const GuidesHyeresRoute = GuidesHyeresRouteImport.update({
@@ -126,6 +132,7 @@ export interface FileRoutesByFullPath {
   '/admin': typeof AdminRoute
   '/agenda': typeof AgendaRoute
   '/club-nid-or': typeof ClubNidOrRoute
+  '/guide': typeof GuideRoute
   '/guides-hyeres': typeof GuidesHyeresRoute
   '/merci-club-nid-or': typeof MerciClubNidOrRoute
   '/merci-offre-directe': typeof MerciOffreDirecteRoute
@@ -146,6 +153,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminRoute
   '/agenda': typeof AgendaRoute
   '/club-nid-or': typeof ClubNidOrRoute
+  '/guide': typeof GuideRoute
   '/guides-hyeres': typeof GuidesHyeresRoute
   '/merci-club-nid-or': typeof MerciClubNidOrRoute
   '/merci-offre-directe': typeof MerciOffreDirecteRoute
@@ -167,6 +175,7 @@ export interface FileRoutesById {
   '/admin': typeof AdminRoute
   '/agenda': typeof AgendaRoute
   '/club-nid-or': typeof ClubNidOrRoute
+  '/guide': typeof GuideRoute
   '/guides-hyeres': typeof GuidesHyeresRoute
   '/merci-club-nid-or': typeof MerciClubNidOrRoute
   '/merci-offre-directe': typeof MerciOffreDirecteRoute
@@ -189,6 +198,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/agenda'
     | '/club-nid-or'
+    | '/guide'
     | '/guides-hyeres'
     | '/merci-club-nid-or'
     | '/merci-offre-directe'
@@ -209,6 +219,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/agenda'
     | '/club-nid-or'
+    | '/guide'
     | '/guides-hyeres'
     | '/merci-club-nid-or'
     | '/merci-offre-directe'
@@ -229,6 +240,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/agenda'
     | '/club-nid-or'
+    | '/guide'
     | '/guides-hyeres'
     | '/merci-club-nid-or'
     | '/merci-offre-directe'
@@ -250,6 +262,7 @@ export interface RootRouteChildren {
   AdminRoute: typeof AdminRoute
   AgendaRoute: typeof AgendaRoute
   ClubNidOrRoute: typeof ClubNidOrRoute
+  GuideRoute: typeof GuideRoute
   GuidesHyeresRoute: typeof GuidesHyeresRoute
   MerciClubNidOrRoute: typeof MerciClubNidOrRoute
   MerciOffreDirecteRoute: typeof MerciOffreDirecteRoute
@@ -300,6 +313,13 @@ declare module '@tanstack/react-router' {
       path: '/club-nid-or'
       fullPath: '/club-nid-or'
       preLoaderRoute: typeof ClubNidOrRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/guide': {
+      id: '/guide'
+      path: '/guide'
+      fullPath: '/guide'
+      preLoaderRoute: typeof GuideRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/guides-hyeres': {
@@ -402,6 +422,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminRoute: AdminRoute,
   AgendaRoute: AgendaRoute,
   ClubNidOrRoute: ClubNidOrRoute,
+  GuideRoute: GuideRoute,
   GuidesHyeresRoute: GuidesHyeresRoute,
   MerciClubNidOrRoute: MerciClubNidOrRoute,
   MerciOffreDirecteRoute: MerciOffreDirecteRoute,
